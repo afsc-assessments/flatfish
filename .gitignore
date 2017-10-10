@@ -1,0 +1,66 @@
+.DS_Store
+*~
+*.swp
+*.swo
+
+# API files
+html/
+docs/api/html/
+
+# Latex files
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.nav
+*.toc
+*.snm
+*.vrb
+*.tex.bak
+*.bak
+auto/
+
+# R files
+rsconnect/
+.Rproj.user
+*.Rproj
+*.Rout
+*.R~
+.RData
+.Rhistory
+*.Rmd.bak
+Rplots.pdf
+
+# ADMB build files
+src/lib/*.obj
+src/build/*
+src/fm.cpp
+src/fm.exe
+src/fm.htp
+src/fm.obj
+
+# ADMB standard output files
+*.b0*
+*.bar
+*.cor
+*.cov
+*.dep
+*.ecm
+*.eva
+gradient.*
+*.hes
+*.log
+*.mc2
+*.mcm
+*.p0*
+*.psv
+*.hst
+*.par
+*.rep
+*.r0*
+*.std
+*.tmp
+*_in.ctl
+*_in.dat
+variance
+sims

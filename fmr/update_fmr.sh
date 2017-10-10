@@ -1,0 +1,2 @@
+R CMD BATCH update-fmr.R
+chmod 777 DESCRIPTION

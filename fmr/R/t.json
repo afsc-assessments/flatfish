@@ -1,0 +1,58 @@
+{
+    "name": "red_snapper_model",
+    "comment":"This is a comment about this model",
+    "data": {
+        "structure": "age",
+        "years": 12,
+        "seasons": 0,
+        "ages": 7,
+        "genders": 1,
+        "comment":"This is a comment about the data",
+        "area": {
+            "name": "area 1",
+            "polygon": {
+                "point": {
+                    "x": 0,
+                    "y": 0
+                },
+                "point": {
+                    "x": 0,
+                    "y": 20
+                },
+                "point": {
+                    "x": 20,
+                    "y": 20
+                },
+                "point": {
+                    "x": 20,
+                    "y": 0
+                }
+            }
+        },
+        "observations": {
+            "fleet": {
+                "name": "fleet 1",
+                "selectivity": "hook",
+                "areas": "area 1, area 2",
+                "source": "data/fleet1.dat",
+                "order": "numbers_at_age,cpue"
+            },
+            "survey": {
+                "name": "survey 1",
+                "areas": "area 1",
+                "selectivity": "hook",
+                "source": "data/survey1.dat",
+                "order": "numbers_at_age,cpue"
+            }
+        },
+        "population": {
+            "name":"optional population name",
+            "growth": "von_bertalanffy",
+            "recruitment": "ricker",
+            "immigration": "diffusion",
+            "emigration": "probability",
+            "natural_mortality": 0.3,
+            "initial_area": "area 1"
+        }
+    }
+}
