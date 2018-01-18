@@ -1,14 +1,14 @@
 R
 rm(list=ls())
-source("R/prelims.R")
+source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
-source("R/compareRuns.r")
+source("../R/compareRuns.r")
 
 # Read in the output of the assessment
 # Read in model results
-i=7
+i=1
 for (i in 0:4) {
   rn=paste0("m",i,"/For_R.rep")
   mn=paste0("mod",i)
@@ -24,11 +24,11 @@ mod3 <- readList("arc/mod3_R.rep")
 mod4 <- readList("arc/mod4_R.rep")
 mod5 <- readList("arc/mod5_R.rep")
 names(mod1)
-source("R/plot_srr.R")
+source("../R/plot_srr.R")
 
 .OVERlAY=TRUE
 M <- list( '2015 Model 1' = mod0,'Model 1' = mod1 )
-M <- list( 'Model 1' = mod1,'Model 5' = mod5 )
+M <- list( 'Model 1' = mod1) # ,'Model 5' = mod5 )
 plot_bts(M ,alpha=.6)
 
 modset0 <- list( '0' = mod0,Model_1_2016 = mod1 )
@@ -36,7 +36,7 @@ modset1 <- list( '1' = mod1)
 modset15 <- list( '1' = mod1,'5' = mod5)
 modset0 <- list( Model_1_2015 = mod0,Model_1_2016 = mod1 )
 modset1 <- list( Model_1 = mod1,Model_2 = mod2, Model_3 = mod3,  Model_5 = mod5 )
-plot_ssb(modset0,alpha=.6)
+plot_ssb(M,alpha=.6)
 plot_ssb(modset1,alpha=.3)
 plot_ssb(modset15,alpha=.3)
 modset1 <- list( Base = mod0, Prior_only = mod5)
@@ -46,8 +46,10 @@ modset2 <- list( Base = mod0, Diff_Prior= mod5, Bholt=mod6, Bholt_Diff_prior=mod
 
 plot_srr(modset15,alpha=.2,xlim=c(0,1100),leglabs=c("1","5")   ,ylim=c(0,7))
 
+plot_srr(M,alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
+
 plot_srr(modset2,alpha=.2,xlim=c(0,5000),leglabs=c("BevHolt","Less wt \n on \"data\""),ylim=c(0,90000))
-plot_srr(modset1,alpha=.2,xlim=c(0,5000),ylim=c(0,80000))
+plot_srr(modset1,alpha=.2,xlim=c(0,1400),ylim=c(0,8))
 plot_srr(modset2,alpha=.2,xlim=c(0,5000),ylim=c(0,80000))
 ,Model_1= mod1, Model_2= mod2, Model_3= mod3, Model_4= mod4)
 
