@@ -15,8 +15,6 @@
 // 
 ///////////////////////////////////////////////////////////////////////
 DATA_SECTION
-
-
   int oper_mod
   int mcmcmode
   int mcflag
@@ -98,7 +96,7 @@ DATA_SECTION
   init_int phase_m_f
   init_int phase_m_m
   init_int phase_sr
-  init_int phase_bottom_temps  //
+  init_int phase_env_cov  //
   init_int phase_sigmar        //
   init_int phase_wtfmsy        //
   init_number pf_sigma         // penalty cv for selectivity used in Fmsy calcs
@@ -131,7 +129,7 @@ DATA_SECTION
     log_input(phase_m_f);
     log_input(phase_m_m);
     log_input(phase_sr);
-    log_input(phase_bottom_temps);  //
+    log_input(phase_env_cov);  //
     log_input(phase_sigmar);        //
     log_input(phase_wtfmsy);        //
     log_input(pf_sigma);         // penalty cv for selectivity used in Fmsy calcs
@@ -295,9 +293,11 @@ DATA_SECTION
   int rec_lag
 
 
-// Survey bottom temperatures for q analysis
-  init_matrix bottom_temps(1,nsrv,1,nyrs_srv)
-  !!log_input(bottom_temps);
+// Survey environmental covariates for q analysis
+  init_ivector n_env_cov(1,nsrv)
+  !!log_input(n_env_cov);
+  init_3darray env_cov(1,nsrv,1,nyrs_srv,1,n_env_cov)
+  !!log_input(env_cov);
 
    number    adj_1;
    number    adj_2
@@ -438,7 +438,7 @@ DATA_SECTION
 
 PARAMETER_SECTION
 
-  init_bounded_vector q_srv(1,nsrv,.01,3,phase_q)
+  init_vector ln_q_srv(1,nsrv,phase_q)
   init_bounded_number natmort_f(.02,.30,phase_m_f)
   init_bounded_number natmort_m(.02,.30,phase_m_m)
   init_bounded_number Linf_f(25.,50.,phase_grwth)
@@ -461,8 +461,8 @@ PARAMETER_SECTION
   init_number sst_alpha(phase_sst)
 
   //   linear model paramters to fit temperature to survey catchability
-  init_number alpha(phase_alpha)
-  init_number beta(phase_beta)
+  init_vector alpha(1,nsrv,phase_alpha)
+  init_vector_vector beta(1,nsrv,1,n_env_cov,3)
 
   //Recruitment parameters
   init_number mean_log_rec(phase_mn_rec);
@@ -568,6 +568,7 @@ PARAMETER_SECTION
   matrix sel_srv_f(1,nsrv,1,nages)
   matrix sel_srv_m(1,nsrv,1,nages)
   matrix pred_srv(1,nsrv,styr,endyr)
+  matrix    q_srv(1,nsrv,styr,endyr)
 
   3darray eac_fsh_c(1,nfsh,1,nyrs_fsh_age_c,1,nages)
   3darray eac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)
@@ -842,8 +843,8 @@ INITIALIZATION_SECTION
   wt_fsh_fut_m .8;
   wt_pop_fut_f .8;
   wt_pop_fut_m .8;
-  alpha alpha_prior ;
-  beta beta_prior ;
+  alpha 0. ;
+  beta 0. ;
   R_logalpha    -4.18844741303
   R_logbeta     -6.15913355283
   sigma_R  sigmar_exp
@@ -852,8 +853,8 @@ INITIALIZATION_SECTION
   mean_log_rec 0.8
   mean_log_init -.8
   log_avg_fmort -2.
-  q_srv  q_exp
-  sel_slope_fsh_f  .8
+  ln_q_srv       0. 
+  sel_slope_fsh_f 0.8
   sel_slope_fsh_m  .8
   sel_slope_srv  .8
   sel50_fsh_f      5.
@@ -1088,15 +1089,17 @@ FUNCTION get_numbers_at_age
       dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
       b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
 
-      if (phase_bottom_temps>=1)
+      if (phase_env_cov>=1)
       {
-     // pred_srv(k,yrs_srv(k,i)) =       (alpha+beta*bottom_temps(k,i)) * elem_prod(natage(yrs_srv(k,i)),exp( -Z(yrs_srv(k,i)) * srv_mo_frac(k) )) * elem_prod(sel_srv(k),wt_srv(k,yrs_srv(k,i)));
-        pred_srv(k,srvyrtmp)     = mfexp(-alpha+beta*bottom_temps(k,i)) * b1tmp;
+        q_srv(k,srvyrtmp) = mfexp(alpha(k) + beta(k) * env_cov(k,i)) ;
+     // pred_srv(k,yrs_srv(k,i)) =       (alpha+beta*env_cov(k,i)) * elem_prod(natage(yrs_srv(k,i)),exp( -Z(yrs_srv(k,i)) * srv_mo_frac(k) )) * elem_prod(sel_srv(k),wt_srv(k,yrs_srv(k,i)));
+     // pred_srv(k,srvyrtmp)     = mfexp(-alpha+beta*env_cov(k,i)) * b1tmp;
       }
       else
       {
-        pred_srv(k,srvyrtmp)     = q_srv(k) * b1tmp;
+        q_srv(k,srvyrtmp) = mfexp(alpha(k));
       }
+      pred_srv(k,srvyrtmp)     = q_srv(k,srvyrtmp) * b1tmp;
     }
     for (i=1;i<=nyrs_srv_age_c(k);i++)
     {
@@ -1197,9 +1200,10 @@ FUNCTION evaluate_the_objective_function
 
   obj_fun += lambda(1)* sum(rec_like);
 
-  if (active(q_srv))
+  // Note not general to multiple surveys...
+  if (active(ln_q_srv))
   {
-     q_like(1) = .5* square(log(q_srv(1))-log(q_exp))/(q_sigma*q_sigma);
+     q_like(1) = .5* square(ln_q_srv(1)-log(q_exp))/(q_sigma*q_sigma);
      obj_fun += q_like(1);
    }
   if (active(sel_slope_fsh_devs_f))
@@ -1686,6 +1690,7 @@ FUNCTION write_srec
 REPORT_SECTION
   save_gradients(gradients);
   dvar_vector wt_pop_tmp_f(1,nages);
+
   for (int i=0;i<=3;i++)
     {
       dvar_vector incr_dev_tmp(2,nages);
@@ -1879,19 +1884,20 @@ REPORT_SECTION
   report << "q_Prior " <<q_like <<endl;
   report << "m_Prior " <<m_like <<endl;
   report << "F_penalty " << fpen << endl;
-  if (phase_bottom_temps>0)
+  /*
+  if (phase_env_cov>0)
   {
     report << "alpha= " << alpha << endl;
     report << "beta= " << beta << endl;
 
-    report << endl<<"Temperature_Effect_(q) " << endl;
+    report << endl<<"Environmental_effect_q " << endl;
     for (i=1;i<=nyrs_srv(1);i++)
-      report <<yrs_srv(1,i)<<", "<<bottom_temps(1,i)<<", "<<mfexp(-alpha+beta*bottom_temps(1,i))<<endl;
+      for (k=1;k<=n_env_cov(1);k++)
+        report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<mfexp(-alpha(1)+beta(1,k)*env_cov(1,k,i))<<endl;
   }
-  if (phase_bottom_temps>0)
-    report << " survey_q= " << mean(exp(-alpha+beta*bottom_temps(1)))<<endl;
-  else
-    report << " survey_q= " << q_srv<<endl;
+  // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+beta*env_cov(1)))<<endl; else
+  */
+  report << " survey_q= " << mean(q_srv(1))<<endl;
   report << "M= " << natmort_f<<" "<<natmort_m << endl;
   report << endl << "Ricker_spawner-recruit_estimates" << endl;
   report << "stock_assessment_model_recruitment_estimates" << endl;
@@ -2070,6 +2076,7 @@ REPORT_SECTION
   cout <<"End of report file for phase "<<current_phase()<<endl;
 	if (last_phase())
 	  ssb_retro << SSB <<endl;
+
  
 BETWEEN_PHASES_SECTION
 

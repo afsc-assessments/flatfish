@@ -29,7 +29,7 @@ class model_data : public ad_comm{
   data_int phase_m_f;
   data_int phase_m_m;
   data_int phase_sr;
-  data_int phase_bottom_temps;
+  data_int phase_env_cov;
   data_int phase_sigmar;
   data_int phase_wtfmsy;
   data_number pf_sigma;
@@ -113,7 +113,8 @@ class model_data : public ad_comm{
   int i;
   int j;
   int rec_lag;
-  data_matrix bottom_temps;
+  data_ivector n_env_cov;
+  data_3array env_cov;
   double adj_1;
   double adj_2;
   double SSB_1;
@@ -171,7 +172,7 @@ public:
 private:
   ivector integer_control_flags;
   dvector double_control_flags;
-  param_init_bounded_vector q_srv;
+  param_init_vector ln_q_srv;
   param_init_bounded_number natmort_f;
   param_init_bounded_number natmort_m;
   param_init_bounded_number Linf_f;
@@ -186,8 +187,8 @@ private:
   param_init_bounded_dev_vector age_incr;
   param_init_bounded_dev_vector yr_incr;
   param_init_number sst_alpha;
-  param_init_number alpha;
-  param_init_number beta;
+  param_init_vector alpha;
+  param_init_vector_vector beta;
   param_init_number mean_log_rec;
   param_init_bounded_vector rec_dev;
   param_init_number mean_log_init;
@@ -226,6 +227,9 @@ private:
   param_vector SAM_recruits;
   param_init_number sigma_R;
   param_number R_alpha;
+  param_vector SRR_SSB;
+  param_stddev_vector rechat;
+  param_stddev_vector pred_rec;
   param_3array wt_fsh;
   param_3array wt_fsh_f;
   param_3array wt_fsh_m;
@@ -256,6 +260,7 @@ private:
   param_matrix sel_srv_f;
   param_matrix sel_srv_m;
   param_matrix pred_srv;
+  param_matrix q_srv;
   param_3array eac_fsh_c;
   param_3array eac_srv_c;
   param_3array eac_fsh_s;
@@ -275,7 +280,6 @@ private:
   param_number surv_f;
   param_number surv_m;
   param_stddev_vector SSB;
-  param_vector pred_rec;
   param_number sigma;
   param_vector rec_like;
   param_number catch_like;

@@ -1,4 +1,9 @@
 # Yellowfin sole issues
+## Generalizing environmental covariate
+  1. confirm control-file switches (excel file fm_mod_ctl.xls)
+	2. check code for old q fn(temp)
+	3. develop for multiple variables
+
 ## Retrospective
 fmr.tpl contains the code version (still needs testing) for retrospective runs. 
    1. F40 and Projections turned off
