@@ -296,7 +296,9 @@ DATA_SECTION
 // Survey environmental covariates for q analysis
   init_ivector n_env_cov(1,nsrv)
   !!log_input(n_env_cov);
-  init_3darray env_cov(1,nsrv,1,nyrs_srv,1,n_env_cov)
+  init_3darray env_cov(1,nsrv,1,n_env_cov,1,nyrs_srv)
+  !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
+	// env_cov(j,k) /= stdev(env_cov(j,k)); }
   !!log_input(env_cov);
 
    number    adj_1;
@@ -1091,7 +1093,11 @@ FUNCTION get_numbers_at_age
 
       if (phase_env_cov>=1)
       {
-        q_srv(k,srvyrtmp) = mfexp(alpha(k) + beta(k) * env_cov(k,i)) ;
+        q_srv(k,srvyrtmp) = mfexp(alpha(k));
+        for (int j=1;j<=n_env_cov(k);j++)
+					q_srv(k,srvyrtmp) *= mfexp( beta(k,j) * env_cov(k,j,i)) ;
+
+        // init_vector_vector beta(1,nsrv,1,n_env_cov)
      // pred_srv(k,yrs_srv(k,i)) =       (alpha+beta*env_cov(k,i)) * elem_prod(natage(yrs_srv(k,i)),exp( -Z(yrs_srv(k,i)) * srv_mo_frac(k) )) * elem_prod(sel_srv(k),wt_srv(k,yrs_srv(k,i)));
      // pred_srv(k,srvyrtmp)     = mfexp(-alpha+beta*env_cov(k,i)) * b1tmp;
       }
@@ -2518,8 +2524,19 @@ FUNCTION Write_R
     double ub=value(pred_rec(i)*exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     R_report<<i<<" "<<pred_rec(i)<<" "<<pred_rec.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
+  for (k=1;k<=nsrv;k++)
+  {
+    R_report << endl<< "$yrs_srv"<<endl;
+    R_report << yrs_srv(k) << endl;
+    R_report << "$q_srv"<<endl;
+    for (i=1;i<=nyrs_srv(k);i++)
+      R_report<< q_srv(k,yrs_srv(k,i)) <<" ";
+	  R_report<< endl;
+	}
+      
+  /* 
 
-  /* for (int k=1;k<=5;k++){
+  for (int k=1;k<=5;k++){
     R_report<<"$SSB_fut_"<<k<<endl; 
     for (i=styr_fut;i<=endyr_fut;i++) 
     {
@@ -2580,8 +2597,6 @@ FUNCTION Write_R
       R_report   << endl;
     }
 
-    R_report << endl<< "$Survey_Q"<<endl;
-    R_report<< q_srv << endl;
     R_report   << endl;
     for (int k=1;k<=nfsh;k++)
     {

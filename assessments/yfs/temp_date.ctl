@@ -1,5 +1,5 @@
-Mod1_temp_date_interaction
-yfs_temp_date_int_cov.dat
+Mod1_temp_date
+yfs_temp_date_cov.dat
 1
 6
 -1
