@@ -10,6 +10,7 @@ library(gridExtra)
 source("../R/plot_ssb.R")
 source("../R/plot_rec.R")
 source("../R/plot_bts.R")
+source("../R/plot_q.R")
 source("../R/plot_srr.R")
 
 .THEME <- theme(panel.grid.major.x = element_blank(), panel.grid.minor.y = element_blank(), panel.grid.major.y = element_blank() )

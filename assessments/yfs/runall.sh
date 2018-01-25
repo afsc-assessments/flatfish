@@ -1,3 +1,4 @@
+./rundt.sh nocov
 ./rundt.sh temp
 ./rundt.sh date
 ./rundt.sh temp_date
