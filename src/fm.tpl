@@ -1890,6 +1890,7 @@ REPORT_SECTION
   report << "q_Prior " <<q_like <<endl;
   report << "m_Prior " <<m_like <<endl;
   report << "F_penalty " << fpen << endl;
+
   /*
   if (phase_env_cov>0)
   {
@@ -2494,7 +2495,17 @@ FUNCTION Write_R
   }
   */ 
 
-
+  R_report << "$survey_likelihood "         << endl << srv_like     << endl;
+  R_report << "$catch_likelihood "          << endl << catch_like   << endl;
+  R_report << "$age_likelihood_for_fishery" << endl << age_like_fsh << endl;
+  R_report << "$age_likeihood_for_survey "  << endl << age_like_srv << endl;
+  R_report << "$recruitment_likelilhood "   << endl << rec_like     << endl;
+  R_report << "$selectivity_likelihood "    << endl << sel_like     << endl;
+  R_report << "$q_Prior "                   << endl << q_like       << endl;
+  R_report << "$m_Prior "                   << endl << m_like       << endl;
+  R_report << "$F_penalty"                  << endl << fpen         << endl;
+  R_report << "$obj_fun"                    << endl << obj_fun      << endl;
+  
   R_report<<"$SSB"<<endl; for (i=styr;i<=endyr;i++) 
   {
     double lb=value(SSB(i)/exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));
@@ -2512,12 +2523,19 @@ FUNCTION Write_R
   R_report<<"$yr_bts"<<endl;
   R_report<<yrs_srv(1)<<endl;
   R_report<<"$eb_bts"<<endl;
+  double rmse=0.;
   for (int i=1;i<=nyrs_srv(1);i++)
+  {
     R_report<<pred_srv(1,yrs_srv(1,i))<<endl;
+    rmse += value(square(log(obs_srv(1,i)) - log(pred_srv(1,yrs_srv(1,i)))));
+  }
+  rmse = sqrt(rmse/nyrs_srv(1));
+  R_report << "$rmse_srv"                   << endl << rmse         << endl;
   R_report<<"$ob_bts"<<endl;
   R_report<<obs_srv(1)<<endl;
   R_report<<"$sd_ob_bts"<<endl;
   R_report<<obs_se_srv(1)<<endl;
+
   R_report<<"$R"<<endl; for (i=styr;i<=endyr;i++) 
   {
     double lb=value(pred_rec(i)/exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));

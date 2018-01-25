@@ -1,4 +1,5 @@
 ./rundt.sh temp
+./rundt.sh date
 ./rundt.sh temp_date
 ./rundt.sh temp_date_int
 #./run.sh 0
