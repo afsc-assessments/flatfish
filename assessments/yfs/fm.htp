@@ -8,7 +8,7 @@ class model_data : public ad_comm{
   data_int Growth_Option;
   int phase_grwth;
   int phase_wt;
-  int phase_sst;
+  int phase_growth_cov;
   int do_wt_only;
   data_int ABC_age_lb;
   data_int phase_age_incr;
@@ -50,6 +50,8 @@ class model_data : public ad_comm{
   data_number yr1_futcat;
   data_number yr2_futcat;
   data_number n_retro;
+  data_int nyrs_fut;
+  data_vector fut_temp;
   data_int styr;
   data_int endyr_in;
   int endyr;
@@ -124,7 +126,7 @@ class model_data : public ad_comm{
   data_vector srv_mo;
   dvector srv_mo_frac;
   data_matrix n_wts;
-  data_vector sst_anom;
+  data_vector growth_cov;
   int styr_fut;
   int endyr_fut;
   int num_proj_Fs;
@@ -186,7 +188,7 @@ private:
   param_matrix incr_dev;
   param_init_bounded_dev_vector age_incr;
   param_init_bounded_dev_vector yr_incr;
-  param_init_number sst_alpha;
+  param_init_number growth_alpha;
   param_init_vector alpha;
   param_init_vector_vector beta;
   param_init_number mean_log_rec;
@@ -281,8 +283,12 @@ private:
   param_number surv_m;
   param_stddev_vector SSB;
   param_number sigma;
+  param_vector nLogPosterior;
   param_vector rec_like;
   param_number catch_like;
+  param_number wt_fut_like;
+  param_number wt_msy_like;
+  param_number init_like;
   param_vector q_like;
   param_number m_like;
   param_vector age_like_fsh;
@@ -333,7 +339,8 @@ private:
   param_stddev_vector TotBiom;
   param_stddev_number endbiom;
   param_stddev_number depletion;
-  param_stddev_matrix catch_future;
+  param_stddev_vector future_spr0;
+  param_stddev_matrix future_catch;
   param_stddev_matrix future_SSB;
   param_stddev_matrix future_TotBiom;
 public:
@@ -361,6 +368,9 @@ public:
   void get_2yr_proj(void);
   void Future_projections(void);
   void write_srec(void);
+  void compute_spr_rates_2(void);
+ dvariable get_spr_rates(double spr_percent);
+ dvariable spr_ratio(dvariable trial_F);
   void between_phases_calculations(void);
  double mn_age(const dvar_vector& pobs);
  double Sd_age(const dvar_vector& pobs, const dvar_vector& phat);

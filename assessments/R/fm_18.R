@@ -15,6 +15,7 @@ for (i in 0:4) {
   assign(mn,readList(rn))
   print(rn)
 }
+m_nocov <- readList("arc/nocov_R.rep")
 m_temp <- readList("arc/temp_R.rep")
 m_date <- readList("arc/date_R.rep")
 m_temp_date <- readList("arc/temp_date_R.rep")
@@ -25,9 +26,14 @@ names(m_date)
 (m_date$survey_likelihood)
 (m_date$recruitment_likelilhood)
 (m_date$rmse)
-M <- list( 'Temperature' = m_temp,'Date' = m_date,'Temp. and date'=m_temp_date,'Temp, date, and interaction'=m_temp_date_int) 
+M <- list( "constant q"=m_nocov,'q = fn(temp))' = m_temp,'q = fn(temp+date+interaction)'=m_temp_date_int) 
+M <- list( "A)"=m_nocov,'B)' = m_temp,'C)'=m_temp_date_int) 
+M
+names(M)
+.THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M ,alpha=.6)
-
+p1 <- p1 + annotate("text", x=1999, y=4000, label="Some text", size = 7, family="Times",
+fontface="bold.italic", colour="red")
 #make a table of likelihoods
 .get_like_df(M)
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))

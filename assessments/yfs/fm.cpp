@@ -19,8 +19,11 @@
 	*/
 	#undef REPORT
 	#define REPORT(object) R_report << "$" #object "\n" << object << endl;
+  #undef WriteData
+  #define WriteData(object) SimDat << "#" #object "\n" << object << endl;
   ofstream writeinput("writeinput.log");
   ofstream R_report("fm_R.rep");
+  ofstream SimDat("sim.dat");
   adstring model_name;
   adstring datafile;
   adstring projfile_name;
@@ -37,8 +40,6 @@
   extern "C"  {
     void ad_boundf(int i);
   }
-#include <gdbprintlib.cpp>
-
 #include <fm.htp>
 
 model_data::model_data(int argc,char * argv[]) : ad_comm(argc,argv)
@@ -88,10 +89,28 @@ ad_comm::change_datafile_name("mod.ctl");  // GRID
  *(ad_comm::global_datafile) >>  model_name; 
  *(ad_comm::global_datafile) >>  datafile; 
   Growth_Option.allocate("Growth_Option");
- phase_grwth=-2;
- phase_wt = -1;
- phase_sst=-1;
- if(Growth_Option==2) {phase_wt = 1;phase_sst=-1;} else if (Growth_Option==3) {phase_wt= -1; phase_sst=1;}
+  phase_grwth=-2;
+  phase_wt  = -1;
+  phase_growth_cov = -1;
+  switch (Growth_Option)
+  {
+    case 0 : // Use constant time-invariant growth (from base growth parameters)
+    break;
+    case 1 : // Use empirical (values in data file) mean wts at age
+    break;
+    case 2 : // start out with base growth values and deviations decomposed by year and age
+    {
+      phase_wt = 1;
+      phase_growth_cov=-1; 
+    }
+    break;
+    case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
+    {
+      phase_wt  = -1; 
+      phase_growth_cov =  1;
+    }
+    break;
+  }
   ABC_age_lb.allocate("ABC_age_lb");
   phase_age_incr.allocate("phase_age_incr");
   phase_init_age_comp.allocate("phase_init_age_comp");
@@ -131,7 +150,7 @@ ad_comm::change_datafile_name("mod.ctl");  // GRID
     log_input(phase_grwth);
     log_input(phase_wt);
     log_input(phase_age_incr);
-    log_input(phase_sst);
+    log_input(phase_growth_cov);
     log_input(ABC_age_lb);
     log_input(phase_F40);           //Phase to begin spawning biomass estimation
     log_input(phase_fmort);         //Phase to begin mortality estimation
@@ -172,6 +191,11 @@ ad_comm::change_datafile_name("mod.ctl");  // GRID
  log_input(styr_wt); log_input(endyr_wt);
  log_input(yr1_futcat); log_input(yr1_futcat);
  log_input(n_retro); 
+ad_comm::change_datafile_name("fut_temp.dat");  
+  nyrs_fut.allocate("nyrs_fut");
+  fut_temp.allocate(1,nyrs_fut,"fut_temp");
+ log_input(nyrs_fut); 
+ log_input(fut_temp); 
 ad_comm::change_datafile_name(datafile);  
   styr.allocate("styr");
   endyr_in.allocate("endyr_in");
@@ -288,9 +312,8 @@ log_input(spawnmo);
 log_input(srv_mo);
   n_wts.allocate(styr_wt,endyr_wt,1,nages,"n_wts");
  log_input(n_wts);
- log_input(n_wts);
-  sst_anom.allocate(styr_wt,endyr,"sst_anom");
- log_input(sst_anom);
+  growth_cov.allocate(styr,endyr,"growth_cov");
+ log_input(growth_cov);
  num_proj_Fs = 4;
   offset_srv.allocate(1,nsrv);
   offset_fsh.allocate(1,nfsh);
@@ -342,7 +365,7 @@ log_input(srv_mo);
 	 if (endyr <= endyr_wt) endyr_wt = endyr - (endyr_in-endyr_wt );
 	 endyr_sr = endyr - (endyr_in-endyr_sr );
    styr_fut=endyr+1;
-   endyr_fut=styr_fut+10;
+   endyr_fut=styr_fut+nyrs_fut;
    for (int isrv=1;isrv<=nsrv;isrv++)
    {
     // need to adjust survey observation dimensions
@@ -399,7 +422,7 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   #endif
   age_incr.allocate(5,nages-5,-10,10,phase_age_incr,"age_incr");
   yr_incr.allocate(styr+1,endyr,-10,10,phase_wt,"yr_incr");
-  sst_alpha.allocate(phase_sst,"sst_alpha");
+  growth_alpha.allocate(phase_growth_cov,"growth_alpha");
   alpha.allocate(1,nsrv,phase_alpha,"alpha");
   beta.allocate(1,nsrv,1,n_env_cov,3,"beta");
   mean_log_rec.allocate(phase_mn_rec,"mean_log_rec");
@@ -668,6 +691,10 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   #ifndef NO_AD_INITIALIZE
   sigma.initialize();
   #endif
+  nLogPosterior.allocate(1,21,"nLogPosterior");
+  #ifndef NO_AD_INITIALIZE
+    nLogPosterior.initialize();
+  #endif
   rec_like.allocate(1,4,"rec_like");
   #ifndef NO_AD_INITIALIZE
     rec_like.initialize();
@@ -675,6 +702,18 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   catch_like.allocate("catch_like");
   #ifndef NO_AD_INITIALIZE
   catch_like.initialize();
+  #endif
+  wt_fut_like.allocate("wt_fut_like");
+  #ifndef NO_AD_INITIALIZE
+  wt_fut_like.initialize();
+  #endif
+  wt_msy_like.allocate("wt_msy_like");
+  #ifndef NO_AD_INITIALIZE
+  wt_msy_like.initialize();
+  #endif
+  init_like.allocate("init_like");
+  #ifndef NO_AD_INITIALIZE
+  init_like.initialize();
   #endif
   q_like.allocate(1,nsrv,"q_like");
   #ifndef NO_AD_INITIALIZE
@@ -825,7 +864,8 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   TotBiom.allocate(styr,endyr,"TotBiom");
   endbiom.allocate("endbiom");
   depletion.allocate("depletion");
-  catch_future.allocate(1,num_proj_Fs-1,styr_fut,endyr_fut,"catch_future");
+  future_spr0.allocate(styr_fut,endyr_fut,"future_spr0");
+  future_catch.allocate(1,num_proj_Fs-1,styr_fut,endyr_fut,"future_catch");
   future_SSB.allocate(1,num_proj_Fs,styr_fut,endyr_fut,"future_SSB");
   future_TotBiom.allocate(1,num_proj_Fs,styr_fut,endyr_fut,"future_TotBiom");
 }
@@ -1019,10 +1059,10 @@ void model_parameters::initializationfunction(void)
   sel50_fsh_f.set_initial_value(5.);
   sel50_fsh_m.set_initial_value(5.);
   sel50_srv.set_initial_value(3.);
-  F40.set_initial_value(.11);
-  F35.set_initial_value(.14);
-  F30.set_initial_value(.16);
-  sst_alpha.set_initial_value(.0);
+  F40.set_initial_value(.12);
+  F35.set_initial_value(.16);
+  F30.set_initial_value(.21);
+  growth_alpha.set_initial_value(.38);
 }
 
 void model_parameters::userfunction(void)
@@ -1036,24 +1076,8 @@ void model_parameters::userfunction(void)
     get_selectivity();
     get_mortality();
     get_numbers_at_age();
-    partial_F_f = mfexp(log_msy_sel_f);
-    partial_F_m = mfexp(log_msy_sel_m);
     if(active(R_logalpha))
      compute_sr_fit();
-    if (active(sst_alpha))
-    {
-      dvar_vector incr_dev_tmp(2,nages);
-      // two degree increase in temperature
-      incr_dev_tmp(5,nages-5)     = sst_alpha * 2.0 + age_incr;
-      incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
-      incr_dev_tmp(2,4)           = incr_dev_tmp(5) ;
-      wt_pop_fut_f(1)        = wt_vbg_f(1);
-      wt_pop_fut_m(1)        = wt_vbg_m(1);
-      wt_pop_fut_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
-      wt_pop_fut_m(2,nages)  = ++wt_vbg_m(1,nages-1) + elem_prod(base_incr_m,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
-    }
-    if (active(F40))
-      compute_spr_rates();
     if (last_phase())
       Future_projections();
     if (sd_phase() || mceval_phase())
@@ -1081,7 +1105,21 @@ void model_parameters::userfunction(void)
      // compute_spr_rates();
       // write_mceval();
     }
-    evalout <<obj_fun<<" "<<q_srv(1)<<" "<<natmort_f<<" "<< Fmsyr <<" "<<ABC_biom1<<" "<<ABC_biom2<<" "<<Bmsy<<" "<<msy<<" "<< TotBiom 
+   //  inf  0 0 0  inf 0.0814782  13.984 1.64572 8.52093 0  32.6187 30.3609 0 0.00937666  90.4879  586.823  539.73  0.846482 0.93861 0.861563 0.874594 0.822898 0.948608 0.870741 0.929537 0.887822 0.921366 0.841266 0.939439 0.807067 0.819997 0.964657 0.898865 0.970638 0.741473 0.857768 0.890177 0.962105 1.0011 0.968926 0.974933 0.821446 0.819997 0.781815 0.786663 0.783197 0.880017 0.762049 0.828732 0.960408 0.964657 1.10127 0.901082 0.108481 0.125338 0.123776 2632.62 2541.99 495.109 441.419  2316.82 2297.56 2273.5 2244.68 2231.11 2214.01 2063.31 1643.45 1145.61 793.073 833.721 829.768 875.837 862.19 791.983 824.822 792.25 838.237 904.882 1148.06 1380.96 1709.52 2009.46 2315.49 2608.21 2768.31 2952.35 3121.75 3236.7 3229.15 3448.95 3467.12 3193.03 3159.11 3057.89 3100.9 2971.87 3087 3290.59 3314.14 3346.24 3133.91 3044.85 3058.49 2791.15 2621.02 2668.73 2599.82 2643.57 2849.5 3060.22 3170.87 3163.42 3178.93 3055.94 2894.21 2962.15 2996.96 2993.04 2952.77 2742.2 2761.32 2915.27 2940.14  901.167 920.002 921.81 908.759 883.521 817.961 640.2 342.496 40.5581 8.5617 19.2127 39.7057 66.8238 90.8636 115.809 123.692 93.8937 67.3402 55.344 58.6771 65.6652 106.58 162.363 251.184 368.564 493.526 636.116 771.942 853.952 970.539 1064.57 1123.49 1117.1 1116.88 1059.53 1031.97 1044.92 1132.33 1219.69 1258.41 1264.11 1264.75 1197.41 1158.19 1088.47 1080.12 1068.13 1063.64 1063.77 1073.22 1106.35 1125.56 1150.04 1158.91 1135.78 1101.19 1079.63 1059.48 1045.84 1042.59 1005.04 1009.94 1029.02 1038.32 0.807464  0.0837012 0.188333 0.359539 0.565576 0.749304 0.873568  1.58871  5.05441  0.0245567  -0.00616844
+    evalout <<obj_fun<<" "<<
+              wt_like<<" "<<
+               q_like<<" "<<
+               m_like<<" "<<
+             rec_like<<" "<<
+             sel_like<<" "<<
+           catch_like<<" "<<
+             srv_like<<" "<<
+             age_like_fsh<<" "<<
+             age_like_srv<<" "<<
+		        q_srv(1)(1982,endyr)<<" "<<
+		        natmort_f<<" "<< 
+		        natmort_m<<" "<< 
+						Fmsyr <<" "<<ABC_biom1<<" "<<ABC_biom2<<" "<<Bmsy<<" "<<msy<<" "<< TotBiom 
                      << " "<<SSB <<" "<< mean_log_rec <<" "<<partial_F_f(7,12)<<
                         " "<<sel_slope_srv<<" "<<sel50_srv<<
                         " "<<sel_slope_srv_m<<" "<<sel50_srv_m<<
@@ -1147,6 +1185,8 @@ void model_parameters::get_selectivity(void)
   sel_srv_m=mfexp(log_sel_srv_m);
   sel_fsh_f = mfexp(log_sel_fsh_f);
   sel_fsh_m = mfexp(log_sel_fsh_m);
+  partial_F_f = mfexp(log_msy_sel_f);
+  partial_F_m = mfexp(log_msy_sel_m);
 }
 
 void model_parameters::get_mortality(void)
@@ -1176,8 +1216,8 @@ void model_parameters::get_mortality(void)
     Z_f += F_f(k);
     Z_m += F_m(k);
   }
-  S_f = mfexp(-1.*Z_f);
-  S_m = mfexp(-1.*Z_m);
+  S_f = mfexp(-Z_f);
+  S_m = mfexp(-Z_m);
 }
 
 void model_parameters::get_numbers_at_age(void)
@@ -1242,18 +1282,15 @@ void model_parameters::get_numbers_at_age(void)
       int srvyrtmp = yrs_srv(k,i);
       dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
       b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
-      if (phase_env_cov>=1)
-      {
+      if (active(beta(k))) 
+			{
         q_srv(k,srvyrtmp) = mfexp(alpha(k));
         for (int j=1;j<=n_env_cov(k);j++)
 					q_srv(k,srvyrtmp) *= mfexp( beta(k,j) * env_cov(k,j,i)) ;
-        // init_vector_vector beta(1,nsrv,1,n_env_cov)
-     // pred_srv(k,yrs_srv(k,i)) =       (alpha+beta*env_cov(k,i)) * elem_prod(natage(yrs_srv(k,i)),exp( -Z(yrs_srv(k,i)) * srv_mo_frac(k) )) * elem_prod(sel_srv(k),wt_srv(k,yrs_srv(k,i)));
-     // pred_srv(k,srvyrtmp)     = mfexp(-alpha+beta*env_cov(k,i)) * b1tmp;
       }
       else
       {
-        q_srv(k,srvyrtmp) = mfexp(alpha(k));
+        q_srv(k) = mfexp(q_exp);
       }
       pred_srv(k,srvyrtmp)     = q_srv(k,srvyrtmp) * b1tmp;
     }
@@ -1311,10 +1348,23 @@ void model_parameters::catch_at_age(void)
 
 void model_parameters::evaluate_the_objective_function(void)
 {
+  if (active(F40))
+  {
+    // compute_spr_rates();
+    dvar_vector incr_dev_tmp(2,nages);
+    // two degree increase in temperature
+    incr_dev_tmp(5,nages-5)     = growth_alpha * 2.0 + age_incr;
+    incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
+    incr_dev_tmp(2,4)           = incr_dev_tmp(5) ;
+    wt_pop_fut_f(1)        = wt_vbg_f(1);
+    wt_pop_fut_m(1)        = wt_vbg_m(1);
+    wt_pop_fut_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
+    wt_pop_fut_m(2,nages)  = ++wt_vbg_m(1,nages-1) + elem_prod(base_incr_m,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
+  }
   fpen.initialize();
   wt_like.initialize();
   q_like.initialize();
-  if(active(yr_incr)||active(age_incr)||active(sst_alpha))
+  if(active(yr_incr)||active(age_incr)||active(growth_alpha))
   {
     // cout <<wt_pred_f(1988)(3,7)<<endl;
     for (i=styr_wt;i<=endyr_wt;i++)
@@ -1353,11 +1403,11 @@ void model_parameters::evaluate_the_objective_function(void)
   if(active(R_logalpha))
     rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigma_R*sigma_R);
   obj_fun += lambda(1)* sum(rec_like);
-  // Note not general to multiple surveys...
-  if (active(ln_q_srv))
+  // Note not general to multiple surveys...also ln_q_srv obsolete?
+  if (active(ln_q_srv)||active(alpha))
   {
-     q_like(1) = .5* square(ln_q_srv(1)-log(q_exp))/(q_sigma*q_sigma);
-     obj_fun += q_like(1);
+     q_like(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
+     obj_fun  += q_like(1);
    }
   if (active(sel_slope_fsh_devs_f))
   {
@@ -1389,19 +1439,24 @@ void model_parameters::evaluate_the_objective_function(void)
     obj_fun +=fpen;
   }
   if(active(wt_fsh_fut_f)) 
+	{
+	  wt_fut_like=0.;
     for (int j=1;j<=nages;j++)
     {
       dvariable res = wt_fsh_mn_f(j)-wt_fsh_fut_f(j);
-      obj_fun += res*res / (2.*wt_fsh_sigma_f(j)*wt_fsh_sigma_f(j));
+      wt_fut_like += res*res / (2.*wt_fsh_sigma_f(j)*wt_fsh_sigma_f(j));
       res           = wt_fsh_mn_m(j)-wt_fsh_fut_m(j);
-      obj_fun += res*res / (2.*wt_fsh_sigma_m(j)*wt_fsh_sigma_m(j));
+      wt_fut_like += res*res / (2.*wt_fsh_sigma_m(j)*wt_fsh_sigma_m(j));
       res = wt_pop_mn_f(j)-wt_pop_fut_f(j);
-      obj_fun += res*res / (2.*wt_pop_sigma_f(j)*wt_pop_sigma_f(j));
+      wt_fut_like += res*res / (2.*wt_pop_sigma_f(j)*wt_pop_sigma_f(j));
       res = wt_pop_mn_m(j)-wt_pop_fut_m(j);
-      obj_fun += res*res / (2.*wt_pop_sigma_m(j)*wt_pop_sigma_m(j));
+      wt_fut_like += res*res / (2.*wt_pop_sigma_m(j)*wt_pop_sigma_m(j));
     }
+		obj_fun += wt_fut_like;
+  }
   if(active(log_msy_sel_f)) 
   {
+	  wt_msy_like=0.;
     // dvar_vector pf_tmp = log(F(1,endyr)/F(1,endyr,nages)); // NOTE: For one fishery only!!!
     // obj_fun += 0.5*norm2(pf_tmp - log_sel_coff)/(pf_sigma*pf_sigma);
     dvar_vector log_sel_mean(1,nages);
@@ -1409,16 +1464,19 @@ void model_parameters::evaluate_the_objective_function(void)
     log_sel_mean += log_sel_fsh_f(1,endyr-1) ;
     log_sel_mean += log_sel_fsh_f(1,endyr-2) ; 
     log_sel_mean /= 3. ; 
-    obj_fun += 0.5*norm2(log_sel_mean - log_msy_sel_f)/(pf_sigma*pf_sigma);
+    wt_msy_like += 0.5*norm2(log_sel_mean - log_msy_sel_f)/(pf_sigma*pf_sigma);
     log_sel_mean  = log_sel_fsh_m(1,endyr) ;
     log_sel_mean += log_sel_fsh_m(1,endyr-1) ;
     log_sel_mean += log_sel_fsh_m(1,endyr-2) ; 
     log_sel_mean /= 3. ; 
-    obj_fun += 0.5*norm2(log_sel_mean - log_msy_sel_m)/(pf_sigma*pf_sigma);
+    wt_msy_like += 0.5*norm2(log_sel_mean - log_msy_sel_m)/(pf_sigma*pf_sigma);
+		obj_fun += wt_msy_like;
   }
   // small penalty to initialize stock to have similar values (unless data suggest otherwise)
   if(active(init_dev_m))
-    obj_fun += norm2(init_dev_m-init_dev_f);
+	{
+    init_like = norm2(init_dev_m-init_dev_f);
+		obj_fun += init_like;
   }
 }
 
@@ -1718,8 +1776,11 @@ void model_parameters::Future_projections(void)
   nage_future_f(styr_fut,nages)   += natage_f(endyr,nages)*S_f(endyr,nages);
   nage_future_m(styr_fut)(2,nages) = ++elem_prod(natage_m(endyr)(1,nages-1),S_m(endyr)(1,nages-1));
   nage_future_m(styr_fut,nages)   += natage_m(endyr,nages)*S_m(endyr,nages);
+  dvar_vector meanF(1,nfsh) ;
+  // compute mean F based on last three years of Fs (assuming nages is fully selected and males and females the same...)
+  meanF(1) = mean(trans(F_m(1))(nages)(endyr-3,endyr));
   future_SSB=0.;
-  catch_future=0.;
+  future_catch=0.;
   for (int m=1;m<=num_proj_Fs;m++)
   {
      switch (m)
@@ -1731,7 +1792,7 @@ void model_parameters::Future_projections(void)
           ftmp = F35;
           break;
          case 3:
-          ftmp = F30;
+          ftmp = meanF;
           break;
          case 4:
           ftmp = 0.0;
@@ -1739,8 +1800,31 @@ void model_parameters::Future_projections(void)
   }
   Z_future_f = natmort_f;
   Z_future_m = natmort_m;
-  for (i=endyr+1;i<=endyr_fut;i++)
+  dvar_vector wt_tmp_f(1,nages);   
+  dvar_vector wt_tmp_m(1,nages);   
+  for (i=endyr+1;i<endyr_fut;i++)
   {
+    // compute future ssb/rec under no fishing (but only need to do that once...)
+    if (m==1)
+    {
+      future_spr0(i) = get_spr(0.);
+    }
+    // Set growth if temperature related
+    if (Growth_Option==3)
+    {
+      dvar_vector incr_dev_tmp(2,nages);
+      incr_dev_tmp(5,nages-5)     = growth_alpha * fut_temp(i-endyr) ;
+      incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
+      incr_dev_tmp(2,4)           = incr_dev_tmp(5) ;
+      wt_tmp_f(1)        = wt_vbg_f(1);
+      wt_tmp_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
+      wt_tmp_m(1)        = wt_vbg_m(1);
+      wt_tmp_m(2,nages)  = ++wt_vbg_m(1,nages-1) + elem_prod(base_incr_m,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
+      wt_pop_fut_f           = wt_tmp_f;
+      wt_pop_fut_m           = wt_tmp_m;
+      wt_fsh_fut_f           = wt_tmp_f;
+      wt_fsh_fut_m           = wt_tmp_m;
+    }
      for (k=1;k<=nfsh;k++)
      {
        F_future_f(k,i) = sel_fsh_f(k,endyr) * ftmp(k);
@@ -1753,9 +1837,9 @@ void model_parameters::Future_projections(void)
   }
   //Future recruitment and SSB
   //Mean average recruitment of the time-series is used for the projection
-    //NOTE spawningbiomass is beginyear, NOT spawnmonth
+    //NOTE spawningbiomass is beginyear, NOT spawnmonth xxx
   dvariable Rectmp=mfexp(mean_log_rec);
-  for (i=styr_fut;i<endyr_fut;i++)
+  for (i=styr_fut;i<=endyr_fut;i++)
   {
     nage_future_f(i,1) = .5*Rectmp*mfexp(rec_dev_future(i));
     nage_future_m(i,1) = nage_future_f(i,1);
@@ -1763,12 +1847,15 @@ void model_parameters::Future_projections(void)
     TotBiom_future(i)  = nage_future_f(i)*wt_pop_fut_f; 
     TotBiom_future(i) += nage_future_m(i)*wt_pop_fut_m; 
   //Now graduate for the next year.....
-    nage_future_f(i+1)(2,nages) = ++elem_prod(nage_future_f(i)(1,nages-1),S_future_f(i)(1,nages-1));
-    nage_future_f(i+1,nages)   += nage_future_f(i,nages) * S_future_f(i,nages);
-    nage_future_m(i+1)(2,nages) = ++elem_prod(nage_future_m(i)(1,nages-1),S_future_m(i)(1,nages-1));
-    nage_future_m(i+1,nages)   += nage_future_m(i,nages) * S_future_m(i,nages);
+	  if (i!=endyr_fut)
+	  {
+      nage_future_f(i+1)(2,nages) = ++elem_prod(nage_future_f(i)(1,nages-1),S_future_f(i)(1,nages-1));
+      nage_future_f(i+1,nages)   += nage_future_f(i,nages) * S_future_f(i,nages);
+      nage_future_m(i+1)(2,nages) = ++elem_prod(nage_future_m(i)(1,nages-1),S_future_m(i)(1,nages-1));
+      nage_future_m(i+1,nages)   += nage_future_m(i,nages) * S_future_m(i,nages);
+    }
   }
-  nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(i));
+  nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
   nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut)/2,pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
   TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
@@ -1784,7 +1871,7 @@ void model_parameters::Future_projections(void)
       catage_future_m(i) += elem_prod(nage_future_m(i), elem_prod(F_future_m(k,i), elem_div( (1.-S_future_m(i) ),Z_future_m(i))));
     }
     if (m!=num_proj_Fs)  // catch biomass in future
-      catch_future(m,i)  += catage_future_f(i)*wt_fsh_fut_f + catage_future_m(i)*wt_fsh_fut_m      ;
+      future_catch(m,i)  += catage_future_f(i)*wt_fsh_fut_f + catage_future_m(i)*wt_fsh_fut_m      ;
     future_SSB(m,i) = SSB_future(i);
     future_TotBiom(m,i) = TotBiom_future(i);
    }
@@ -1808,10 +1895,75 @@ void model_parameters::write_srec(void)
   R_report << Bzero    <<endl;
   R_report << "$phizero" <<endl;
   R_report << phizero/1000<<endl;
-  R_report << "$alpha" <<endl;
+  R_report << "$alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
   R_report << "$sigmar" <<endl;
   R_report << sigma_R    <<endl;
+}
+
+void model_parameters::compute_spr_rates_2(void)
+{
+  //Compute SPR Rates 
+  F35 = get_spr_rates(.35);
+  F40 = get_spr_rates(.40);
+}
+
+dvariable model_parameters::get_spr_rates(double spr_percent)
+{
+  RETURN_ARRAYS_INCREMENT();
+  double df=1.e-3;
+  dvariable F1 ;
+  F1.initialize();
+  F1 = .9*natmort_f;
+  dvariable F2;
+  dvariable F3;
+  dvariable yld1;
+  dvariable yld2;
+  dvariable yld3;
+  dvariable dyld;
+  dvariable dyldp;
+  // Newton Raphson stuff to go here
+  for (int ii=1;ii<=6;ii++)
+  {
+    F2     = F1 + df;
+    F3     = F1 - df;
+    yld1   = -100.*square(log(spr_percent/spr_ratio(F1)));
+    yld2   = -100.*square(log(spr_percent/spr_ratio(F2)));
+    yld3   = -100.*square(log(spr_percent/spr_ratio(F3)));
+    dyld   = (yld2 - yld3)/(2*df);                          // First derivative (to find the root of this)
+    dyldp  = (yld3-(2*yld1)+yld2)/(df*df);  // Newton-Raphson approximation for second derivitive
+    F1    -= dyld/dyldp;
+  }
+  RETURN_ARRAYS_DECREMENT();
+  return(F1);
+}
+
+dvariable model_parameters::spr_ratio(dvariable trial_F)
+{
+  RETURN_ARRAYS_INCREMENT();
+  dvariable SBtmp;
+  dvar_vector Ntmp(1,nages);
+  dvar_vector srvtmp(1,nages);
+  SBtmp.initialize();
+  Ntmp.initialize();
+  srvtmp.initialize();
+  dvar_vector Ftmp(1,nages);
+  dvar_vector wttmp = wt_pop_fut_f;
+  Ftmp = sel_fsh_f(1,endyr) * trial_F;
+  srvtmp  = mfexp(-(Ftmp + natmort_f) );
+  Ntmp(1)=1.;
+  j=1;
+  SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+  for (j=2;j<nages;j++)
+  {
+    Ntmp(j) = Ntmp(j-1)*srvtmp(j-1);
+    SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+   // !!spmo_frac    =(spawnmo-1)/12.;
+  }
+  Ntmp(nages)=Ntmp(nages-1)*srvtmp(nages-1)/(1.-srvtmp(nages));
+  SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages),spmo_frac);
+  RETURN_ARRAYS_DECREMENT();
+  return(SBtmp/phizero);
 }
 
 void model_parameters::report(const dvector& gradients)
@@ -1825,15 +1977,35 @@ void model_parameters::report(const dvector& gradients)
   }
   save_gradients(gradients);
   dvar_vector wt_pop_tmp_f(1,nages);
+	int ilike=1;
+	nLogPosterior(ilike) = wt_like(1); ilike++;
+	nLogPosterior(ilike) = wt_like(2); ilike++;
+	nLogPosterior(ilike) = wt_like(3); ilike++;
+	nLogPosterior(ilike) = wt_fut_like; ilike++;
+	nLogPosterior(ilike) = wt_msy_like; ilike++;
+	nLogPosterior(ilike) = init_like; ilike++;
+	nLogPosterior(ilike) = srv_like;   ilike++;
+	nLogPosterior(ilike) = catch_like; ilike++;
+	nLogPosterior(ilike) = age_like_fsh; ilike++;
+	nLogPosterior(ilike) = age_like_srv; ilike++;
+	nLogPosterior(ilike) = rec_like(1); ilike++;
+	nLogPosterior(ilike) = rec_like(2); ilike++;
+	nLogPosterior(ilike) = rec_like(3); ilike++;
+	nLogPosterior(ilike) = rec_like(4); ilike++;
+	nLogPosterior(ilike) = sel_like(1); ilike++;
+	nLogPosterior(ilike) = sel_like(2); ilike++;
+	nLogPosterior(ilike) = q_like     ; ilike++;
+	nLogPosterior(ilike) = m_like     ; ilike++;
+	nLogPosterior(ilike) = fpen       ; ilike++;
   for (int i=0;i<=3;i++)
     {
       dvar_vector incr_dev_tmp(2,nages);
-      incr_dev_tmp(5,nages-5)     = sst_alpha * double(i) ;
+      incr_dev_tmp(5,nages-5)     = growth_alpha * double(i) ;
       incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
       incr_dev_tmp(2,4)           = incr_dev_tmp(5) ;
       wt_pop_tmp_f(1)        = wt_vbg_f(1);
       wt_pop_tmp_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
-      report <<i<<" "<<double(i)*sst_alpha<<" "<<wt_pop_tmp_f<<endl;
+      report <<i<<" "<<double(i)*growth_alpha<<" "<<wt_pop_tmp_f<<endl;
     }
     report << "wt_pop_f"<<endl;
     report << wt_pop_f<<endl;
@@ -1988,9 +2160,9 @@ void model_parameters::report(const dvector& gradients)
   report << "F30_total_biomass " << future_TotBiom(3) <<endl;
   report << "F=0_total_biomass " << future_TotBiom(4) <<endl;
   report << "Projected_catch " << endl;
-  report << "F40_harvest " << catch_future(1) <<endl;
-  report << "F35_harvest " << catch_future(2) <<endl;
-  report << "F30_harvest " << catch_future(3) <<endl;
+  report << "F40_harvest " << future_catch(1) <<endl;
+  report << "F35_harvest " << future_catch(2) <<endl;
+  report << "three-yr-mean_harvest" << future_catch(3) <<endl;
   report << "F=0_harvest " << " 0 0 0 0 0 0 0 0 0 0 0 " <<endl;
   report << endl << "Likelihood_Components " << endl;
   report << "survey_likelihood " << srv_like << endl;
@@ -2002,7 +2174,7 @@ void model_parameters::report(const dvector& gradients)
   report << "q_Prior " <<q_like <<endl;
   report << "m_Prior " <<m_like <<endl;
   report << "F_penalty " << fpen << endl;
-  /*
+   /*
   if (phase_env_cov>0)
   {
     report << "alpha= " << alpha << endl;
@@ -2013,7 +2185,7 @@ void model_parameters::report(const dvector& gradients)
         report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<mfexp(-alpha(1)+beta(1,k)*env_cov(1,k,i))<<endl;
   }
   // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+beta*env_cov(1)))<<endl; else
-  */
+   */
   report << " survey_q= " << mean(q_srv(1))<<endl;
   report << "M= " << natmort_f<<" "<<natmort_m << endl;
   report << endl << "Ricker_spawner-recruit_estimates" << endl;
@@ -2415,16 +2587,57 @@ void model_parameters::Write_sd(void)
       endl;
     }
   }
-  SaveOM.close();
-  if (!mceval_phase())
-    exit(1);
-    */ 
+  SaveOM.close  init_int styr
+  */
+  WriteData( endyr_in);
+  WriteData(nages);
+  WriteData( a_lw_f);
+  WriteData( b_lw_f);
+  WriteData( a_lw_m);
+  WriteData( b_lw_m);
+  WriteData( nfsh  );                                      //Number of fisheries
+  WriteData( obs_catch);
+  WriteData( nyrs_fsh_age_c);
+  WriteData( nyrs_fsh_age_s);
+  WriteData( yrs_fsh_age_c);
+  WriteData( yrs_fsh_age_s);
+  WriteData( oac_fsh_c);
+  WriteData( oac_fsh_s);
+  WriteData( wt_fsh_in);
+  WriteData( nsmpl_fsh_c);
+  WriteData( nsmpl_fsh_s);
+  WriteData( nsrv  );
+  WriteData( nyrs_srv);
+  WriteData( yrs_srv);
+  WriteData( mo_srv);
+  WriteData( obs_srv);
+  WriteData( obs_se_srv);
+  WriteData( nyrs_srv_age_c);
+  WriteData( nyrs_srv_age_s);
+  WriteData( yrs_srv_age_c);
+  WriteData( yrs_srv_age_s);
+  WriteData( nsmpl_srv_c);
+  WriteData( nsmpl_srv_s);
+  WriteData( oac_srv_c);
+  WriteData( oac_srv_s);
+  WriteData( wt_srv_f_in);
+  WriteData( wt_srv_m_in);
+  WriteData(  wt_pop_f_in); 
+  WriteData(  wt_pop_m_in); 
+  WriteData( maturity);
+  WriteData( init_age_comp);
+  WriteData( n_env_cov);
+  WriteData( env_cov);
+  WriteData( spawnmo);
+  WriteData( srv_mo); 
+  WriteData( n_wts);
+  WriteData( growth_cov);
 }
 
 void model_parameters::Get_wt_age(void)
 {
   incr_dev.initialize();
-  if (active(yr_incr)||active(age_incr)||active(sst_alpha))
+  if (active(yr_incr)||active(age_incr)||active(growth_alpha))
   {
     switch (Growth_Option)
     {
@@ -2461,10 +2674,10 @@ void model_parameters::Get_wt_age(void)
         for (i=styr+1;i<=endyr;i++)
         {
           // Age component estimated from 5-15
-          if (i >=1982)
-            incr_dev(i)(5,nages-5)     = sst_alpha * sst_anom(i) ; // + age_incr; vestigial
-          else 
-            incr_dev(i)(5,nages-5)     = 0.;
+          // if (i >=1982)
+            incr_dev(i)(5,nages-5)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
+          // else 
+          //   incr_dev(i)(5,nages-5)     = 0.;
           incr_dev(i)(nages-4,nages) = incr_dev(i,nages-5) ;
           incr_dev(i)(2,4) = incr_dev(i,5) ;
           wt_srv_f(1,i,1) = wt_srv_f(1,i-1,1);
@@ -2550,6 +2763,20 @@ void model_parameters::Write_R(void)
     R_report<<i<<" "<<Sp_Biom_NoFishR(i)<<" "<<Sp_Biom_NoFishR.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
   */ 
+  REPORT(nLogPosterior);
+  REPORT(future_SSB);
+  REPORT(future_TotBiom);
+  REPORT(future_catch);
+  R_report << "$survey_likelihood "         << endl << srv_like     << endl;
+  R_report << "$catch_likelihood "          << endl << catch_like   << endl;
+  R_report << "$age_likelihood_for_fishery" << endl << age_like_fsh << endl;
+  R_report << "$age_likeihood_for_survey "  << endl << age_like_srv << endl;
+  R_report << "$recruitment_likelilhood "   << endl << rec_like     << endl;
+  R_report << "$selectivity_likelihood "    << endl << sel_like     << endl;
+  R_report << "$q_Prior "                   << endl << q_like       << endl;
+  R_report << "$m_Prior "                   << endl << m_like       << endl;
+  R_report << "$F_penalty"                  << endl << fpen         << endl;
+  R_report << "$obj_fun"                    << endl << obj_fun      << endl;
   R_report<<"$SSB"<<endl; for (i=styr;i<=endyr;i++) 
   {
     double lb=value(SSB(i)/exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));
@@ -2566,8 +2793,14 @@ void model_parameters::Write_R(void)
   R_report<<"$yr_bts"<<endl;
   R_report<<yrs_srv(1)<<endl;
   R_report<<"$eb_bts"<<endl;
+  double rmse=0.;
   for (int i=1;i<=nyrs_srv(1);i++)
+  {
     R_report<<pred_srv(1,yrs_srv(1,i))<<endl;
+    rmse += value(square(log(obs_srv(1,i)) - log(pred_srv(1,yrs_srv(1,i)))));
+  }
+  rmse = sqrt(rmse/nyrs_srv(1));
+  R_report << "$rmse_srv"                   << endl << rmse         << endl;
   R_report<<"$ob_bts"<<endl;
   R_report<<obs_srv(1)<<endl;
   R_report<<"$sd_ob_bts"<<endl;
@@ -2578,7 +2811,17 @@ void model_parameters::Write_R(void)
     double ub=value(pred_rec(i)*exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     R_report<<i<<" "<<pred_rec(i)<<" "<<pred_rec.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-  /* for (int k=1;k<=5;k++){
+  for (k=1;k<=nsrv;k++)
+  {
+    R_report << endl<< "$yrs_srv"<<endl;
+    R_report << yrs_srv(k) << endl;
+    R_report << "$q_srv"<<endl;
+    for (i=1;i<=nyrs_srv(k);i++)
+      R_report<< q_srv(k,yrs_srv(k,i)) <<" ";
+	  R_report<< endl;
+	}
+  /* 
+  for (int k=1;k<=5;k++){
     R_report<<"$SSB_fut_"<<k<<endl; 
     for (i=styr_fut;i<=endyr_fut;i++) 
     {
@@ -2592,7 +2835,7 @@ void model_parameters::Write_R(void)
     R_report<<"$Catch_fut_"<<k<<endl; 
     for (i=styr_fut;i<=endyr_fut;i++) 
     {
-      if (k==5) ctmp=0.;else ctmp=value(catch_future(k,i));
+      if (k==5) ctmp=0.;else ctmp=value(future_catch(k,i));
       R_report<<i<<" "<<ctmp<<endl;
     }
   }
@@ -2634,8 +2877,6 @@ void model_parameters::Write_R(void)
       }
       R_report   << endl;
     }
-    R_report << endl<< "$Survey_Q"<<endl;
-    R_report<< q_srv << endl;
     R_report   << endl;
     for (int k=1;k<=nfsh;k++)
     {
@@ -2951,6 +3192,8 @@ void model_parameters::final_calcs()
     REPORT(SRR_SSB);
     REPORT(rechat);
     REPORT(rechat.sd);
+    REPORT(future_spr0);
+    REPORT(future_spr0.sd);
     Write_sd();
     Write_R();
   }
@@ -2983,7 +3226,7 @@ int main(int argc,char * argv[])
   ad_exit=&ad_boundf;
   gradient_structure::set_MAX_NVAR_OFFSET(1600);
   gradient_structure::set_GRADSTACK_BUFFER_SIZE(200000);
-  gradient_structure::set_NUM_DEPENDENT_VARIABLES(800); 
+  gradient_structure::set_NUM_DEPENDENT_VARIABLES(1800); 
   gradient_structure::set_CMPDIF_BUFFER_SIZE(2000000);
   arrmblsize=10000000;
     gradient_structure::set_NO_DERIVATIVES();

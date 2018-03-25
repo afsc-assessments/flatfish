@@ -1,5 +1,5 @@
 #rt.sh 0
-cp mod$1.ctl mod.ctl
+#cp mod$1.ctl mod.ctl
 rm fm.std
 rm extra_sd.rep
 fm -nox -iprint 100 -mcmc 1000000 -mcsave 500
