@@ -107,6 +107,8 @@ DATA_SECTION
   init_int phase_fmort         //Phase to begin mortality estimation
   init_int phase_proj          //Phase to begin future projections
   init_int phase_logist_sel    //Phase to begin logistic selectivity estimation
+  init_int phase_logist_sel_devs    //Phase to begin logistic selectivity estimation
+	// !!  phase_logist_sel_devs = 5;   //Phase to begin logistic selectivity estimation
   init_int phase_male_sel      //Phase to begin logistic selectivity estimation
   init_int phase_q
   init_number alpha_prior
@@ -372,6 +374,7 @@ DATA_SECTION
   int styr_fut                //Start year for projections
   int endyr_fut               //End year for projections
   int num_proj_Fs             // Number of F's to evaluate in future
+	int npfs;
   !! num_proj_Fs = 4;
 
   vector offset_srv(1,nsrv)
@@ -432,7 +435,7 @@ DATA_SECTION
 	 if (endyr <= endyr_wt) endyr_wt = endyr - (endyr_in-endyr_wt );
 	 endyr_sr = endyr - (endyr_in-endyr_sr );
    styr_fut=endyr+1;
-   endyr_fut=styr_fut+nyrs_fut;
+   endyr_fut=endyr+nyrs_fut;
    for (int isrv=1;isrv<=nsrv;isrv++)
    {
     // need to adjust survey observation dimensions
@@ -528,16 +531,16 @@ PARAMETER_SECTION
   // fishery females  
   init_vector sel_slope_fsh_f(1,nfsh,phase_logist_sel)
   init_vector sel50_fsh_f(1,nfsh,phase_logist_sel)
-  init_bounded_matrix sel_slope_fsh_devs_f(1,nfsh,styr,endyr,-5,5,phase_logist_sel)
-  init_bounded_matrix sel50_fsh_devs_f(1,nfsh,styr,endyr,-10,10,phase_logist_sel)
+  init_bounded_matrix sel_slope_fsh_devs_f(1,nfsh,styr,endyr,-5,5,phase_logist_sel_devs)
+  init_bounded_matrix sel50_fsh_devs_f(1,nfsh,styr,endyr,-10,10,phase_logist_sel_devs)
   number slope_tmp
   number sel50_tmp
   // fishery males
 
   init_vector sel_slope_fsh_m(1,nfsh,phase_logist_sel)
-  init_bounded_matrix sel_slope_fsh_devs_m(1,nfsh,styr,endyr,-5,5,phase_logist_sel)
+  init_bounded_matrix sel_slope_fsh_devs_m(1,nfsh,styr,endyr,-5,5,phase_logist_sel_devs)
   init_vector sel50_fsh_m(1,nfsh,phase_logist_sel)
-  init_bounded_matrix sel50_fsh_devs_m(1,nfsh,styr,endyr,-10,10,phase_logist_sel)
+  init_bounded_matrix sel50_fsh_devs_m(1,nfsh,styr,endyr,-10,10,phase_logist_sel_devs)
 
   // survey selectivity (time invariant)
 
@@ -598,7 +601,7 @@ PARAMETER_SECTION
   matrix sel_srv_f(1,nsrv,1,nages)
   matrix sel_srv_m(1,nsrv,1,nages)
   matrix pred_srv(1,nsrv,styr,endyr)
-  matrix    q_srv(1,nsrv,styr,endyr)
+  // matrix    q_srv(1,nsrv,styr,endyr)
 
   3darray eac_fsh_c(1,nfsh,1,nyrs_fsh_age_c,1,nages)
   3darray eac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)
@@ -625,6 +628,7 @@ PARAMETER_SECTION
   number surv_m
 
   sdreport_vector SSB(styr,endyr)
+  sdreport_matrix    q_srv(1,nsrv,1982,endyr)
   // vector pred_rec(styr,endyr)
   //Likelihood value names
   number sigma
@@ -702,8 +706,9 @@ PARAMETER_SECTION
   sdreport_vector TotBiom(styr,endyr)
   sdreport_number endbiom
   sdreport_number depletion
-  sdreport_vector future_spr0(styr_fut,endyr_fut)
-  sdreport_matrix future_catch(1,num_proj_Fs-1,styr_fut,endyr_fut)
+  // sdreport_vector future_spr0(styr_fut,endyr_fut)
+	!! npfs = num_proj_Fs-1;
+  sdreport_matrix future_catch(1,npfs,styr_fut,endyr_fut)
   sdreport_matrix future_SSB(1,num_proj_Fs,styr_fut,endyr_fut)
   sdreport_matrix future_TotBiom(1,num_proj_Fs,styr_fut,endyr_fut)
 
@@ -1232,61 +1237,60 @@ FUNCTION evaluate_the_objective_function
   }
   if (!do_wt_only)
   {
-  if (active(rec_dev))
-  {
-    rec_like(1) = norm2(rec_dev);
-    sigma_rec = norm2(rec_dev);
-    var_rec = (sigma_rec/((endyr-styr)+1))+.0001;      //variance of Rbar from styr to endyr
-
-    rec_like(2)  = norm2(init_dev_m);
-    rec_like(2) += norm2(init_dev_f);
-    rec_like(4) = (1/(2*var_rec))*norm2(rec_dev_future);
-  }
-  if(active(R_logalpha))
-    rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigma_R*sigma_R);
-
-  obj_fun += lambda(1)* sum(rec_like);
-
-  // Note not general to multiple surveys...also ln_q_srv obsolete?
-  if (active(ln_q_srv)||active(alpha))
-  {
-     q_like(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
-     obj_fun  += q_like(1);
-   }
-  if (active(sel_slope_fsh_devs_f))
-  {
-    sel_like.initialize();
-    // Implies a CV of 0.5 on time-varying selectivity parameter
-    sel_like(1) += .5*norm2(sel_slope_fsh_devs_f)/(slp_sigma*slp_sigma);
-    sel_like(1) += .5*norm2(sel_slope_fsh_devs_m)/(slp_sigma*slp_sigma);
-    sel_like(2) += .5*norm2(sel50_fsh_devs_f)/(a50_sigma*a50_sigma);
-    sel_like(2) += .5*norm2(sel50_fsh_devs_m)/(a50_sigma*a50_sigma);
-    obj_fun += sum(sel_like);
-  }
-
-  if (active(natmort_f))
-  {
-     m_like = .5* square(log(natmort_f)-log(m_exp))/(m_sigma*m_sigma);
-     obj_fun += m_like;
-  }
-
-  if (current_phase()>phase_wt)
-  {
-    Age_Like();
-    Srv_Like();
-    if (phase_fmort>0)
+    if (active(rec_dev))
     {
-      catch_like = 0.;
-      for (int ifsh=1;ifsh<=nfsh;ifsh++)
-        catch_like += norm2(log(obs_catch(ifsh)(styr,endyr)+.000001)-log(pred_catch(ifsh)+.000001));
-      obj_fun += lambda(3) * catch_like;
+      rec_like(1) = norm2(rec_dev);
+      sigma_rec = norm2(rec_dev);
+      var_rec = (sigma_rec/((endyr-styr)+1))+.0001;      //variance of Rbar from styr to endyr
+  
+      rec_like(2)  = norm2(init_dev_m);
+      rec_like(2) += norm2(init_dev_f);
+      rec_like(4) = (1/(2*var_rec))*norm2(rec_dev_future);
     }
-    Fmort_Pen();
-    obj_fun +=fpen;
-  }
-  }
-
-  if(active(wt_fsh_fut_f)) 
+    if(active(R_logalpha))
+      rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigma_R*sigma_R);
+  
+    obj_fun += lambda(1)* sum(rec_like);
+  
+    // Note not general to multiple surveys...also ln_q_srv obsolete?
+    if (active(ln_q_srv)||active(alpha))
+    {
+       q_like(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
+       obj_fun  += q_like(1);
+     }
+    if (active(sel_slope_fsh_devs_f))
+    {
+      sel_like.initialize();
+      // Implies a CV of 0.5 on time-varying selectivity parameter
+      sel_like(1) += .5*norm2(sel_slope_fsh_devs_f)/(slp_sigma*slp_sigma);
+      sel_like(1) += .5*norm2(sel_slope_fsh_devs_m)/(slp_sigma*slp_sigma);
+      sel_like(2) += .5*norm2(sel50_fsh_devs_f)/(a50_sigma*a50_sigma);
+      sel_like(2) += .5*norm2(sel50_fsh_devs_m)/(a50_sigma*a50_sigma);
+      obj_fun += sum(sel_like);
+    }
+  
+    if (active(natmort_f))
+    {
+       m_like = .5* square(log(natmort_f)-log(m_exp))/(m_sigma*m_sigma);
+       obj_fun += m_like;
+    }
+  
+    if (current_phase()>phase_wt)
+    {
+      Age_Like();
+      Srv_Like();
+      if (phase_fmort>0)
+      {
+        catch_like = 0.;
+        for (int ifsh=1;ifsh<=nfsh;ifsh++)
+          catch_like += norm2(log(obs_catch(ifsh)(styr,endyr)+.000001)-log(pred_catch(ifsh)+.000001));
+        obj_fun += lambda(3) * catch_like;
+      }
+      Fmort_Pen();
+      obj_fun +=fpen;
+    }
+  
+    if(active(wt_fsh_fut_f)) 
 	{
 	  wt_fut_like=0.;
     for (int j=1;j<=nages;j++)
@@ -1330,6 +1334,7 @@ FUNCTION evaluate_the_objective_function
 	{
     init_like = norm2(init_dev_m-init_dev_f);
 		obj_fun += init_like;
+  }
   }
 
 FUNCTION Fmort_Pen
@@ -1643,8 +1648,8 @@ FUNCTION Future_projections
   dvar_vector meanF(1,nfsh) ;
   // compute mean F based on last three years of Fs (assuming nages is fully selected and males and females the same...)
   meanF(1) = mean(trans(F_m(1))(nages)(endyr-3,endyr));
-  future_SSB=0.;
-  future_catch=0.;
+  future_SSB.initialize();
+  future_catch.initialize();
   
 //Loop to cycle different fishing mortality values through the projections
   for (int m=1;m<=num_proj_Fs;m++)
@@ -1669,12 +1674,12 @@ FUNCTION Future_projections
   Z_future_m = natmort_m;
   dvar_vector wt_tmp_f(1,nages);   
   dvar_vector wt_tmp_m(1,nages);   
-  for (i=endyr+1;i<endyr_fut;i++)
+  for (i=endyr+1;i<=endyr_fut;i++)
   {
     // compute future ssb/rec under no fishing (but only need to do that once...)
     if (m==1)
     {
-      future_spr0(i) = get_spr(0.);
+      // future_spr0(i) = get_spr(0.);
     }
     // Set growth if temperature related
     if (Growth_Option==3)
@@ -1723,9 +1728,9 @@ FUNCTION Future_projections
       nage_future_m(i+1)(2,nages) = ++elem_prod(nage_future_m(i)(1,nages-1),S_future_m(i)(1,nages-1));
       nage_future_m(i+1,nages)   += nage_future_m(i,nages) * S_future_m(i,nages);
     }
+    nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
+    nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   }
-  nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
-  nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
 
   SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut)/2,pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
   TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
@@ -1743,7 +1748,7 @@ FUNCTION Future_projections
       catage_future_m(i) += elem_prod(nage_future_m(i), elem_prod(F_future_m(k,i), elem_div( (1.-S_future_m(i) ),Z_future_m(i))));
     }
 
-    if (m!=num_proj_Fs)  // catch biomass in future
+    if (m<num_proj_Fs)  // catch biomass in future
       future_catch(m,i)  += catage_future_f(i)*wt_fsh_fut_f + catage_future_m(i)*wt_fsh_fut_m      ;
 
     future_SSB(m,i) = SSB_future(i);
@@ -1841,18 +1846,18 @@ REPORT_SECTION
 	nLogPosterior(ilike) = wt_like(3); ilike++;
 	nLogPosterior(ilike) = wt_fut_like; ilike++;
 	nLogPosterior(ilike) = wt_msy_like; ilike++;
-	nLogPosterior(ilike) = init_like; ilike++;
-	nLogPosterior(ilike) = srv_like;   ilike++;
-	nLogPosterior(ilike) = catch_like; ilike++;
-	nLogPosterior(ilike) = age_like_fsh; ilike++;
-	nLogPosterior(ilike) = age_like_srv; ilike++;
+	nLogPosterior(ilike) = init_like  ; ilike++;
+	nLogPosterior(ilike) = srv_like(1);   ilike++;
+	nLogPosterior(ilike) = catch_like ; ilike++;
+	nLogPosterior(ilike) = age_like_fsh(1); ilike++;
+	nLogPosterior(ilike) = age_like_srv(1); ilike++;
 	nLogPosterior(ilike) = rec_like(1); ilike++;
 	nLogPosterior(ilike) = rec_like(2); ilike++;
 	nLogPosterior(ilike) = rec_like(3); ilike++;
 	nLogPosterior(ilike) = rec_like(4); ilike++;
 	nLogPosterior(ilike) = sel_like(1); ilike++;
 	nLogPosterior(ilike) = sel_like(2); ilike++;
-	nLogPosterior(ilike) = q_like     ; ilike++;
+	nLogPosterior(ilike) = q_like(1)  ; ilike++;
 	nLogPosterior(ilike) = m_like     ; ilike++;
 	nLogPosterior(ilike) = fpen       ; ilike++;
 
@@ -2063,8 +2068,8 @@ REPORT_SECTION
   }
   // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+beta*env_cov(1)))<<endl; else
    */
-  report << " survey_q= " << mean(q_srv(1))<<endl;
-  report << "M= " << natmort_f<<" "<<natmort_m << endl;
+  report << "survey_q = " << mean(q_srv(1))<<endl;
+  report << "M (F M)  = " << natmort_f<<" "<<natmort_m << endl;
   report << endl << "Ricker_spawner-recruit_estimates" << endl;
   report << "stock_assessment_model_recruitment_estimates" << endl;
   report << SAM_recruits << endl;
@@ -2701,6 +2706,8 @@ FUNCTION Write_R
   */ 
 
   REPORT(nLogPosterior);
+  REPORT(natmort_f);
+  REPORT(natmort_m);
   REPORT(future_SSB);
   REPORT(future_TotBiom);
   REPORT(future_catch);
@@ -2752,6 +2759,15 @@ FUNCTION Write_R
     double ub=value(pred_rec(i)*exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     R_report<<i<<" "<<pred_rec(i)<<" "<<pred_rec.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
+
+  int k=1;
+  R_report<<"$q"<<endl; for (i=1982;i<=endyr;i++) 
+  {
+    double lb=value(q_srv(k,i)/exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
+    double ub=value(q_srv(k,i)*exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
+    R_report<<i<<" "<<q_srv(k,i)<<" "<<q_srv.sd(k,i)<<" "<<lb<<" "<<ub<<endl;
+  }
+
   for (k=1;k<=nsrv;k++)
   {
     R_report << endl<< "$yrs_srv"<<endl;
@@ -3165,8 +3181,8 @@ FINAL_SECTION
     REPORT(SRR_SSB);
     REPORT(rechat);
     REPORT(rechat.sd);
-    REPORT(future_spr0);
-    REPORT(future_spr0.sd);
+    // REPORT(future_spr0);
+    // REPORT(future_spr0.sd);
     Write_sd();
     Write_R();
   }

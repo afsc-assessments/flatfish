@@ -20,6 +20,7 @@ class model_data : public ad_comm{
   data_int phase_fmort;
   data_int phase_proj;
   data_int phase_logist_sel;
+  data_int phase_logist_sel_devs;
   data_int phase_male_sel;
   data_int phase_q;
   data_number alpha_prior;
@@ -130,6 +131,7 @@ class model_data : public ad_comm{
   int styr_fut;
   int endyr_fut;
   int num_proj_Fs;
+  int npfs;
   dvector offset_srv;
   dvector offset_fsh;
   double R_guess;
@@ -262,7 +264,6 @@ private:
   param_matrix sel_srv_f;
   param_matrix sel_srv_m;
   param_matrix pred_srv;
-  param_matrix q_srv;
   param_3array eac_fsh_c;
   param_3array eac_srv_c;
   param_3array eac_fsh_s;
@@ -282,6 +283,7 @@ private:
   param_number surv_f;
   param_number surv_m;
   param_stddev_vector SSB;
+  param_stddev_matrix q_srv;
   param_number sigma;
   param_vector nLogPosterior;
   param_vector rec_like;
@@ -339,7 +341,6 @@ private:
   param_stddev_vector TotBiom;
   param_stddev_number endbiom;
   param_stddev_number depletion;
-  param_stddev_vector future_spr0;
   param_stddev_matrix future_catch;
   param_stddev_matrix future_SSB;
   param_stddev_matrix future_TotBiom;
