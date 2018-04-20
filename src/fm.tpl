@@ -1931,10 +1931,16 @@ REPORT_SECTION
   for (k=1;k<=nfsh;k++)
   {
     report << "Observed_fishery_age_comp "<< k <<"  "<<endl ;
+		if (last_phase()) R_report << "$fsh_age_c"<<endl;
     for (i=1;i<=nyrs_fsh_age_c(k);i++)
-      report << yrs_fsh_age_c(k,i)<< ", " << oac_fsh_c(k,i) << " "<<Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i))<< endl; 
+		{
+      report   << yrs_fsh_age_c(k,i)<< ", " << oac_fsh_c(k,i) << " "<<Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i))<< endl; 
+      if (last_phase()) R_report << yrs_fsh_age_c(k,i)<< " " << " "<<Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i))<< " "<< oac_fsh_c(k,i) << " "<< eac_fsh_c(k,i) << endl; 
+		}
+		if (last_phase()) R_report << "$fsh_age_s"<<endl;
     for (i=1;i<=nyrs_fsh_age_s(k);i++)
     {
+      if (last_phase()) R_report << yrs_fsh_age_s(k,i)<< " " << " "<<Eff_N(oac_fsh_s(k,i),eac_fsh_s(k,i))<< " "<< oac_fsh_s(k,i) << " "<< eac_fsh_s(k,i) << endl; 
       report << yrs_fsh_age_s(k,i)<< ", " << oac_fsh_s(k,i) << ", Female/Total: "<< sum(oac_fsh_s(k,i)(1,nages)) 
              << " "<<Eff_N(oac_fsh_s(k,i),eac_fsh_s(k,i)) 
              << " "<<mn_age(oac_fsh_s(k,i))
@@ -2245,11 +2251,14 @@ REPORT_SECTION
   report<<"\"SAFE report indicates that this stock was not subjected to overfishing in 2012 and is neither overfished nor approaching a condition of being overfished in 2013.\""<<endl;
 
   cout <<"End of report file for phase "<<current_phase()<<endl;
-	if (last_phase())
-	  ssb_retro << SSB <<endl;
+	// if (last_phase()) ssb_retro << SSB <<endl;
 
  
 BETWEEN_PHASES_SECTION
+  // Set the msy selectivity to something reasonable???
+
+  log_msy_sel_f = log_sel_fsh_f(1,endyr-2);
+  log_msy_sel_m = log_sel_fsh_m(1,endyr-2);
 
 TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(1600);
@@ -2287,7 +2296,7 @@ GLOBALS_SECTION
   adstring repstring;
   ofstream evalout("evalout.rep");
   ofstream srecpar("srecpar.rep"); // To write srec-parameters for projection model
-  ofstream ssb_retro("ssb_retro.rep",ios::app); // To write srec-parameters for projection model
+  // ofstream ssb_retro("ssb_retro.rep",ios::app); // To write srec-parameters for projection model
       
 RUNTIME_SECTION
    maximum_function_evaluations 1000,500,1000,6000
