@@ -12,7 +12,7 @@ yfs_temp_date_int_cov.dat
 7
 5
 4
--4
+4
 -5
 -0.071768333
 4
@@ -47,7 +47,7 @@ yfs_temp_date_int_cov.dat
 1978
 2012
 1982
-2010
+2012
 150
 150
 0

@@ -119,7 +119,7 @@ DATA_SECTION
   init_int phase_m_m
   init_int phase_sr
   init_int phase_env_cov  //
-  init_int phase_sigmar        //
+  init_int phase_sigmaR        //
   init_int phase_wtfmsy        //
   init_number pf_sigma         // penalty cv for selectivity used in Fmsy calcs
   init_number a50_sigma        // 
@@ -129,8 +129,8 @@ DATA_SECTION
   init_number q_sigma
   init_number m_exp
   init_number m_sigma
-  init_number sigmar_exp
-  init_number sigmar_sigma
+  init_number sigmaR_exp
+  init_number sigmaR_sigma
   init_int nselages            //Number of selected ages
 
  LOCAL_CALCS
@@ -152,7 +152,7 @@ DATA_SECTION
     log_input(phase_m_m);
     log_input(phase_sr);
     log_input(phase_env_cov);  //
-    log_input(phase_sigmar);        //
+    log_input(phase_sigmaR);        //
     log_input(phase_wtfmsy);        //
     log_input(pf_sigma);         // penalty cv for selectivity used in Fmsy calcs
     log_input(a50_sigma);        // 
@@ -161,8 +161,8 @@ DATA_SECTION
     log_input(q_sigma);
     log_input(m_exp);
     log_input(m_sigma);
-    log_input(sigmar_exp);
-    log_input(sigmar_sigma);
+    log_input(sigmaR_exp);
+    log_input(sigmaR_sigma);
     log_input(nselages);
     log_input(alpha_prior);
     log_input(phase_alpha);
@@ -268,8 +268,13 @@ DATA_SECTION
 // Define survey indices
   init_int nsrv                             //Number of surveys
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
+  ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
   init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values
+	!! nyrs_srv_inbag = 0.9 * nyrs_srv;
+	!! nyrs_srv_oobag = nyrs_srv - nyrs_srv_inbag;
+  imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
+  imatrix yrs_srv_oobag(1,nsrv,1,nyrs_srv_oobag)   //Years of the survey index values
   init_vector mo_srv(1,nsrv)                //Month the survey occurs
   init_matrix obs_srv(1,nsrv,1,nyrs_srv)    //Survey values (biomass or CPUE)
   init_matrix obs_se_srv(1,nsrv,1,nyrs_srv) //Survey standard errors
@@ -505,7 +510,7 @@ PARAMETER_SECTION
   init_number mean_log_init(phase_init_age_comp); 
   init_bounded_vector init_dev_m(2,nages,-15,15,phase_init_age_comp)
   init_bounded_vector init_dev_f(2,nages,-15,15,phase_init_age_comp)
-  number sigmarsq
+  number sigmaRsq
   number avg_rec_dev
   number sigma_rec
   number var_rec
@@ -559,7 +564,7 @@ PARAMETER_SECTION
   init_number R_logbeta(phase_sr)      // log of Ricker beta
   vector SRC_recruits(styr_sr,endyr_sr)     // predicted recruits
   vector SAM_recruits(styr_sr,endyr_sr)     // model estimate of recruitment (from nage matrix)
-  init_number sigma_R(phase_sigmar)                   // variability of R for objective function distributional assumption
+  init_number sigmaR(phase_sigmaR)                   // variability of R for objective function distributional assumption
   number R_alpha                            // Ricker alpha
   vector SRR_SSB(0,30)
   sdreport_vector rechat(0,30)
@@ -638,8 +643,9 @@ PARAMETER_SECTION
 	number  wt_fut_like
 	number  wt_msy_like
   number  init_like 
-  vector q_like(1,nsrv)
-  number m_like
+  number sigmaR_prior;
+  vector q_prior(1,nsrv)
+  number m_prior
   vector age_like_fsh(1,nfsh)
   vector age_like_srv(1,nsrv)
   vector wt_like(1,3)
@@ -651,7 +657,7 @@ PARAMETER_SECTION
   //Definitions for SPR and future yield projections
   number SPR_ABC // (0.05,2.,phase_F40)
   number SPR_OFL // (0.05,2.,phase_F40)
-  number sigmar_fut
+  number sigmaR_fut
   vector ftmp(1,nfsh)
   number SB0
   number SBF40
@@ -887,7 +893,7 @@ INITIALIZATION_SECTION
   beta 0. ;
   R_logalpha    -4.18844741303
   R_logbeta     -6.15913355283
-  sigma_R  sigmar_exp
+  sigmaR  sigmaR_exp
   natmort_f  m_exp
   natmort_m  m_exp
   mean_log_rec 0.8
@@ -949,8 +955,8 @@ PROCEDURE_SECTION
    //  inf  0 0 0  inf 0.0814782  13.984 1.64572 8.52093 0  32.6187 30.3609 0 0.00937666  90.4879  586.823  539.73  0.846482 0.93861 0.861563 0.874594 0.822898 0.948608 0.870741 0.929537 0.887822 0.921366 0.841266 0.939439 0.807067 0.819997 0.964657 0.898865 0.970638 0.741473 0.857768 0.890177 0.962105 1.0011 0.968926 0.974933 0.821446 0.819997 0.781815 0.786663 0.783197 0.880017 0.762049 0.828732 0.960408 0.964657 1.10127 0.901082 0.108481 0.125338 0.123776 2632.62 2541.99 495.109 441.419  2316.82 2297.56 2273.5 2244.68 2231.11 2214.01 2063.31 1643.45 1145.61 793.073 833.721 829.768 875.837 862.19 791.983 824.822 792.25 838.237 904.882 1148.06 1380.96 1709.52 2009.46 2315.49 2608.21 2768.31 2952.35 3121.75 3236.7 3229.15 3448.95 3467.12 3193.03 3159.11 3057.89 3100.9 2971.87 3087 3290.59 3314.14 3346.24 3133.91 3044.85 3058.49 2791.15 2621.02 2668.73 2599.82 2643.57 2849.5 3060.22 3170.87 3163.42 3178.93 3055.94 2894.21 2962.15 2996.96 2993.04 2952.77 2742.2 2761.32 2915.27 2940.14  901.167 920.002 921.81 908.759 883.521 817.961 640.2 342.496 40.5581 8.5617 19.2127 39.7057 66.8238 90.8636 115.809 123.692 93.8937 67.3402 55.344 58.6771 65.6652 106.58 162.363 251.184 368.564 493.526 636.116 771.942 853.952 970.539 1064.57 1123.49 1117.1 1116.88 1059.53 1031.97 1044.92 1132.33 1219.69 1258.41 1264.11 1264.75 1197.41 1158.19 1088.47 1080.12 1068.13 1063.64 1063.77 1073.22 1106.35 1125.56 1150.04 1158.91 1135.78 1101.19 1079.63 1059.48 1045.84 1042.59 1005.04 1009.94 1029.02 1038.32 0.807464  0.0837012 0.188333 0.359539 0.565576 0.749304 0.873568  1.58871  5.05441  0.0245567  -0.00616844
     evalout <<obj_fun<<" "<<
               wt_like<<" "<<
-               q_like<<" "<<
-               m_like<<" "<<
+               q_prior<<" "<<
+               m_prior<<" "<<
              rec_like<<" "<<
              sel_like<<" "<<
            catch_like<<" "<<
@@ -963,9 +969,38 @@ PROCEDURE_SECTION
 						Fmsyr <<" "<<ABC_biom1<<" "<<ABC_biom2<<" "<<Bmsy<<" "<<msy<<" "<< TotBiom 
                      << " "<<SSB <<" "<< mean_log_rec <<" "<<partial_F_f(7,12)<<
                         " "<<sel_slope_srv<<" "<<sel50_srv<<
-                        " "<<sel_slope_srv_m<<" "<<sel50_srv_m<<
-                        endl;
+                        " "<<sel_slope_srv_m<<" "<<sel50_srv_m;
+	  double mean_N_fsh_age=0;
+    for (k=1;k<=nfsh;k++)
+    {
+      for (i=1;i<=nyrs_fsh_age_c(k);i++) // combined sexes
+		  {
+        mean_N_fsh_age += Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i));
+		  }
+      for (i=1;i<=nyrs_fsh_age_s(k);i++) // split sexes
+      {
+			  mean_N_fsh_age += Eff_N(oac_fsh_s(k,i),eac_fsh_s(k,i));
+      }
+			mean_N_fsh_age /= double(nyrs_fsh_age_c(k) + nyrs_fsh_age_s(k));
+    }
+    evalout << " " <<mean_N_fsh_age;
+		double mean_N_srv_age=0;
+    for (k=1;k<=nsrv;k++)
+    {
+      for (i=1;i<=nyrs_srv_age_c(k);i++) // combined sexes
+		  {
+        mean_N_srv_age += Eff_N(oac_srv_c(k,i),eac_srv_c(k,i));
+		  }
+      for (i=1;i<=nyrs_srv_age_s(k);i++) // split sexes
+      {
+			  mean_N_srv_age += Eff_N(oac_srv_s(k,i),eac_srv_s(k,i));
+      }
+			mean_N_srv_age /= double(nyrs_srv_age_c(k) + nyrs_srv_age_s(k));
+    }
+    evalout << " " <<mean_N_srv_age;
   } 
+	// Alpha and beta of SRR
+  evalout << " " <<R_alpha<<" "<<R_beta<<endl;
 
 FUNCTION get_selectivity
   //Logistic selectivity is modeled for the fishery and survey, by age
@@ -1207,7 +1242,7 @@ FUNCTION evaluate_the_objective_function
   }
   fpen.initialize();
   wt_like.initialize();
-  q_like.initialize();
+  q_prior.initialize();
   if(active(yr_incr)||active(age_incr)||active(growth_alpha))
   {
     // cout <<wt_pred_f(1988)(3,7)<<endl;
@@ -1248,15 +1283,20 @@ FUNCTION evaluate_the_objective_function
       rec_like(4) = (1/(2*var_rec))*norm2(rec_dev_future);
     }
     if(active(R_logalpha))
-      rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigma_R*sigma_R);
+      rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigmaR*sigmaR);
   
     obj_fun += lambda(1)* sum(rec_like);
   
+    if (active(sigmaR))
+    {
+       sigmaR_prior = .5* square(log(sigmaR)-log(sigmaR_exp))/(sigmaR_sigma*sigmaR_sigma);
+       obj_fun  += sigmaR_prior;
+     }
     // Note not general to multiple surveys...also ln_q_srv obsolete?
     if (active(ln_q_srv)||active(alpha))
     {
-       q_like(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
-       obj_fun  += q_like(1);
+       q_prior(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
+       obj_fun  += q_prior(1);
      }
     if (active(sel_slope_fsh_devs_f))
     {
@@ -1271,8 +1311,8 @@ FUNCTION evaluate_the_objective_function
   
     if (active(natmort_f))
     {
-       m_like = .5* square(log(natmort_f)-log(m_exp))/(m_sigma*m_sigma);
-       obj_fun += m_like;
+       m_prior = .5* square(log(natmort_f)-log(m_exp))/(m_sigma*m_sigma);
+       obj_fun += m_prior;
     }
   
     if (current_phase()>phase_wt)
@@ -1462,14 +1502,35 @@ FUNCTION compute_spr_rates
   obj_fun += sprpen;
 
 FUNCTION compute_sr_fit
-  // sigma_R = 0.6;
+  // sigmaR = 0.6;
   R_alpha=mfexp(R_logalpha);
   R_beta=mfexp(R_logbeta);
   for (int i=styr_sr; i <= endyr_sr; i++)
   {
     SAM_recruits(i)= 2.*natage_f(i,1);
-    SRC_recruits(i) = R_alpha*SSB(i-rec_lag)*(mfexp(-1.*R_beta*SSB(i-rec_lag)));  // Ricker model
+    SRC_recruits(i) = SRecruit(SSB(i-rec_lag));
   }
+FUNCTION dvariable SRecruit(const dvariable& Stmp)
+  RETURN_ARRAYS_INCREMENT();
+  dvariable RecTmp;
+  RecTmp = R_alpha*Stmp*mfexp(-R_beta*Stmp);              // Ricker model
+  /* switch (SrType)
+  {
+    case 1: // Eq. 12
+      break;
+    case 2:
+      RecTmp = Stmp / ( alpha + beta * Stmp);        //Beverton-Holt form
+      break;
+    case 3:
+      RecTmp = mfexp(log_avgrec);                    //Avg recruitment
+      break;
+    case 4:
+      RecTmp = Stmp * mfexp( alpha  - Stmp * beta) ; //old Ricker form
+      break;
+  }
+	*/
+  RETURN_ARRAYS_DECREMENT();
+  return RecTmp;
 
 FUNCTION dvariable get_yield(const dvariable& Ftmp)      // calculates yield for any value of F 
   dvariable phi;  
@@ -1763,19 +1824,19 @@ FUNCTION write_srec
   dvariable Rzero = -(log(1/(R_alpha*phizero)))/(phizero*R_beta);   // Ricker formulation of equilibrium recruitment at each F
   dvariable Bzero = Rzero*phizero;
   dvariable Btmp  =  .8*Bzero;
-  srecpar << "# Bzero,  PhiZero,  Alpha, sigmar"<<endl;
+  srecpar << "# Bzero,  PhiZero,  Alpha, sigmaR"<<endl;
   srecpar     << Bzero          <<
          " "  << phizero/1000   <<
          " "  << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<
-         " "  << sigma_R         << endl;
+         " "  << sigmaR         << endl;
   R_report << "$Bzero" <<endl;
   R_report << Bzero    <<endl;
   R_report << "$phizero" <<endl;
   R_report << phizero/1000<<endl;
   R_report << "$alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
-  R_report << "$sigmar" <<endl;
-  R_report << sigma_R    <<endl;
+  R_report << "$sigmaR" <<endl;
+  R_report << sigmaR    <<endl;
 
 FUNCTION compute_spr_rates_2
   //Compute SPR Rates 
@@ -1857,8 +1918,9 @@ REPORT_SECTION
 	nLogPosterior(ilike) = rec_like(4); ilike++;
 	nLogPosterior(ilike) = sel_like(1); ilike++;
 	nLogPosterior(ilike) = sel_like(2); ilike++;
-	nLogPosterior(ilike) = q_like(1)  ; ilike++;
-	nLogPosterior(ilike) = m_like     ; ilike++;
+	nLogPosterior(ilike) = q_prior(1)  ; ilike++;
+	nLogPosterior(ilike) = sigmaR_prior; ilike++;
+	nLogPosterior(ilike) = m_prior     ; ilike++;
 	nLogPosterior(ilike) = fpen       ; ilike++;
 
   for (int i=0;i<=3;i++)
@@ -2057,8 +2119,9 @@ REPORT_SECTION
   report << "age_likeihood_for_survey " << age_like_srv << endl;
   report << "recruitment_likelilhood " << rec_like << endl;
   report << "selectivity_likelihood " << sel_like << endl;
-  report << "q_Prior " <<q_like <<endl;
-  report << "m_Prior " <<m_like <<endl;
+  report << "q_Prior " <<q_prior <<endl;
+  report << "m_Prior " <<m_prior <<endl;
+  report << "sigmaR_Prior " <<sigmaR_prior <<endl;
   report << "F_penalty " << fpen << endl;
 
    /*
@@ -2727,8 +2790,9 @@ FUNCTION Write_R
   R_report << "$age_likeihood_for_survey "  << endl << age_like_srv << endl;
   R_report << "$recruitment_likelilhood "   << endl << rec_like     << endl;
   R_report << "$selectivity_likelihood "    << endl << sel_like     << endl;
-  R_report << "$q_Prior "                   << endl << q_like       << endl;
-  R_report << "$m_Prior "                   << endl << m_like       << endl;
+  R_report << "$q_Prior "                   << endl << q_prior      << endl;
+  R_report << "$sigmaR_Prior "              << endl << sigmaR_prior << endl;
+  R_report << "$m_Prior "                   << endl << m_prior      << endl;
   R_report << "$F_penalty"                  << endl << fpen         << endl;
   R_report << "$obj_fun"                    << endl << obj_fun      << endl;
   
@@ -2999,7 +3063,7 @@ FUNCTION Write_R
     R_report   << endl;
 
     R_report << setw(10)<< setfixed() << setprecision(5) <<endl;
-    R_report   << "$Rec_Pen" <<endl<<sigmar<<"  "<<rec_like<<endl;
+    R_report   << "$Rec_Pen" <<endl<<sigmaR<<"  "<<rec_like<<endl;
     R_report   << endl;
 
     R_report   << "$F_Pen" <<endl;
@@ -3033,9 +3097,9 @@ FUNCTION Write_R
     R_report   << endl;
     R_report << "$Sigmar"<<endl;
     R_report << " "<< post_priors(3)
-             << " "<< sigmar
-             << " "<< sigmarprior
-             << " "<< cvsigmarprior <<endl;
+             << " "<< sigmaR
+             << " "<< sigmaRprior
+             << " "<< cvsigmaRprior <<endl;
     R_report   << endl;
     R_report<<"$Num_parameters_Est"<<endl;
     R_report<<initial_params::nvarcalc()<<endl;
@@ -3047,8 +3111,8 @@ FUNCTION Write_R
     phase_srec<<" "<< endl;
     R_report   << endl;
 
-  R_report<<"$sigmarPrior " <<endl;
-  R_report<<sigmarprior<<" "<<  cvsigmarprior <<" "<<phase_sigmar<<endl;
+  R_report<<"$sigmaRPrior " <<endl;
+  R_report<<sigmaRprior<<" "<<  cvsigmaRprior <<" "<<phase_sigmaR<<endl;
   R_report   << endl;
 
   R_report<<"$Rec_estimated_in_styr_endyr " <<endl;

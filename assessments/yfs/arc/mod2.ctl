@@ -18,7 +18,7 @@ yfs_temp_date_int_cov.dat
 4
 0.09286971
 5
--6
+6
 -7
 6
 4
@@ -32,7 +32,7 @@ yfs_temp_date_int_cov.dat
 0.12
 0.1
 0.6
-0.05
+0.1
 17
 1
 1

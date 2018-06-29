@@ -1,6 +1,6 @@
-Est_Sex_M
+Est_Sex_M_G2
 yfs_temp_date_int_cov.dat
-1
+2
 6
 -1
 2
@@ -28,11 +28,11 @@ yfs_temp_date_int_cov.dat
 0.2
 0.4
 1
-0.9
+0.1
 0.12
 0.1
 0.6
-0.05
+0.1
 17
 1
 1

@@ -62,7 +62,7 @@
 #' @export
 #' 
 plot_srr <- function(M, ylab = "Recruits (age 1, billions)", xlab = "Female spawning biomass (kt)", 
-                     ylim = NULL, xlim=NULL, alpha = 0.05,ebar="FALSE",leglabs=NULL)
+                     ylim = NULL, xlim=NULL, alpha = 0.05,ebar="FALSE",leglabs=NULL,styr=1978,endyr=2012)
 {
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
@@ -90,12 +90,16 @@ plot_srr <- function(M, ylab = "Recruits (age 1, billions)", xlab = "Female spaw
             geom_ribbon(aes(x = ssb, ymax = ub, ymin = lb, fill = Model), alpha = alpha)
     }
     mdf2<- .get_sr_est_df(M)
+	mdf3<- filter(mdf2,Year<=endyr&Year>=styr)
+    mdf2<- filter(mdf2,Year>endyr|Year<styr)
     if (length(M) == 1)
     {
-        p <- p + geom_text(data=mdf2, aes(x = ssb, y = rhat, label=Year),size=4) 
+        p <- p + geom_text(data=mdf2, aes(x = ssb, y = rhat, label=Year),size=3) 
+        p <- p + geom_text(data=mdf3, aes(x = ssb, y = rhat, label=Year),size=5)#,fontface="bold") 
         if (ebar) p <- p + geom_errorbar(data=mdf2, aes(x = ssb, ymax = ub, ymin = lb))
     } else {
-        p <- p + geom_text(data=mdf2, aes(x = ssb, y = rhat, label=Year , col = Model),size=4) 
+        p <- p + geom_text(data=mdf2, aes(x = ssb, y = rhat, label=Year , col = Model),size=3) 
+        p <- p + geom_text(data=mdf3, aes(x = ssb, y = rhat, label=Year , col = Model),size=5)#,fontface="bold") 
         if (ebar) p <- p +  geom_errorbar(data=mdf2, aes(x = ssb, ymax = ub, ymin = lb ,colour=Model))
     }
     
