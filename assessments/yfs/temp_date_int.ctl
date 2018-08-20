@@ -1,6 +1,6 @@
-gmod2
-yfsg_2016.dat
-2
+Mod1_temp_date_interaction
+yfs_temp_date_int_cov.dat
+1
 6
 -1
 2
@@ -28,9 +28,9 @@ yfsg_2016.dat
 0.05
 0.2
 0.4
-1.104
+1
 0.9
-0.12
+0.12 #M
 0.8
 0.6
 0.05
@@ -46,10 +46,9 @@ yfsg_2016.dat
 1
 1
 1978
-2009
+2012
 1982
 2010
 150
 150
 0
-

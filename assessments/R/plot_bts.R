@@ -48,7 +48,7 @@
 #' @return Plot of model estimates of spawning stock biomass 
 #' @export
 #' 
-plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass", ylim = NULL, alpha = 0.1,biomass=TRUE)
+plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass index", ylim = NULL, alpha = 0.1,biomass=TRUE)
 {
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
@@ -75,6 +75,7 @@ plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass", yli
     }
     
     #if(!.OVERLAY) 
-        p <- p + facet_wrap(~Model) + guides(colour=FALSE)
+        #p <- p + facet_wrap(~Model) + guides(colour=FALSE)
+        p <- p + facet_grid( Model~.) + guides(colour=FALSE)
     print(p + .THEME)
 }
