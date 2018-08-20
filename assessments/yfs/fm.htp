@@ -329,14 +329,12 @@ private:
   param_matrix catage_future_m;
   param_number avg_rec_dev_future;
   param_vector avg_F_future;
-  param_stddev_vector C_age;
+  param_stddev_number msy;
   param_stddev_number Fmsy;
   param_stddev_number logFmsy;
   param_stddev_number Fmsyr;
   param_stddev_number logFmsyr;
-  param_stddev_number ABC_biom1;
-  param_stddev_number ABC_biom2;
-  param_stddev_number msy;
+  param_stddev_vector ABC_biom;
   param_stddev_number Bmsy;
   param_stddev_number Bmsyr;
   param_stddev_vector TotBiom;
@@ -368,7 +366,6 @@ public:
  dvariable get_ypr(dvariable Ftemp);
  dvariable get_biom_per_rec(dvariable Ftemp);
   void get_msy(void);
-  void get_2yr_proj(void);
   void Future_projections(void);
   void write_srec(void);
   void compute_spr_rates_2(void);

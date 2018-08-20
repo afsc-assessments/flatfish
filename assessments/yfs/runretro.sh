@@ -8,6 +8,7 @@ do
   awk -v rrr=$i 'NR==53{print rrr} NR!=53 {print $0}' arc/mod6.ctl >mod.ctl
   ./fm -nox -iprint 400
   cp fm_R.rep retro/r_mod6_R$i.rep
+  cp mod.ctl retro/r_mod6_R$i.ctl
 	cp fm.std retro/r_mod6_$i.std
 	cp fm.rep retro/r_mod6_$i.rep
 done    
