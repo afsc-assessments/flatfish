@@ -2000,11 +2000,19 @@ REPORT_SECTION
   report << endl<< "Observed_prop_Survey "<<endl;
   for (k=1;k<=nsrv;k++)
   {
+		if (last_phase()) R_report << "$srv_age_c"<<endl;
     report << "Obs_Survey_age_comp "<< k <<"  "<<endl ;
     for (i=1;i<=nyrs_srv_age_c(k);i++)
+    {
       report << yrs_srv_age_c(k,i)<< ", " << oac_srv_c(k,i)  << " "<<Eff_N(oac_srv_c(k,i),eac_srv_c(k,i))<< endl; 
+      if (last_phase()) R_report << yrs_srv_age_c(k,i)<< " "<<Eff_N(oac_srv_c(k,i),eac_srv_c(k,i))<< " "<< oac_srv_c(k,i) << " "<< eac_srv_c(k,i) << endl; 
+    }
+		if (last_phase()) R_report << "$srv_age_s"<<endl;
     for (i=1;i<=nyrs_srv_age_s(k);i++)
+    {
       report << yrs_srv_age_s(k,i)<< ", " << oac_srv_s(k,i) << ", Female/Total: "<< sum(oac_srv_s(k,i)(1,nages))  << " "<<Eff_N(oac_srv_s(k,i),eac_srv_s(k,i))<< endl; 
+      if (last_phase()) R_report << yrs_srv_age_s(k,i)<< " "<<Eff_N(oac_srv_s(k,i),eac_srv_s(k,i))<< " "<< oac_srv_s(k,i) << " "<< eac_srv_s(k,i) << endl; 
+    }
   }
 
   report << endl << "Predicted_prop_Survey "<<endl;

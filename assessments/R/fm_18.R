@@ -1,10 +1,9 @@
-R
 rm(list=ls())
 source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
-source("../R/compareRuns.r")
+#source("../R/compareRuns.r")
 
 # Read in the output of the assessment
 # Read in model results
@@ -15,6 +14,10 @@ for (i in 0:4) {
   assign(mn,readList(rn))
   print(rn)
 }
+file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)
+system("../../src/fm -nox -iprint 500")
+system("run.bat 1")
+system("run.bat _temp")
 m_nocov <- readList("arc/nocov_R.rep")
 m_temp <- readList("arc/temp_R.rep")
 m_date <- readList("arc/date_R.rep")
