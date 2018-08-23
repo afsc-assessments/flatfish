@@ -7,6 +7,8 @@ source("../R/prelims.R")
 
 # Read in the output of the assessment
 # Read in model results
+.THEME
+plot_age_comps(m_temp_date_int)
 i=1
 for (i in 0:4) {
   rn=paste0("m",i,"/For_R.rep")
@@ -23,6 +25,7 @@ m_temp <- readList("arc/temp_R.rep")
 m_date <- readList("arc/date_R.rep")
 m_temp_date <- readList("arc/temp_date_R.rep")
 m_temp_date_int <- readList("arc/temp_date_int_R.rep")
+m_temp_date_int <- readList("arc/mod1_R.rep")
 names(m_date)
 (m_date$age_likelihood_for_fishery)
 (m_date$catch_likelihood)
@@ -31,8 +34,11 @@ names(m_date)
 (m_date$rmse)
 M <- list( "constant q"=m_nocov,'q = fn(temp))' = m_temp,'q = fn(temp+date+interaction)'=m_temp_date_int) 
 M <- list( "A)"=m_nocov,'B)' = m_temp,'C)'=m_temp_date_int) 
-M
+M <- list( "A)"=m_temp_date_int) 
+length(M)
 names(M)
+plot_age_comps(M)
+plot_age_comps(M,type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M ,alpha=.6)
 p1 <- p1 + annotate("text", x=1999, y=4000, label="Some text", size = 7, family="Times",
