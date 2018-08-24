@@ -1,5 +1,5 @@
 mod1_nrs
-nrsg_2016.dat
+nrs_2017.dat
 1
 6
 -1
