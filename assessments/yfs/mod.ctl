@@ -1,5 +1,5 @@
-New_Base
-yfs_temp_date_int_cov.dat
+Mod_No_env_covariate_q
+yfs_no_cov.dat
 1
 6
 -1
@@ -10,15 +10,16 @@ yfs_temp_date_int_cov.dat
 -6
 3
 7
-5
 4
 4
 -5
--0.0717683
+# alpha:
+-0.0717683334420
 4
-0.09286971
+# beta:
+0.0928697099712
 5
-6
+-6
 -7
 6
 4
@@ -29,10 +30,10 @@ yfs_temp_date_int_cov.dat
 0.4
 1
 0.9
-0.12
-0.1
+0.12 #M
+0.8
 0.6
-0.1
+0.05
 17
 1
 1
@@ -47,7 +48,7 @@ yfs_temp_date_int_cov.dat
 1978
 2012
 1982
-2012
+2010
 150
 150
 0

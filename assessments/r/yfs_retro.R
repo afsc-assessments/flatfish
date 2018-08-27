@@ -1,6 +1,7 @@
 rm(list=ls())
 # Set this where you ran model:
 setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/yfs")
+setwd("~/_mymods/flatfish/assessments/yfs")
 # This is one directory above where yfs is...your mileage may vary
 source("../R/prelims.R")
 mqtext <- as.matrix(read.table("M_q.dat",as.is=TRUE)) # the combos of M and q

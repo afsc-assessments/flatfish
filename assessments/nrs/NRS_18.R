@@ -13,7 +13,8 @@ nrs17 <- readList("fm_R.rep")
 names(nrs17)
 dim(nrs17$oac_fsh_s)
 head(nrs17$oac_fsh_s)
-plot_age_comps(nrs17)
+M <- list("2017 update"=nrs17)
+plot_age_comps(M)
 i=1
 for (i in 0:4) {
   rn=paste0("m",i,"/For_R.rep")

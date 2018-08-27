@@ -112,10 +112,10 @@ DATA_SECTION
 	// !!  phase_logist_sel_devs = 5;   //Phase to begin logistic selectivity estimation
   init_int phase_male_sel      //Phase to begin logistic selectivity estimation
   init_int phase_q
-  init_number alpha_prior
-  init_int phase_alpha
-  init_number beta_prior
-  init_int phase_beta
+  init_number q_alpha_prior
+  init_int phase_q_alpha
+  init_number q_beta_prior
+  init_int phase_q_beta_in
   init_int phase_m_f
   init_int phase_m_m
   init_int phase_sr
@@ -126,8 +126,10 @@ DATA_SECTION
   init_number a50_sigma        // 
   init_number slp_sigma        //
   // catchability values for rock sole from herding experiment
-  init_number q_exp
-  init_number q_sigma
+  init_number q_exp   // expected value of q
+  init_number q_sigma // std of prior on q
+	number ln_q_in      // put on log scale...
+	!! ln_q_in = log(q_exp);
   init_number m_exp
   init_number m_sigma
   init_number sigmaR_exp
@@ -165,10 +167,10 @@ DATA_SECTION
     log_input(sigmaR_exp);
     log_input(sigmaR_sigma);
     log_input(nselages);
-    log_input(alpha_prior);
-    log_input(phase_alpha);
-    log_input(beta_prior);
-    log_input(phase_beta);
+    log_input(q_alpha_prior);
+    log_input(phase_q_alpha);
+    log_input(q_beta_prior);
+    log_input(phase_q_beta_in);
  END_CALCS
 
   init_vector lambda(1,10)     //Vector of emphasis factors
@@ -268,6 +270,8 @@ DATA_SECTION
 
 // Define survey indices
   init_int nsrv                             //Number of surveys
+	ivector phase_q_beta(1,nsrv)
+	!! phase_q_beta = phase_q_beta_in;
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
@@ -500,8 +504,8 @@ PARAMETER_SECTION
   init_number growth_alpha(phase_growth_cov)
 
   //   linear model paramters to fit temperature to survey catchability
-  init_vector alpha(1,nsrv,phase_alpha)
-  init_vector_vector beta(1,nsrv,1,n_env_cov,3)
+  init_vector q_alpha(1,nsrv,phase_q_alpha)
+  init_vector_vector q_beta(1,nsrv,1,n_env_cov,phase_q_beta)
 
   //Recruitment parameters
   init_number mean_log_rec(phase_mn_rec);
@@ -562,7 +566,7 @@ PARAMETER_SECTION
 
   // Spawner-recruit parameters and associated definitions
   init_number R_logalpha(phase_sr)      // log of Ricker alpha
-  init_number R_logbeta(phase_sr)      // log of Ricker beta
+  init_number R_logbeta(phase_sr+1)      // log of Ricker beta
   vector SRC_recruits(styr_sr,endyr_sr)     // predicted recruits
   vector SAM_recruits(styr_sr,endyr_sr)     // model estimate of recruitment (from nage matrix)
   init_number sigmaR(phase_sigmaR)                   // variability of R for objective function distributional assumption
@@ -889,10 +893,10 @@ INITIALIZATION_SECTION
   wt_fsh_fut_m .8;
   wt_pop_fut_f .8;
   wt_pop_fut_m .8;
-  alpha 0. ;
-  beta 0. ;
+  q_alpha 0. ;
+  q_beta 0. ;
   R_logalpha    -4.18844741303
-  R_logbeta     -6.15913355283
+  R_logbeta     -5.8380e+00 
   sigmaR  sigmaR_exp
   natmort_f  m_exp
   natmort_m  m_exp
@@ -920,11 +924,10 @@ PROCEDURE_SECTION
     get_selectivity();
     get_mortality();
     get_numbers_at_age();
+    //if(active(R_logalpha))
+    compute_sr_fit();
   
-    if(active(R_logalpha))
-     compute_sr_fit();
 
-    if (last_phase())
     if (sd_phase() || mceval_phase())
     {
       get_msy();
@@ -955,8 +958,8 @@ PROCEDURE_SECTION
    //  inf  0 0 0  inf 0.0814782  13.984 1.64572 8.52093 0  32.6187 30.3609 0 0.00937666  90.4879  586.823  539.73  0.846482 0.93861 0.861563 0.874594 0.822898 0.948608 0.870741 0.929537 0.887822 0.921366 0.841266 0.939439 0.807067 0.819997 0.964657 0.898865 0.970638 0.741473 0.857768 0.890177 0.962105 1.0011 0.968926 0.974933 0.821446 0.819997 0.781815 0.786663 0.783197 0.880017 0.762049 0.828732 0.960408 0.964657 1.10127 0.901082 0.108481 0.125338 0.123776 2632.62 2541.99 495.109 441.419  2316.82 2297.56 2273.5 2244.68 2231.11 2214.01 2063.31 1643.45 1145.61 793.073 833.721 829.768 875.837 862.19 791.983 824.822 792.25 838.237 904.882 1148.06 1380.96 1709.52 2009.46 2315.49 2608.21 2768.31 2952.35 3121.75 3236.7 3229.15 3448.95 3467.12 3193.03 3159.11 3057.89 3100.9 2971.87 3087 3290.59 3314.14 3346.24 3133.91 3044.85 3058.49 2791.15 2621.02 2668.73 2599.82 2643.57 2849.5 3060.22 3170.87 3163.42 3178.93 3055.94 2894.21 2962.15 2996.96 2993.04 2952.77 2742.2 2761.32 2915.27 2940.14  901.167 920.002 921.81 908.759 883.521 817.961 640.2 342.496 40.5581 8.5617 19.2127 39.7057 66.8238 90.8636 115.809 123.692 93.8937 67.3402 55.344 58.6771 65.6652 106.58 162.363 251.184 368.564 493.526 636.116 771.942 853.952 970.539 1064.57 1123.49 1117.1 1116.88 1059.53 1031.97 1044.92 1132.33 1219.69 1258.41 1264.11 1264.75 1197.41 1158.19 1088.47 1080.12 1068.13 1063.64 1063.77 1073.22 1106.35 1125.56 1150.04 1158.91 1135.78 1101.19 1079.63 1059.48 1045.84 1042.59 1005.04 1009.94 1029.02 1038.32 0.807464  0.0837012 0.188333 0.359539 0.565576 0.749304 0.873568  1.58871  5.05441  0.0245567  -0.00616844
     evalout <<obj_fun<<" "<<
               wt_like<<" "<<
-               q_prior<<" "<<
-               m_prior<<" "<<
+              q_prior<<" "<<
+              m_prior<<" "<<
              rec_like<<" "<<
              sel_like<<" "<<
            catch_like<<" "<<
@@ -974,13 +977,9 @@ PROCEDURE_SECTION
     for (k=1;k<=nfsh;k++)
     {
       for (i=1;i<=nyrs_fsh_age_c(k);i++) // combined sexes
-		  {
         mean_N_fsh_age += Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i));
-		  }
       for (i=1;i<=nyrs_fsh_age_s(k);i++) // split sexes
-      {
 			  mean_N_fsh_age += Eff_N(oac_fsh_s(k,i),eac_fsh_s(k,i));
-      }
 			mean_N_fsh_age /= double(nyrs_fsh_age_c(k) + nyrs_fsh_age_s(k));
     }
     evalout << " " <<mean_N_fsh_age;
@@ -988,13 +987,9 @@ PROCEDURE_SECTION
     for (k=1;k<=nsrv;k++)
     {
       for (i=1;i<=nyrs_srv_age_c(k);i++) // combined sexes
-		  {
         mean_N_srv_age += Eff_N(oac_srv_c(k,i),eac_srv_c(k,i));
-		  }
       for (i=1;i<=nyrs_srv_age_s(k);i++) // split sexes
-      {
 			  mean_N_srv_age += Eff_N(oac_srv_s(k,i),eac_srv_s(k,i));
-      }
 			mean_N_srv_age /= double(nyrs_srv_age_c(k) + nyrs_srv_age_s(k));
     }
     evalout << " " <<mean_N_srv_age;
@@ -1162,11 +1157,11 @@ FUNCTION get_numbers_at_age
       dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
       b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
 
-      if (active(beta(k))) 
+      if (active(q_beta(k))) 
 			{
-        q_srv(k,srvyrtmp) = mfexp(alpha(k));
+        q_srv(k,srvyrtmp) = mfexp(q_alpha(k));
         for (int j=1;j<=n_env_cov(k);j++)
-					q_srv(k,srvyrtmp) *= mfexp( beta(k,j) * env_cov(k,j,i)) ;
+					q_srv(k,srvyrtmp) *= mfexp( q_beta(k,j) * env_cov(k,j,i)) ;
       }
       else
       {
@@ -1292,7 +1287,7 @@ FUNCTION evaluate_the_objective_function
        obj_fun  += sigmaR_prior;
      }
     // Note not general to multiple surveys...also ln_q_srv obsolete?
-    if (active(ln_q_srv)||active(alpha))
+    if (active(ln_q_srv)||active(q_alpha))
     {
        q_prior(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
        obj_fun  += q_prior(1);
@@ -1809,6 +1804,10 @@ FUNCTION write_srec
   R_report << phizero/1000<<endl;
   R_report << "$alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
+  R_report << "$R_alpha" <<endl;
+  R_report << R_alpha <<endl;
+  R_report << "$R_beta" <<endl;
+  R_report << R_beta <<endl;
   R_report << "$sigmaR" <<endl;
   R_report << sigmaR    <<endl;
 
@@ -2174,9 +2173,9 @@ REPORT_SECTION
     report << endl<<"Environmental_effect_q " << endl;
     for (i=1;i<=nyrs_srv(1);i++)
       for (k=1;k<=n_env_cov(1);k++)
-        report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<mfexp(-alpha(1)+beta(1,k)*env_cov(1,k,i))<<endl;
+        report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<mfexp(-alpha(1)+q_beta(1,k)*env_cov(1,k,i))<<endl;
   }
-  // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+beta*env_cov(1)))<<endl; else
+  // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+q_beta*env_cov(1)))<<endl; else
    */
   report << "survey_q = " << mean(q_srv(1))<<endl;
   report << "M (F M)  = " << natmort_f<<" "<<natmort_m << endl;
@@ -2842,6 +2841,7 @@ FUNCTION Write_R
   R_report << "$sigmaR_Prior "              << endl << sigmaR_prior << endl;
   R_report << "$m_Prior "                   << endl << m_prior      << endl;
   R_report << "$F_penalty"                  << endl << fpen         << endl;
+  R_report << "$SPR_penalty"                << endl << sprpen       << endl;
   R_report << "$obj_fun"                    << endl << obj_fun      << endl;
   
   R_report<<"$SSB"<<endl; for (i=styr;i<=endyr;i++) 
