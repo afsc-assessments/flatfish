@@ -5,7 +5,6 @@ rt.sh 3
 rt.sh 4
 rt.sh 5
 rt.sh 6
-#rt.sh 6
-#rt.sh 7
-#rt.sh 8
+rt.sh 7
+rt.sh 8
 #rt.sh 9
