@@ -1,4 +1,5 @@
-cp mod$1.ctl mod.ctl
+#cp mod$1.ctl mod.ctl
+awk '{print $'$1'}' mods.dat >mod.ctl
 rm fm.std
 ./fm -nox -iprint 200
 cp extra_sd.rep arc/mod$1_ABC_OFL.rep

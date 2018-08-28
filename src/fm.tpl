@@ -151,6 +151,10 @@ DATA_SECTION
     log_input(phase_logist_sel);    //Phase to begin logistic selectivity estimation
     log_input(phase_male_sel);      //Phase to begin logistic selectivity estimation
     log_input(phase_q);
+    log_input(q_alpha_prior);
+    log_input(phase_q_alpha);
+    log_input(q_beta_prior);
+    log_input(phase_q_beta_in);
     log_input(phase_m_f);
     log_input(phase_m_m);
     log_input(phase_sr);
@@ -167,10 +171,6 @@ DATA_SECTION
     log_input(sigmaR_exp);
     log_input(sigmaR_sigma);
     log_input(nselages);
-    log_input(q_alpha_prior);
-    log_input(phase_q_alpha);
-    log_input(q_beta_prior);
-    log_input(phase_q_beta_in);
  END_CALCS
 
   init_vector lambda(1,10)     //Vector of emphasis factors
@@ -1165,7 +1165,7 @@ FUNCTION get_numbers_at_age
       }
       else
       {
-        q_srv(k) = mfexp(q_exp);
+        q_srv(k) = mfexp(ln_q_srv(k));
       }
       pred_srv(k,srvyrtmp)     = q_srv(k,srvyrtmp) * b1tmp;
     }
@@ -1286,7 +1286,7 @@ FUNCTION evaluate_the_objective_function
        sigmaR_prior = .5* square(log(sigmaR)-log(sigmaR_exp))/(sigmaR_sigma*sigmaR_sigma);
        obj_fun  += sigmaR_prior;
      }
-    // Note not general to multiple surveys...also ln_q_srv obsolete?
+    // Note not general to multiple surveys...also ln_q_srv should be a "free" parameter because q_surve is an sdreport variable?
     if (active(ln_q_srv)||active(q_alpha))
     {
        q_prior(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
@@ -2844,7 +2844,8 @@ FUNCTION Write_R
   R_report << "$SPR_penalty"                << endl << sprpen       << endl;
   R_report << "$obj_fun"                    << endl << obj_fun      << endl;
   
-  R_report<<"$SSB"<<endl; for (i=styr;i<=endyr;i++) 
+  R_report<<"$SSB"<<endl; 
+	for (i=styr;i<=endyr;i++) 
   {
     double lb=value(SSB(i)/exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));
     double ub=value(SSB(i)*exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));

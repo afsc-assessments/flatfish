@@ -3,21 +3,19 @@ source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
-#source("../R/compareRuns.r")
+source("../R/compareRuns.r")
 
 # Read in the output of the assessment
 # Read in model results
 .THEME
 setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/nrs")
-nrs17 <- readList("fm_R.rep")
-names(nrs17)
-dim(nrs17$oac_fsh_s)
-head(nrs17$oac_fsh_s)
-M <- list("2017 update"=nrs17)
-plot_age_comps(M)
-i=1
-for (i in 0:4) {
-  rn=paste0("m",i,"/For_R.rep")
+#nrs17 <- readList("fm_R.rep")
+#M <- list("2017 update"=nrs17)
+#args(plot_age_comps)
+#plot_age_comps
+#i=1
+for (i in 1:6) {
+  rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
   assign(mn,readList(rn))
   print(rn)
@@ -26,103 +24,54 @@ file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)
 system("../../src/fm -nox -iprint 500")
 system("run.bat 1")
 system("run.bat _temp")
-m_nocov <- readList("arc/nocov_R.rep")
-m_temp <- readList("arc/temp_R.rep")
-m_date <- readList("arc/date_R.rep")
-m_temp_date <- readList("arc/temp_date_R.rep")
-m_temp_date_int <- readList("arc/temp_date_int_R.rep")
-m_temp_date_int <- readList("arc/mod1_R.rep")
-names(m_date)
-(m_date$age_likelihood_for_fishery)
-(m_date$catch_likelihood)
-(m_date$survey_likelihood)
-(m_date$recruitment_likelilhood)
-(m_date$rmse)
-M <- list( "constant q"=m_nocov,'q = fn(temp))' = m_temp,'q = fn(temp+date+interaction)'=m_temp_date_int) 
-M <- list( "A)"=m_nocov,'B)' = m_temp,'C)'=m_temp_date_int) 
-M <- list( "A)"=m_temp_date_int) 
-length(M)
-names(M)
-plot_age_comps(M)
+M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4)
+M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6)
+plot_age_comps(M[1])
 plot_age_comps(M,title="Survey age compositions",type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M ,alpha=.6)
-p1 <- p1 + annotate("text", x=1999, y=4000, label="Some text", size = 7, family="Times",
-fontface="bold.italic", colour="red")
 #make a table of likelihoods
 .get_like_df(M)
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))
+plot_ssb(M[c(1,3,5)],alpha=.26,xlim=c(1990,2018))
 plot_rec(M,alpha=.26,xlim=c(1990,2014))
-plot_ssb(M[c(1,4)],alpha=.26,xlim=c(1990,2018))
-plot_rec(M[c(1,4)],alpha=.26,xlim=c(1990,2018))
-mod4$yr_bts
-mod0 <- readList("arc/mod2015_R.rep")
-mod1 <- readList("arc/mod1_R.rep")
-mod1 <- readList("arc/mod1_R.rep")
-mod2 <- readList("arc/mod2_R.rep")
-mod3 <- readList("arc/mod3_R.rep")
-mod4 <- readList("arc/mod4_R.rep")
-mod5 <- readList("arc/mod5_R.rep")
-names(mod1)
-source("../R/plot_srr.R")
+plot_srr(M,alpha=.2)
+plot_srr(M[c(1,3,5)],alpha=.26)
+plot_srr(M[c(1,3,6)],alpha=.26)
 
 .OVERlAY=TRUE
-M <- list( '2015 Model 1' = mod0,'Model 1' = mod1 )
-M <- list( 'Model 1' = mod1) # ,'Model 5' = mod5 )
-M <- list( 'Temperature' = m_temp,'Date' = m_date,'Temp. and date'=m_temp_date,'Temp, date, and interaction'=m_temp_date_int) 
-# ,'Model 5' = mod5 )
+,xlim=c(0,1100),ylim=c(0,7.2))
+like_tab <- data.table()
+like_tab <- data.frame()
+for (i in 1:6) {
+  like_tab <- rbind(like_tab,(M[[i]]$nLogPosterior ))
+}
+dim(like_tab)
+  names(like_tab) <- c("wt_like(1)", "wt_like(2)", "wt_like(3)", "wt_fut_like", "wt_msy_like", "init_like  ", "srv_like(1)", "catch_like ", "age_like_fsh(1)", "age_like_srv(1)",
+  "rec_like(1)", "rec_like(2)", "rec_like(3)", "rec_like(4)", "sel_like(1)", "sel_like(2)", "q_prior(1)  ", "sigmaR_prior", "m_prior     ", "fpen")
 
-modset0 <- list( '0' = mod0,Model_1_2016 = mod1 )
-modset1 <- list( '1' = mod1)
-modset15 <- list( '1' = mod1,'5' = mod5)
-modset0 <- list( Model_1_2015 = mod0,Model_1_2016 = mod1 )
-modset1 <- list( Model_1 = mod1,Model_2 = mod2, Model_3 = mod3,  Model_5 = mod5 )
+like_tab
 
+,M[[i]]$survey_likelihood,M[[i]]$catch_likelihood,
+M[[i]]$age_likelihood_for_fishery,M[[i]]$age_likeihood_for_survey,
+M[[i]]$recruitment_likelilhood,M[[i]]$selectivity_likelihood, M[[i]]$q_Prior,M[[i]]$sigmaR_Prior,
+M[[i]]$m_Prior,M[[i]]$F_penalty, M[[i]]$SPR_penalty,M[[i]]$obj_fun) )
+  print( M[[i]]$nLogPosterior )
+  print( M[[i]]$survey_likelihood)
+  print( M[[i]]$catch_likelihood)
+  print( M[[i]]$age_likelihood_for_fishery)
+print( M[[i]]$age_likeihood_for_survey)
+print( M[[i]]$recruitment_likelilhood)
+print( M[[i]]$selectivity_likelihood)
+print(  M[[i]]$q_Prior)
+print( M[[i]]$sigmaR_Prior)
+print( M[[i]]$m_Prior)
+print( M[[i]]$F_penalty)
+print(  M[[i]]$SPR_penalty)
+print( M[[i]]$obj_fun) )
+names(like_tab) <- c("nLogPosterior","survey_likelihood","catch_likelihood", "age_likelihood_for_fishery","age_likeihood_for_survey",
+"recruitment_likelilhood","selectivity_likelihood", "q_Prior","sigmaR_Prior", "m_Prior","F_penalty", "SPR_penalty","obj_fun")
 
-
-
-plot_ssb(modset1,alpha=.3)
-plot_ssb(modset15,alpha=.3)
-modset1 <- list( Base = mod0, Prior_only = mod5)
-modset2 <- list( Bholt=mod6, Bholt_Prior_only=mod7)
-
-modset2 <- list( Base = mod0, Diff_Prior= mod5, Bholt=mod6, Bholt_Diff_prior=mod7)
-
-plot_srr(modset15,alpha=.2,xlim=c(0,1100),leglabs=c("1","5")   ,ylim=c(0,7))
-
-plot_srr(M,alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
-
-plot_srr(modset2,alpha=.2,xlim=c(0,5000),leglabs=c("BevHolt","Less wt \n on \"data\""),ylim=c(0,90000))
-plot_srr(modset1,alpha=.2,xlim=c(0,1400),ylim=c(0,8))
-plot_srr(modset2,alpha=.2,xlim=c(0,5000),ylim=c(0,80000))
-,Model_1= mod1, Model_2= mod2, Model_3= mod3, Model_4= mod4)
-
-at <-read.table("at_srv.dat",header=T)
-ggplot(at,aes(x=yr,y=at)) + geom_smooth() + .THEME + geom_point(size=4) + xlab("Year") + 
-             scale_x_continuous(breaks=seq(1982,2016,2)) + ylab("Survey biomass (millions of t)") + ylim(c(0,6.5))
-             
-
-h_prior
-q_prior        
-surv_like     
-cpue_like      
-avo_like      
-sel_like       
-sel_like_dev  
-age_like       
-len_like       
-rec_like       
- repl_yld       
- repl_SSB       
- Yr             
- steepness     
-  SR_resids     
-  sigr           
-  SRR_SSB        
-  rechat         
-  repl_F        
-  future_SSB    
-  SSB
 "future_SSB.sd"  "catch_future"   "Fcur_Fmsy"      "Fcur_Fmsy.sd"  
 "Bcur_Bmsy"      "Bcur_Bmsy.sd"   "Bcur_Bmean"     "Bcur_Bmean.sd" 
 "Bcur2_Bmsy"     "Bcur2_Bmsy.sd"  "Bcur2_B20"      "Bcur2_B20.sd"  
@@ -138,43 +87,13 @@ rec_like
 "wt_yraf"        "wt_yraf.sd"     "wt_fsh"         
 
 names(mod4)
-.OVERlAY=TRUE
-.OVERlAY=FALSE
-lstOuts <- list( Model_0= mod0,Model_1= mod1, Model_2= mod2, Model_3= mod3, Model_4= mod4)
-source("R/plot-ssb.R")
-1G
-plot_ssb(modset0,xlim=c(1980,2015),alpha=.3)
-plot_ssb(lstOuts,xlim=c(1980,2015))
-source("R/plot-bts.R")
-plot_bts(lstOuts)
-plot_bts(lstOuts,biomass=FALSE,ylab="Bottom trawl survey numbers")
-source("R/plot-eit.R")
-plot_eit(lstOuts)
-plot_eit(lstOuts,biomass=FALSE,ylab="Acoustic trawl survey numbers")
-lstOuts <- list( Model_1= mod1,Model_3= mod3)
-lstOuts <- list( Model_1= mod1,Model_2= mod2)
-lstOuts <- list( Model_2= mod2,Model_3= mod3)
-lstOuts <- list( Model_3= mod3, Model_4= mod4)
-lstOuts <- list( Model_0= mod0,Model_1= mod1, Model_2= mod2, Model_3= mod3, Model_4= mod4)
-lstOuts <- list( Model_1= mod1, Model_2= mod2, Model_3= mod3, Model_4= mod4, Model_5= mod5, Model_6= mod6, Model_7= mod7 )
-tab     <- cbind(lstOuts[[1]]$Like_Comp_names,do.call(cbind,lapply(lstOuts,function(x){round(x[["Like_Comp"]],2)})))
-tab
-write.csv(tab,file=file.path(inputPath,"LikelihoodTable2015.csv"),row.names=F)
-system(paste("open ",inputPath,"/LikelihoodTable2015.csv",sep=""))
-lstOuts   <- list( Model_1= mod1, Model_5= mod5, Model_6= mod6, Model_7= mod7 )
-lstOuts   <- list( Model_1= mod1, Model_5= mod5, Model_7= mod7 )
-lstOuts   <- list( Model_1= mod1, Model_7= mod7 )
-lstOuts   <- list( Model_1= mod1, Model_2= mod2 )
-names(mod1)
-mod1$M
-mod2$M
 
 #SSB ============================================================
 df  <- data.table(Model = "Model 1", mod1$SSB )
-for (i in 2:2) df <- rbind(df, data.table(Model=paste0("Model ",i),lstOuts[[i]]$SSB))
+for (i in 2:4) df <- rbind(df, data.table(Model=paste0("Model ",i),M[[i]]$SSB))
 names(df) <- c("Model","yr","SSB","SE","lb","ub")
 bdf <- filter(df,yr>1980,yr<=2016) %>% arrange(yr)
-bdf
+df
 
 # try over same time range...
 p1 <- ggplot() + scale_y_continuous(limits=c(0,6000)) + ylab("Spawning biomass") + xlab("Year") +  mytheme + geom_line(data=bdf,aes(x=yr,y=SSB,type=Model)) +
@@ -423,6 +342,7 @@ lines(modsigmaR$R[,1],modsigmaR$R[,2],col="purple",lwd=2)
 #dev.off()
 
 # Likelihood table
+tab       <- cbind(lstOuts[[1]]$Like_Comp_names,do.call(cbind,lapply(lstOuts,function(x){round(x[["Like_Comp"]],2)})))
 tab       <- cbind(lstOuts[[1]]$Like_Comp_names,do.call(cbind,lapply(lstOuts,function(x){round(x[["Like_Comp"]],2)})))
 tab
 do.call(cbind,lapply(lstOuts,function(x){round(x[["Like_Comp"]],2)}))
