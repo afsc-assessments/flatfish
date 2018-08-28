@@ -4,6 +4,7 @@ set exec=..\..\src\build\release\fm.exe
 :: %1 %2 %3 %4 %5 %6
 if EXIST %exec% (copy %exec% fm.exe ) ELSE echo "file missing, compile source code in fm\src directory "
 copy mod%1.ctl mod.ctl
+awk "{print $"%1"}" mods.dat >mod.ctl
 del fm.std
 fm -nox -iprint 200
 copy extra_sd.rep arc\mod%1_ABC_OFL.rep
