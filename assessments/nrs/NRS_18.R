@@ -8,42 +8,56 @@ source("../R/compareRuns.r")
 # Read in the output of the assessment
 # Read in model results
 .THEME
-setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/nrs")
+#setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/nrs")
 #nrs17 <- readList("fm_R.rep")
 #M <- list("2017 update"=nrs17)
-#args(plot_age_comps)
-#plot_age_comps
+
+#--To compile fm and copy to working directory
+setwd("../../src")
+system("admb fm")
+system("copy fm.exe ..\assessments\nrs")
+system("copy fm.exe ..\assessments\yfs")
+setwd("../assessments/nrs")
+#--------------------------------------
+
+i=3
+for (i in 1:8) {
+  system(paste0("run.bat ",i) ) # run each of 8 models in a "system" call (same as commandline)
+}
+.OVERLAY=T
 #i=1
-for (i in 1:6) {
+for (i in 1:8) {
   rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
   assign(mn,readList(rn))
   print(rn)
 }
-file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)
-system("../../src/fm -nox -iprint 500")
-system("run.bat 1")
-system("run.bat _temp")
-M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4)
-M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6)
-plot_age_comps(M[1])
+
+#M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4)
+M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
+           "Est female M"=mod7, "Est male and female M"=mod8)
+M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
+
+plot_age_comps(M[8])
 plot_age_comps(M,title="Survey age compositions",type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
-plot_bts(M ,alpha=.6)
+plot_bts(M[1] ,alpha=.6) #Plot model one
+plot_bts(M[c(1,5,8)] ,alpha=.6) #Plot model one
 #make a table of likelihoods
 .get_like_df(M)
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))
 plot_ssb(M[c(1,3,5)],alpha=.26,xlim=c(1990,2018))
 plot_rec(M,alpha=.26,xlim=c(1990,2014))
+plot_rec(M[c(1,5,8)],alpha=.26,xlim=c(1990,2014))
 plot_srr(M,alpha=.2)
 plot_srr(M[c(1,3,5)],alpha=.26)
-plot_srr(M[c(1,3,6)],alpha=.26)
+plot_srr(M[c(1)],alpha=.26)
 
 .OVERlAY=TRUE
 ,xlim=c(0,1100),ylim=c(0,7.2))
 like_tab <- data.table()
 like_tab <- data.frame()
-for (i in 1:6) {
+for (i in 1:8) {
   like_tab <- rbind(like_tab,(M[[i]]$nLogPosterior ))
 }
 dim(like_tab)
@@ -52,53 +66,6 @@ dim(like_tab)
 
 like_tab
 
-,M[[i]]$survey_likelihood,M[[i]]$catch_likelihood,
-M[[i]]$age_likelihood_for_fishery,M[[i]]$age_likeihood_for_survey,
-M[[i]]$recruitment_likelilhood,M[[i]]$selectivity_likelihood, M[[i]]$q_Prior,M[[i]]$sigmaR_Prior,
-M[[i]]$m_Prior,M[[i]]$F_penalty, M[[i]]$SPR_penalty,M[[i]]$obj_fun) )
-  print( M[[i]]$nLogPosterior )
-  print( M[[i]]$survey_likelihood)
-  print( M[[i]]$catch_likelihood)
-  print( M[[i]]$age_likelihood_for_fishery)
-print( M[[i]]$age_likeihood_for_survey)
-print( M[[i]]$recruitment_likelilhood)
-print( M[[i]]$selectivity_likelihood)
-print(  M[[i]]$q_Prior)
-print( M[[i]]$sigmaR_Prior)
-print( M[[i]]$m_Prior)
-print( M[[i]]$F_penalty)
-print(  M[[i]]$SPR_penalty)
-print( M[[i]]$obj_fun) )
-names(like_tab) <- c("nLogPosterior","survey_likelihood","catch_likelihood", "age_likelihood_for_fishery","age_likeihood_for_survey",
-"recruitment_likelilhood","selectivity_likelihood", "q_Prior","sigmaR_Prior", "m_Prior","F_penalty", "SPR_penalty","obj_fun")
-
-"future_SSB.sd"  "catch_future"   "Fcur_Fmsy"      "Fcur_Fmsy.sd"  
-"Bcur_Bmsy"      "Bcur_Bmsy.sd"   "Bcur_Bmean"     "Bcur_Bmean.sd" 
-"Bcur2_Bmsy"     "Bcur2_Bmsy.sd"  "Bcur2_B20"      "Bcur2_B20.sd"  
-"Bcur3_Bcur"     "Bcur3_Bcur.sd"  "Bcur3_Bmean"    "Bcur3_Bmean.sd"
-"LTA1_5R"        "LTA1_5R.sd"     "MatAgeDiv1"     "MatAgeDiv1.sd" 
-"MatAgeDiv2"     "MatAgeDiv2.sd"  "RelEffort"      "RelEffort.sd"  
-"LTA1_5"         "LTA1_5.sd"      "SER"            "SSB"           
-"R"              "N"              "yrs_avo"        "obs_avo"       
-"obs_avo_std"    "pred_avo"       "pobs_fsh"       "phat_fsh"      
-"phat_bts"       "phat_eit"       "pobs_biom_bts"  "pobs_eit"      
-"EffN_Fsh_1"     "F"              "P_SSB"          "wt_ssb"        
-"wt_cur"         "wt_cur.sd"      "wt_next"        "wt_next.sd"    
-"wt_yraf"        "wt_yraf.sd"     "wt_fsh"         
-
-names(mod4)
-
-#SSB ============================================================
-df  <- data.table(Model = "Model 1", mod1$SSB )
-for (i in 2:4) df <- rbind(df, data.table(Model=paste0("Model ",i),M[[i]]$SSB))
-names(df) <- c("Model","yr","SSB","SE","lb","ub")
-bdf <- filter(df,yr>1980,yr<=2016) %>% arrange(yr)
-df
-
-# try over same time range...
-p1 <- ggplot() + scale_y_continuous(limits=c(0,6000)) + ylab("Spawning biomass") + xlab("Year") +  mytheme + geom_line(data=bdf,aes(x=yr,y=SSB,type=Model)) +
-           geom_ribbon(data=bdf ,aes(x=yr,y=SSB,ymin=lb,ymax=ub,fill=Model),alpha=.7)  + guides(alpha=FALSE,col=FALSE) 
-p1
 #Recruits==========================================================
 mytheme = mytheme + theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5))
 rdf <- data.frame(mod1$R)
@@ -209,7 +176,7 @@ mod1$sel_ind_1
 srv_sel <- mod1$sel_ind_1[1,3:13]
 srv_sel <- data.frame(Age=1:11,Selectivity=srv_sel/max(srv_sel))
 srv_sel
-mytheme = mytheme + theme(axis.text.x = element_text(angle=0, hjust=1, vjust=.5))
+mytheme = .THEME + theme(axis.text.x = element_text(angle=0, hjust=1, vjust=.5))
 ggplot(srv_sel) + geom_line(aes(x=Age,y=Selectivity),size=2) +mytheme
 #=====================
 # Retro
