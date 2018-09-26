@@ -8,9 +8,6 @@
    1. Model 2 but with male selectivity offset estimated
 
 ## Retrospective
-fmr.tpl contains the code version (still needs testing) for retrospective runs. 
-   1. F40 and Projections turned off
-   2. n_retro needs to be added to ctl file...
 
 Changed the projection phase to -7 in the mod1.ctl file...as of July 13 it failed to converge
 
