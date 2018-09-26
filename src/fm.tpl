@@ -112,7 +112,6 @@ DATA_SECTION
   init_int phase_logist_sel_devs    //Phase to begin logistic selectivity estimation
 	// !!  phase_logist_sel_devs = 5;   //Phase to begin logistic selectivity estimation
   init_int phase_male_sel      //Phase to begin logistic selectivity estimation
-  init_int phase_male_sel_offset      //Phase to begin logistic selectivity estimation
   // !! phase_male_sel_offset = 4;
   init_int phase_q
   init_number q_alpha_prior
@@ -153,7 +152,6 @@ DATA_SECTION
     log_input(phase_proj);          //Phase to begin future projections
     log_input(phase_logist_sel);    //Phase to begin logistic selectivity estimation
     log_input(phase_male_sel);      //Phase to begin logistic selectivity estimation
-    log_input(phase_male_sel_offset);      //Phase to begin logistic selectivity estimation
     log_input(phase_q);
     log_input(q_alpha_prior);
     log_input(phase_q_alpha);
@@ -186,11 +184,14 @@ DATA_SECTION
   init_number yr1_futcat       // catch specified in endyr+1 (for 2-year projection for Tier 1)
   init_number yr2_futcat       // catch specified in endyr+2 (for 2-year projection for Tier 1) used for SSB_2 calc
 	init_number n_retro;
+	int phase_male_sel_offset;      //Phase to begin logistic selectivity estimation
+  !! phase_male_sel_offset = lambda(4); 
   !! log_input(lambda); 
   !! log_input(styr_sr); log_input(endyr_sr);
   !! log_input(styr_wt); log_input(endyr_wt);
   !! log_input(yr1_futcat); log_input(yr1_futcat);
   !! log_input(n_retro); 
+  !! log_input(phase_male_sel_offset);      //Phase to begin logistic selectivity estimation
   // End reading control file......................................................
 
   // Open future temperature specified........

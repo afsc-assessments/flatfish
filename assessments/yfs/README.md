@@ -1,8 +1,11 @@
-# Yellowfin sole issues
-## Generalizing environmental covariate
-  1. confirm control-file switches (excel file fm_mod_ctl.xls)
-	2. check code for old q fn(temp)
-	3. develop for multiple variables
+# Yellowfin sole 2018 developments
+## Models for considerations
+   1. 2017 "base" with updated data   
+	 2. recommended model (with temp-startdate-interaction included on q)
+   3. fixed q model (no temp or survey start date model)
+   4. Model 2 run with all S/R points 1954-2012 (productivity comparison run).  
+   1. Model 2 but with male mortality estimated 
+   1. Model 2 but with male selectivity offset estimated
 
 ## Retrospective
 fmr.tpl contains the code version (still needs testing) for retrospective runs. 
