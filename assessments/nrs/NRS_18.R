@@ -1,4 +1,7 @@
 rm(list=ls())
+library(tidyverse)
+library(grid)
+library(ggridges)
 source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
@@ -7,7 +10,7 @@ source("../R/compareRuns.r")
 
 # Read in the output of the assessment
 # Read in model results
-.THEME
+#.THEME
 #setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/nrs")
 #nrs17 <- readList("fm_R.rep")
 #M <- list("2017 update"=nrs17)
@@ -20,25 +23,73 @@ system("copy fm.exe ..\assessments\yfs")
 setwd("../assessments/nrs")
 #--------------------------------------
 
-i=3
 for (i in 1:8) {
   system(paste0("run.bat ",i) ) # run each of 8 models in a "system" call (same as commandline)
 }
 .OVERLAY=T
-#i=1
-for (i in 1:8) {
+i=1
+for (i in 1:10) {
   rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
-  assign(mn,readList(rn))
+  A <-  readList(rn)
+  sr <- read.table(paste0("arc/mod",i,"_sex_ratio.rep"))
+  names(sr) <- c("Year","source","sex_ratio")
+  A$sex_ratio <- sr %>% arrange(source,Year)
+  assign(mn,A)
   print(rn)
 }
 
 #M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4)
 M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
-           "Est female M"=mod7, "Est male and female M"=mod8)
+           "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
 M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
+M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
+M <- list( "Base"=mod1, "Est Male, , q"=mod5)
+M <- M[refSet]
 
-plot_age_comps(M[8])
+plot_sel <- function(mod, title=NULL,alpha=0.3){
+  mdf <- data.frame(Year=1975:2017,sex="males",mod$sel_fsh_m)
+  mdf <- rbind(mdf,data.frame(Year=1975:2017,sex="females",mod$sel_fsh_f))
+  names(mdf)[3:22] <- 1:20
+  sdf <- (gather(mdf,age,selectivity,3:22) ) %>% filter(Year>1990) %>% mutate(age=as.numeric(age)) #+ arrange(age,Year)
+  ggplot(sdf,aes(x=age,y=fct_rev(as.factor(Year)),height = selectivity,fill=sex,color=sex,alpha=alpha)) + ggtitle(title) +
+            geom_density_ridges(stat = "identity",scale=1,alpha = alpha) + ylab("Year")+ .THEME #+ facet_grid(~seas) +
+}
+plot_srv_sel <- function(M, title="Survey selectivity",bysex=TRUE){
+  n <- length(M)
+    mdf <- NULL
+    for (i in 1:n)
+    {
+        A   <- M[[i]]
+        #length(A$sel_srv_f)
+        #length(A$sel_srv_m)
+        mdf <- rbind(mdf, data.frame(Model= names(M)[i],sex="males",  selectivity=A$sel_srv_m,age=1:length(A$sel_srv_m)))
+        mdf <- rbind(mdf, data.frame(Model= names(M)[i],sex="females",selectivity=A$sel_srv_f,age=1:length(A$sel_srv_f)))
+    }
+    names(mdf) <- c("Model","sex","selectivity","age")
+
+if (bysex)
+{
+  ggplot(mdf,aes(x=age,y=Model,height = selectivity,fill=sex,color=sex,alpha=.3)) + ggtitle(title) +
+            geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
+}
+else
+  ggplot(mdf,aes(x=age,y=sex,height = selectivity,fill=Model,color=Model,alpha=.3)) + ggtitle(title) +
+            geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
+}
+
+plot_srv_sel(M[refSet])
+plot_srv_sel(M[refSet],bysex=FALSE)
+plot_sel(mod1,"Base")
+plot_sel(mod5,"Estimate male M and survey q")
+
+plot_age_comps(M[1])
+plot_age_comps(M[5])
+
+plot_sex_ratio(M[1:2],ylim=c(.2,.8))
+plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Population")
+plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Survey")
+
 plot_age_comps(M,title="Survey age compositions",type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M[1] ,alpha=.6) #Plot model one
@@ -57,7 +108,7 @@ plot_srr(M[c(1)],alpha=.26)
 ,xlim=c(0,1100),ylim=c(0,7.2))
 like_tab <- data.table()
 like_tab <- data.frame()
-for (i in 1:8) {
+for (i in 1:9) {
   like_tab <- rbind(like_tab,(M[[i]]$nLogPosterior ))
 }
 dim(like_tab)
@@ -210,7 +261,6 @@ for (i in 1:10) { tab=cbind(tab,retouts[[i]]$SSB)}
 names(mod1$SSB)
 rn = "mod1"
 dim(tdf)
-library(grid)
 p1 <- ggplot() + scale_y_continuous(limits=c(0,590000)) + ylab("Spawning biomass") + xlab("Year") +  mytheme + geom_line(data=bdf,aes(x=yr,y=SSB),size=4) +
            geom_ribbon(data=bdf ,aes(x=yr,y=SSB,ymin=lb,ymax=ub),fill="tan",col="grey",alpha=.6)  + guides(fill=FALSE,alpha=FALSE,col=FALSE) 
 for (i in 1:15) {

@@ -11,6 +11,7 @@
 //    --add MSE utility...
 // 
 //   Add sex ratio in survey selectivity, output on SR in fishery and survey, 
+//   Add sex offset for fishing mortality on males
 //   eff N using 3 methods, 
 //   Weight calculation method: estimated wt in first phase, use between phases to set "actual" wts to value of estimates 
 // 
@@ -111,6 +112,8 @@ DATA_SECTION
   init_int phase_logist_sel_devs    //Phase to begin logistic selectivity estimation
 	// !!  phase_logist_sel_devs = 5;   //Phase to begin logistic selectivity estimation
   init_int phase_male_sel      //Phase to begin logistic selectivity estimation
+  init_int phase_male_sel_offset      //Phase to begin logistic selectivity estimation
+  // !! phase_male_sel_offset = 4;
   init_int phase_q
   init_number q_alpha_prior
   init_int phase_q_alpha
@@ -150,6 +153,7 @@ DATA_SECTION
     log_input(phase_proj);          //Phase to begin future projections
     log_input(phase_logist_sel);    //Phase to begin logistic selectivity estimation
     log_input(phase_male_sel);      //Phase to begin logistic selectivity estimation
+    log_input(phase_male_sel_offset);      //Phase to begin logistic selectivity estimation
     log_input(phase_q);
     log_input(q_alpha_prior);
     log_input(phase_q_alpha);
@@ -548,6 +552,7 @@ PARAMETER_SECTION
   // fishery males
 
   init_vector sel_slope_fsh_m(1,nfsh,phase_logist_sel)
+  init_bounded_number male_sel_offset(-4,4,phase_male_sel_offset)
   init_bounded_matrix sel_slope_fsh_devs_m(1,nfsh,styr,endyr,-5,5,phase_logist_sel_devs)
   init_vector sel50_fsh_m(1,nfsh,phase_logist_sel)
   init_bounded_matrix sel50_fsh_devs_m(1,nfsh,styr,endyr,-10,10,phase_logist_sel_devs)
@@ -906,6 +911,7 @@ INITIALIZATION_SECTION
   ln_q_srv       0. 
   sel_slope_fsh_f 0.8
   sel_slope_fsh_m  .8
+  sel_slope_fsh_m  .8
   sel_slope_srv  .8
   sel50_fsh_f      5.
   sel50_fsh_m      5.
@@ -1052,10 +1058,13 @@ FUNCTION get_selectivity
       log_sel_srv_m(k)(nselages,nages) = log_sel_srv_m(k,nselages);
     }
   }
-  sel_srv_f=mfexp(log_sel_srv_f);
-  sel_srv_m=mfexp(log_sel_srv_m);
-  sel_fsh_f = mfexp(log_sel_fsh_f);
-  sel_fsh_m = mfexp(log_sel_fsh_m);
+  sel_srv_f   = mfexp(log_sel_srv_f);
+  sel_srv_m   = mfexp(log_sel_srv_m);
+  sel_fsh_f   = mfexp(log_sel_fsh_f);
+  sel_fsh_m   = mfexp(log_sel_fsh_m);
+  if (active(male_sel_offset)) 
+    sel_fsh_m   = mfexp(log_sel_fsh_m+male_sel_offset);
+
   partial_F_f = mfexp(log_msy_sel_f);
   partial_F_m = mfexp(log_msy_sel_m);
 
@@ -2390,6 +2399,7 @@ GLOBALS_SECTION
   #define WriteData(object) SimDat << "#" #object "\n" << object << endl;
   ofstream writeinput("writeinput.log");
   ofstream R_report("fm_R.rep");
+  ofstream report_sex_ratio("sex_ratio.rep");
   ofstream SimDat("sim.dat");
   adstring model_name;
   adstring datafile;
@@ -2807,6 +2817,29 @@ FUNCTION Write_R_wts
   R_report<<"$wt_like"  <<endl;
   R_report <<  wt_like(1)<<endl;
 
+  // Make a dataframe (long) with year, Population, report << "Estimated_sex_ratio Year Total Mature Age_7+"<< endl;
+  // R_report<<"$sex_ratio"  <<endl;
+  for (i=styr;i<=endyr;i++)
+    report_sex_ratio << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
+  for (i=styr;i<=endyr;i++)
+    report_sex_ratio << i << " Mature "<< 
+     sum(elem_prod(maturity(i),natage_f(i)))/sum(elem_prod(maturity(i),natage_f(i)+natage_m(i)))<<endl;
+  for (i=styr;i<=endyr;i++)
+    report_sex_ratio << i << " Age_7_plus "<< 
+     sum(natage_f(i)(7,nages))/sum(natage_f(i)(7,nages)+natage_m(i)(7,nages))<<endl;
+  // init_3darray oac_fsh_s(1,nfsh,1,nyrs_fsh_age_s,1,2*nages)  //Fishery age compositions
+	for (k=1;k<=nfsh;k++)
+	{
+    for (i=1;i<=nyrs_fsh_age_s(k);i++)
+      report_sex_ratio << yrs_fsh_age_s(k,i) << " Fishery_obs "<< sum(oac_fsh_s(k,i)(1,nages)) /sum(oac_fsh_s(k,i)) << endl;
+    for (i=1;i<=nyrs_fsh_age_s(k);i++)
+      report_sex_ratio << yrs_fsh_age_s(k,i) << " Fishery_est "<< sum(eac_fsh_s(k,i)(1,nages)) /sum(eac_fsh_s(k,i)) << endl;
+    for (i=1;i<=nyrs_srv_age_s(k);i++)
+      report_sex_ratio << yrs_srv_age_s(k,i) << " Survey_est "<< sum(eac_srv_s(k,i)(1,nages)) /sum(eac_srv_s(k,i)) << endl;
+    for (i=1;i<=nyrs_srv_age_s(k);i++)
+      report_sex_ratio << yrs_srv_age_s(k,i) << " Survey_obs "<< sum(oac_srv_s(k,i)(1,nages)) /sum(oac_srv_s(k,i)) << endl;
+	}
+
 FUNCTION Write_R
   Write_R_wts();
   // R_report<<"$TotF"<<endl << Ftot<<endl;
@@ -2830,6 +2863,10 @@ FUNCTION Write_R
   REPORT(future_SSB);
   REPORT(future_TotBiom);
   REPORT(future_catch);
+  REPORT(sel_srv_f);
+  REPORT(sel_srv_m);
+  REPORT(sel_fsh_f);
+  REPORT(sel_fsh_m);
 
   R_report << "$survey_likelihood "         << endl << srv_like     << endl;
   R_report << "$catch_likelihood "          << endl << catch_like   << endl;

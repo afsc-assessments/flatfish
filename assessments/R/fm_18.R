@@ -9,7 +9,7 @@ source("../R/prelims.R")
 # Read in model results
 .THEME
 plot_age_comps(m_temp_date_int)
-i=1
+i=5
 for (i in 0:4) {
   rn=paste0("m",i,"/For_R.rep")
   mn=paste0("mod",i)

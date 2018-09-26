@@ -27,7 +27,7 @@ BUILD_NUMBER_FILE=build-number.txt
 # ======================= END OF CONFIGURABLE THINGS ===========================
 # Create debug & release list of object files as well as dep files.
 # Default to release build.
-all: $(OUTPUT).tpl debug release
+all: $(OUTPUT) debug release
 
 
 # Directory targets
@@ -45,13 +45,13 @@ debug: CXXFLAGS+= $(DEBUG_CXXFLAGS)
 debug: LDFLAGS+= $(DEBUG_LDFLAGS)
 debug: build/debug/$(OUTPUT)
 
-build/debug/$(OUTPUT): build/debug $(DEBUG_OBJS)
+build/debug/$(OUTPUT): $(OUTPUT).tpl build/debug $(DEBUG_OBJS)
 	@echo 'linking ' build/debug/$(OUTPUT)
 	@admb -g $(OUTPUT) 
 	@$(COPY) $(OUTPUT) build/debug/$(OUTPUT) 
 
 # Release route.
-release: build/release/$(OUTPUT)
+release: $(OUTPUT).tpl build/release/$(OUTPUT)
 build/release/$(OUTPUT): build/release $(RELEASE_OBJS)
 	@echo 'linking ' build/release/$(OUTPUT)
 	@admb -g $(OUTPUT) 
