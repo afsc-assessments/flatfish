@@ -1,5 +1,5 @@
-New_Base
-yfs_temp_date_int_cov.dat
+Base
+yfs_2018.dat
 1
 6
 -1
@@ -14,7 +14,7 @@ yfs_temp_date_int_cov.dat
 4
 4
 -5
--0.0717683
+-0.071768333
 4
 0.09286971
 5
@@ -30,14 +30,14 @@ yfs_temp_date_int_cov.dat
 1
 0.9
 0.12
-0.1
+0.8
 0.6
 0.1
 17
 1
 1
 300
-1
+-1
 1
 1
 1

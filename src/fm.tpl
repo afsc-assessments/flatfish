@@ -1772,7 +1772,7 @@ FUNCTION Future_projections
     nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   }
 
-  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut)/2,pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
+  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
   TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
   TotBiom_future(endyr_fut) += nage_future_m(endyr_fut)*wt_pop_fut_m;
 
@@ -2540,6 +2540,7 @@ FUNCTION Write_sd
  {
    dvariable cv_b = ABC_biom.sd(i)/ABC_biom(i);
    dvariable gm_b = exp(log(ABC_biom(i))-(cv_b*cv_b)/2.);
+
    if(future_SSB(m,i) < Bmsy)
      adj_1 = value((future_SSB(m,i)/Bmsy - 0.05)/(1.-0.05));
    sdreport << i                 <<" "<<
