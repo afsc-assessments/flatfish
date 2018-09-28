@@ -385,6 +385,7 @@ DATA_SECTION
   init_vector growth_cov(styr,endyr);
   !! log_input(growth_cov);
 
+
 //Projection indices
   int styr_fut                //Start year for projections
   int endyr_fut               //End year for projections
@@ -480,9 +481,10 @@ DATA_SECTION
        if (endyr <= yrs_fsh_age_c(ifsh,iyr))
          nyrs_fsh_age_c(ifsh) = min(nyrs_fsh_age_c(ifsh),iyr);
    }
-
-
  END_CALCS
+  !!ad_comm::change_datafile_name("future_catch.dat");  
+  init_matrix future_ABC(1,nfsh,styr_fut,endyr_fut)
+  !! log_input(future_ABC); 
 
 PARAMETER_SECTION
 
@@ -725,6 +727,7 @@ PARAMETER_SECTION
   // sdreport_vector future_spr0(styr_fut,endyr_fut)
 	!! npfs = num_proj_Fs-2;
   sdreport_matrix future_catch(1,npfs,styr_fut,endyr_fut)
+  sdreport_vector future_Fs(styr_fut,endyr_fut)
   sdreport_matrix future_SSB(1,num_proj_Fs,styr_fut,endyr_fut)
   sdreport_matrix future_TotBiom(1,num_proj_Fs,styr_fut,endyr_fut)
 
@@ -1667,6 +1670,7 @@ FUNCTION Future_projections
   // compute mean F based on last three years of Fs (assuming nages is fully selected and males and females the same...)
   meanF(1) = mean(trans(F_m(1))(nages)(endyr-3,endyr));
   future_SSB.initialize();
+  future_Fs.initialize();
   future_catch.initialize();
   
 //Loop to cycle different fishing mortality values through the projections
@@ -1686,7 +1690,7 @@ FUNCTION Future_projections
       case 4:
         ftmp = 0.0;
         break;
-      case 5:
+      case 5: // this is the case for fixed future catch
         ftmp = 0.0;
         break;
      }
@@ -1745,7 +1749,8 @@ FUNCTION Future_projections
       Z_future_m = natmort_m;
       for (k=1;k<=nfsh;k++)
       {
-        ftmp(k)         = SolveF2(nage_future_f(i),nage_future_m(i),yr1_futcat); // Only works for 1 fishery
+        ftmp(k)         = SolveF2(nage_future_f(i),nage_future_m(i),future_ABC(k,i)); // Only works for 1 fishery
+				future_Fs(i)   += ftmp(k);
         F_future_f(k,i) = sel_fsh_f(k,endyr) * ftmp(k);
         Z_future_f(i)  += F_future_f(k,i);
         F_future_m(k,i) = sel_fsh_m(k,endyr) * ftmp(k);
@@ -2531,11 +2536,22 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
 
   
 FUNCTION Write_sd
- ofstream sdreport("extra_sd.rep");
- sdreport << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust "<<endl;
+ int m = 5; // the projection for Tier 1 stuff
  dvariable hm_f = exp(logFmsyr - logFmsyr.sd*logFmsyr.sd /2.);
  dvariable am_f = exp(logFmsyr + logFmsyr.sd*logFmsyr.sd /2.);
- int m = 5; // the projection for Tier 1 stuff
+ ofstream ABCreport("future_ABC.rep");
+ for (i = styr_fut;i<=endyr_fut;i++)
+ {
+   dvariable cv_b = ABC_biom.sd(i)/ABC_biom(i);
+   dvariable gm_b = exp(log(ABC_biom(i))-(cv_b*cv_b)/2.);
+   if(future_SSB(m,i) < Bmsy)
+     adj_1 = value((future_SSB(m,i)/Bmsy - 0.05)/(1.-0.05));
+   ABCreport <<        gm_b  * hm_f * adj_1  <<" "<< endl;
+ }
+ ABCreport.close();
+
+ ofstream sdreport("extra_sd.rep");
+ sdreport << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust "<<endl;
  for (i = styr_fut;i<=endyr_fut;i++)
  {
    dvariable cv_b = ABC_biom.sd(i)/ABC_biom(i);
@@ -2547,7 +2563,7 @@ FUNCTION Write_sd
 	         hm_f                  <<" "<<
 	         am_f                  <<" "<<
 	         gm_b                  <<" "<<
-	         yr1_futcat            <<" "<<
+	         trans(future_ABC)(i)  <<" "<<
            gm_b  * hm_f * adj_1  <<" "<<
            gm_b  * am_f * adj_1  <<" "<<
            Bmsy                  <<" "<< 
@@ -2883,6 +2899,13 @@ FUNCTION Write_R
   R_report << "$SPR_penalty"                << endl << sprpen       << endl;
   R_report << "$obj_fun"                    << endl << obj_fun      << endl;
   
+  R_report<<"$Future_F"<<endl; 
+	for (i=styr_fut;i<=endyr_fut;i++) 
+  {
+    double lb=value(future_Fs(i)/exp(2.*sqrt(log(1+square(future_Fs.sd(i))/square(future_Fs(i))))));
+    double ub=value(future_Fs(i)*exp(2.*sqrt(log(1+square(future_Fs.sd(i))/square(future_Fs(i))))));
+    R_report<<i<<" "<<future_Fs(i)<<" "<<future_Fs.sd(i)<<" "<<lb<<" "<<ub<<endl;
+  }
   R_report<<"$SSB"<<endl; 
 	for (i=styr;i<=endyr;i++) 
   {
