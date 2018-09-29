@@ -34,7 +34,7 @@ names(M) <- mods[c(2,3,5,6,8,9,10,11)]
 names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series", "2018 Male M","2018 Male M, selectivity")
 
 # Plot SSB 
-plot_fut_Fs(M[2],alpha=.2)
+plot_fut_Fs(M[2],alpha=.7)
 names(mod2)
 plot_ssb(M[1:4],alpha=.2,xlim=c(1977,2018),ylim=c(0,1400))
 plot_sex_ratio(M,ylim=c(.25,.75))
@@ -42,7 +42,10 @@ plot_sex_ratio(M,ylim=c(.25,.75),type="Population")
 plot_sex_ratio(M,ylim=c(.25,.75),type="Survey")
 # SRR stuff
 plot_srr(M,alpha=.2)
-plot_srr(M[c(1:4)],alpha=.2,xlim=c(0,1800),ylim=c(0,7.2))
+plot_srr(M[c(1:4)],alpha=.2,xlim=c(0,1500),ylim=c(0,10.2))
+plot_srr(M[c(2,4)],alpha=.2,xlim=c(0,1500),ylim=c(0,10.2))
+plot_bts(M[c(1,2)],alpha=.2)
+
 plot_srr(M[c(1,7)],alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
 plot_srr(M[c(5,6)],alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
 plot_srr(M[c(5,7)],alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
@@ -50,7 +53,6 @@ plot_srr(M[c(1,7)],alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
 plot_srr(M[c(1)],alpha=.2,xlim=c(0,1200),ylim=c(0,7.2))
 plot_srr(M[c(7)],alpha=.2,xlim=c(0,1200),ylim=c(0,7.2))
 plot_ssb(M[1:4],alpha=.2)
-plot_bts(M,alpha=.2)
 srr.df <- as.data.frame(list(R=NULL,B=NULL,Model=NULL))
 names(srr.df)
 srr.df
