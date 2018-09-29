@@ -82,7 +82,7 @@ plot_sex_ratio <- function(M, xlab = "Year", ylab = "Proportion female ", ylim =
   print(p + .THEME + ggtitle(type))
 }
 
-plot_sex_ratio(M,ylim=c(.25,.75))
+#plot_sex_ratio(M,ylim=c(.25,.75))
 #plot_sex_ratio(M,ylim=c(.25,.75),type="Population")
 #plot_sex_ratio(M,ylim=c(.25,.75),type="Survey")
 
