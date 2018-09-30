@@ -45,6 +45,7 @@ plot_srr(M,alpha=.2)
 plot_srr(M[c(1:4)],alpha=.2,xlim=c(0,1500),ylim=c(0,7.2))
 plot_srr(M[c(2,4)],alpha=.2,xlim=c(0,1500),ylim=c(0,7.2))
 plot_bts(M[c(1,2)],alpha=.2)
+plot_rec(M[c(2,3)],alpha=.2)
 # Print out likelihood table for this model set
 .get_like_df(M[1:4])
 tab     <- cbind(M[[1]]$Like_Comp_names,do.call(cbind,lapply(M,function(x){round(x[["Like_Comp"]],2)})))
