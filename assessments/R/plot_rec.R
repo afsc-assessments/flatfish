@@ -58,10 +58,12 @@ plot_rec <- function(M, xlab = "Year", ylab = "Recruitment", ylim = NULL, xlim=N
     if (length(M) == 1)
     {
         p <- p + geom_line(aes(x = year, y = rec)) +
-            geom_ribbon(aes(x = year, ymax = ub, ymin = lb), alpha = alpha,fill="salmon")
+            geom_errorbar(aes(x = year, ymax = ub, ymin = lb))
+            #geom_ribbon(aes(x = year, ymax = ub, ymin = lb), alpha = alpha,fill="salmon")
     } else {
         p <- p + geom_line(aes(x = year, y = rec, col = Model),size=1.2) +
-            geom_ribbon(aes(x = year, ymax = ub, ymin = lb, fill = Model), alpha = alpha)
+            geom_errorbar(aes(x = year, ymax = ub, ymin = lb))
+            #geom_ribbon(aes(x = year, ymax = ub, ymin = lb, fill = Model), alpha = alpha)
     }
     
     if(!.OVERLAY) p <- p + facet_wrap(~Model)
