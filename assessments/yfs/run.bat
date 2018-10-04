@@ -8,7 +8,7 @@ del fm.std
 fm -nox -iprint 400
 copy extra_sd.rep arc\mod%1_ABC_OFL.rep
 copy srecpar.rep arc\mod%1_srec_par.rep
-copy sex_ratio.rep arc\mod$1_sex_ratio.rep
+copy sex_ratio.rep arc\mod%1_sex_ratio.rep
 copy fm.par arc\mod%1.par
 copy fm.std arc\mod%1.std
 copy fm.rep arc\mod%1.rep
