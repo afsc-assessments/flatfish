@@ -1,4 +1,4 @@
-R
+#R
 rm(list=ls())
 source("../R/prelims.R")
 # Read in MCMC header and results
@@ -6,9 +6,9 @@ source("../R/prelims.R")
 #mods <- c("Base","Base","Const. fish sel.","Short_dat","Sex specific M","Constant survey q","Est_Sex_M_G2","Temperature-growth","Sigma R estimated","Sigma R 1.0","Full SRR Series")
 # Read in MCMC results
 mc.df <-tibble()
-i=3
+i=4
 #for (i in c(2,3,5:6,8:11)){
-for (i in c(1:6)){
+for (i in c(1:4)){
   rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
   A <-  readList(rn)
@@ -25,15 +25,18 @@ for (i in c(1:6)){
   #mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
   #mc.df <- rbind(mc.df,mctmp.df)
 }
-mc.df<- mc.df %>% mutate(Obj=Obj-wt1)
-dim(mc.df)
-mods
+#mc.df<- mc.df %>% mutate(Obj=Obj-wt1)
+#dim(mc.df)
+#mods
 #M <- list( mod2, mod3, mod5, mod6,mod8,mod9,mod10,mod11)
-M <- list( mod1,mod2,mod3,mod4,mod5,mod6)
-names(M) <- mods[c(2,3,5,6,8,9,10,11)]
-names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series", "2018 Male M","2018 Male M, selectivity")
+#M <- list( mod1,mod2,mod3,mod4,mod5,mod6)
+M <- list( mod1,mod2,mod3,mod4)
+#names(M) <- mods[c(2,3,5,6,8,9,10,11)]
+#names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series", "2018 Male M","2018 Male M, selectivity")
+names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series")
 
 # Plot SSB 
+plot_q(M)
 plot_fut_Fs(M[2],alpha=.7)
 names(mod2)
 plot_ssb(M[1:4],alpha=.2,xlim=c(1977,2018),ylim=c(0,1400))
