@@ -2179,18 +2179,24 @@ REPORT_SECTION
   report << "sigmaR_Prior " <<sigmaR_prior <<endl;
   report << "F_penalty " << fpen << endl;
 
-   /*
+
   if (phase_env_cov>0)
   {
-    report << "alpha= " << alpha << endl;
-    report << "beta= " << beta << endl;
+    // report << "alpha= " << q_alpha << endl;
+    // report << "beta= " << q_beta << endl;
 
-    report << endl<<"Environmental_effect_q " << endl;
-    for (i=1;i<=nyrs_srv(1);i++)
-      for (k=1;k<=n_env_cov(1);k++)
-        report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<mfexp(-alpha(1)+q_beta(1,k)*env_cov(1,k,i))<<endl;
+    // report << endl<<"Environmental_effect_q " << endl;
+  // init_ivector n_env_cov(1,nsrv)
+  // !!log_input(n_env_cov);
+  // init_3darray env_cov(1,nsrv,1,n_env_cov,1,nyrs_srv)
+  // !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
+
+    // for (i=1;i<=nyrs_srv(1);i++)
+      // for (k=1;k<=n_env_cov(1);k++);
+        // report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<endl;// mfexp(-q_alpha(1)+q_beta(1,k)*env_cov(1,k,i))<<endl;
   }
-  // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-alpha+q_beta*env_cov(1)))<<endl; else
+  // if (phase_env_cov>0) report << " survey_q= " << mean(exp(-q_alpha+q_beta*env_cov(1)))<<endl; else
+   /*
    */
   report << "survey_q = " << mean(q_srv(1))<<endl;
   report << "M (F M)  = " << natmort_f<<" "<<natmort_m << endl;
@@ -2386,7 +2392,8 @@ TOP_OF_MAIN_SECTION
   arrmblsize=10000000;
 
 GLOBALS_SECTION
- # include "admodel.h"                      // Include AD class definitions
+	// Include AD class definitions
+  #include <admodel.h>
  // logs input for checking
 	/**
 	\def log_input(object)
@@ -2401,6 +2408,7 @@ GLOBALS_SECTION
 	*/
 	#undef REPORT
 	#define REPORT(object) R_report << "$" #object "\n" << object << endl;
+
   #undef WriteData
   #define WriteData(object) SimDat << "#" #object "\n" << object << endl;
   ofstream writeinput("writeinput.log");

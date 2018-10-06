@@ -29,19 +29,14 @@ build/release:
 	@echo creating release directory
 	@mkdir -p build/release build/deps
 
-# Debug route.
-.PHONY: debug
-
 debug: $(OUTPUT).tpl build/debug/$(OUTPUT)
-build/debug/$(OUTPUT): $(OUTPUT).tpl build/debug $(DEBUG_OBJS)
-	@echo 'linking ' build/debug/$(OUTPUT)
+build/debug/$(OUTPUT): $(OUTPUT).tpl build/debug 
 	@admb -g $(OUTPUT) 
 	@$(COPY) $(OUTPUT) build/debug/$(OUTPUT) 
 
 # Release route.
 release: $(OUTPUT).tpl build/release/$(OUTPUT)
-build/release/$(OUTPUT): build/release $(RELEASE_OBJS)
-	@echo 'linking ' build/release/$(OUTPUT)
+build/release/$(OUTPUT): build/release 
 	@admb -f $(OUTPUT) 
 	@$(COPY) $(OUTPUT) build/release/$(OUTPUT) 
 
