@@ -1,13 +1,11 @@
 #R
 rm(list=ls())
 source("../R/prelims.R")
-# Read in MCMC header and results
-#hdr <- read_table2("hdr.dat",col_names=TRUE)
+mytheme = .THEME
 #mods <- c("Base","Base","Const. fish sel.","Short_dat","Sex specific M","Constant survey q","Est_Sex_M_G2","Temperature-growth","Sigma R estimated","Sigma R 1.0","Full SRR Series")
-# Read in MCMC results
-mc.df <-tibble()
-i=4
+#---------------------------------------------------------------
 #for (i in c(2,3,5:6,8:11)){
+# Read in regular results
 for (i in c(1:4)){
   rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
@@ -18,14 +16,7 @@ for (i in c(1:4)){
   assign(mn,A)
   print(rn)
 	print(i)
-  #mctmp.df <-read_table2(paste0("arc/mod",i,"_evalout.rep"),col_names=FALSE) 
-  #names(mctmp.df) <- names(hdr)
-  #mctmp.df$Model <- mods[i]
-  #mctmp.df$ModNum <- i
-  #mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
-  #mc.df <- rbind(mc.df,mctmp.df)
 }
-#mc.df<- mc.df %>% mutate(Obj=Obj-wt1)
 #dim(mc.df)
 #mods
 #M <- list( mod2, mod3, mod5, mod6,mod8,mod9,mod10,mod11)
@@ -34,6 +25,23 @@ M <- list( mod1,mod2,mod3,mod4)
 #names(M) <- mods[c(2,3,5,6,8,9,10,11)]
 #names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series", "2018 Male M","2018 Male M, selectivity")
 names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series")
+#---------------------------------------------------------------
+# Read in MCMC results
+# Read in MCMC header and results
+hdr <- read.table("hdr.dat",as.is=T,header=F)
+mc.df <-tibble()
+mods  <- c("Base","Model 18.1","FixQ", "Model 14.2")
+i=2
+for (i in c(2,4)){
+  mctmp.df <-read_table2(paste0("arc/mod",i,"_evalout.rep"),col_names=FALSE) 
+  names(mctmp.df) <- hdr
+  mctmp.df$Model <- mods[i]
+  mctmp.df$ModNum <- i
+  mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
+  mc.df <- rbind(mc.df,mctmp.df)
+}
+#mc.df<- mc.df %>% mutate(Obj=Obj-wt1)
+#---------------------------------------------------------------
 
 # Plot SSB 
 plot_q(M)
@@ -78,7 +86,7 @@ abc.df <- mc.df %>% select(Model,ModNum,Fmsyr,ABC_biom1) %>%
 abc.df
 write_csv(abc.df,"abctab.csv")
 ggplot(abc.df,aes(x=Model,y=Buffer))  + xlim(c(0.08,0.38)) +
-        geom_text(aes(x = CV_Fmsy, y = Buffer, label=Model),color="red",size=4.5) + mytheme + ylab("Buffer") + xlab("CV Fmsy")
+        geom_text(aes(x = CV_Fmsy, y = Buffer, label=Model),color="red",size=4.5) + .THEME + ylab("Buffer") + xlab("CV Fmsy")
   #geom_point(size=3,color="blue") 
 
 
@@ -130,27 +138,32 @@ mc.df <- mcfull.df %>% filter(ModNum<=8)
 
 # All Fmsy
  mc.df %>% select(Model,Fmsyr) %>% 
-  ggplot(aes(x=Fmsyr,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.25))
-mc.df %>% select(ModNum,Model,Fmsyr) %>% filter(ModNum==2|ModNum==10) %>% ggplot(aes(x=Fmsyr,fill=Model)) + geom_density(alpha=.4) + mytheme+ xlim(c(0,.25))+ scale_y_continuous(breaks=NULL)
+  ggplot(aes(x=Fmsyr,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.3))
 
 # Biomass 
 mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% ggplot(aes(x=ABC_biom1,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Biomass (kt)") 
-mc.df %>% select(ModNum,Model,Fmsyr,ABC_biom1) %>% filter(ModNum==2|ModNum==6)%>% ggplot(aes(x=ABC_biom1,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Biomass (kt)") 
+
+p 
+mctmp <- mc.df %>% filter(ModNum==2)%>% select(Fmsyr,ABC_biom1,ABC_biom2,ABC_biom3,ABC_biom4)
+names(mctmp) <- c("Fmsyr","2019","2020","2021","2022")
+mctmp <- gather(mctmp,value=Fmsyr,Year)
+names(mctmp) <- c("Year", "Biomass")
+p <- ggplot(mctmp,aes(x=Biomass,fill=Year)) + geom_density(alpha=.4) + xlim(c(0,3300)) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Biomass (kt)") 
+p
 
 # Catch 
-mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% mutate(Catch = Fmsyr*ABC_biom1) %>% ggplot(aes(x=Catch,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL)
-mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% summarise(FABC=1/mean(1/Fmsyr),Biomass=exp(mean(log(ABC_biom1))),ABC=FABC*Biomass)
+mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% mutate(Catch = Fmsyr*ABC_biom1) %>% ggplot(aes(x=Catch,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("2019 Fmsy x Biomass")
+mc.df %>% filter(ModNum==2) %>% select(Model,Fmsyr,ABC_biom1) %>% summarise(FABC=1/mean(1/Fmsyr),Biomass=exp(mean(log(ABC_biom1))),ABC=FABC*Biomass)
 
 # q vs biomass 
 mc.df %>% select(Model,Fmsyr,q_2017,ABC_biom1) %>% ggplot(aes(x=q_2017,y=ABC_biom1, color=Model)) + geom_point(alpha=.4) + mytheme + xlab("Survey catchability") + ylab("Projected biomass (kt)")
-
-mc.df %>% select(Model,Fmsyr,q_2017,M_Female) %>% ggplot(aes(x=q_2017,y=M_Female, color=Model)) + geom_point(alpha=.4) + mytheme + xlab("Survey catchability") + ylab("Natural mortality")
+#mc.df %>% select(Model,Fmsyr,q_2017,M_Female) %>% ggplot(aes(x=q_2017,y=M_Female, color=Model)) + geom_point(alpha=.4) + mytheme + xlab("Survey catchability") + ylab("Natural mortality")
 
 # M
-mc.df %>% select(Model,ModNum,Fmsyr,M_Female) %>% 
-	ggplot(aes(x=M_Female,fill=Model)) + geom_density(alpha=.4) + xlim(c(0.05,0.15))+ mytheme+ scale_y_continuous(breaks=NULL)
-mc.df %>% select(Model,ModNum,Fmsyr,M_Male)   %>%  filter(ModNum!=2&ModNum!=3) %>%
-	ggplot(aes(x=M_Male,fill=Model))   + geom_density(alpha=.4) + xlim(c(0.05,0.15))+ mytheme+ scale_y_continuous(breaks=NULL)
+#mc.df %>% select(Model,ModNum,Fmsyr,M_Female) %>% 
+#	ggplot(aes(x=M_Female,fill=Model)) + geom_density(alpha=.4) + xlim(c(0.05,0.15))+ mytheme+ scale_y_continuous(breaks=NULL)
+#mc.df %>% select(Model,ModNum,Fmsyr,M_Male)   %>%  filter(ModNum!=2&ModNum!=3) %>%
+#	ggplot(aes(x=M_Male,fill=Model))   + geom_density(alpha=.4) + xlim(c(0.05,0.15))+ mytheme+ scale_y_continuous(breaks=NULL)
 
 #=====================
 # Retro
