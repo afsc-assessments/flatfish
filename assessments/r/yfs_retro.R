@@ -14,25 +14,28 @@ ssb <- data.frame()
 rec <- data.frame()
 surv_like <- data.frame()
 for (i in 1:40) {
-  for (j in 0:10) {
-    rn=paste0("mq_retro/mq",i,"_",j,"_R.rep")
-    mn=paste0("ret_",i,"_",j)
-    assign(mn,readList(rn))
+  rn=paste0("mq_profile/mod",i,"_R.rep")
+  mn=paste0("mq_",i)
+  assign(mn,readList(rn))
+  #for (j in 0:10) {
+    #rn=paste0("mq_retro/mq",i,"_",j,"_R.rep")
+    #mn=paste0("ret_",i,"_",j)
+    #assign(mn,readList(rn))
     print(rn)
     rtmp <- data.frame(get(mn)$R)
     names(rtmp) <- c("Year","Recruits","Stdev","lb","ub")
     btmp <- data.frame(get(mn)$SSB)
     names(btmp) <- c("Year","SSB","Stdev","lb","ub")
-    btmp$termyr <- rtmp$termyr <- 2017-j
+    #btmp$termyr <- rtmp$termyr <- 2017-j
     ltmp <- data.frame(get(mn)$survey_likelihood)
     names(ltmp) <- "Survey_NLL"
-    ltmp$termyr <- 2017-j
+    #ltmp$termyr <- 2017-j
     btmp$M <- rtmp$M <- ltmp$M <- Mspec[i]
     btmp$q <- rtmp$q <- ltmp$q <- qspec[i]
     surv_like <- rbind(surv_like,ltmp)
     ssb       <- rbind(ssb,btmp)
     rec       <- rbind(rec,rtmp)
-  }
+  #}
 }
 dim(rec)
 dim(ssb)
