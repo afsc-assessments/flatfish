@@ -1,4 +1,5 @@
 rm(list=ls())
+source("../R/prelims.R")
 library(tidyverse)
 library(grid)
 library(ggridges)
@@ -46,6 +47,7 @@ M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "
 M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
 M <- list( "Base"=mod1, "Est Male, , q"=mod5)
 M <- M[refSet]
+M <- M[1]
 
 
 plot_srv_sel(M[refSet])
@@ -56,7 +58,7 @@ plot_sel(mod5,"Estimate male M and survey q",alpha=.1)
 plot_age_comps(M[1])
 plot_age_comps(M[5])
 
-plot_sex_ratio(M[1:2],ylim=c(.2,.8))
+plot_sex_ratio(M[1],ylim=c(.2,.8))
 plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Population")
 plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Survey")
 
