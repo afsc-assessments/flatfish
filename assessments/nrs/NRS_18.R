@@ -1,9 +1,9 @@
+R
 rm(list=ls())
 source("../R/prelims.R")
 library(tidyverse)
 library(grid)
 library(ggridges)
-source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ for (i in 1:8) {
 .OVERLAY=T
 i=1
 for (i in 1:10) {
+for (i in 1:4) {
   rn=paste0("arc/mod",i,"_R.rep")
   mn=paste0("mod",i)
   A <-  readList(rn)
@@ -45,32 +46,38 @@ M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"E
            "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
 M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
 M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
-M <- list( "Base"=mod1, "Est Male, , q"=mod5)
+M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, Msel"=mod4)
 M <- M[refSet]
 M <- M[1]
+refSet=1
 
 
 plot_srv_sel(M[refSet])
+plot_srv_sel(M)
+plot_sel(mod4,alpha=.2)
+plot_srv_sel(M,bysex=FALSE)
 plot_srv_sel(M[refSet],bysex=FALSE)
-plot_sel(mod1,"Base",alpha=0.1)
-plot_sel(mod5,"Estimate male M and survey q",alpha=.1)
 
 plot_age_comps(M[1])
+plot_age_comps(M[1],type="survey")
 plot_age_comps(M[5])
+args(plot_age_comps)
 
-plot_sex_ratio(M[1],ylim=c(.2,.8))
-plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Population")
-plot_sex_ratio(M[1:2],ylim=c(.2,.8),type="Survey")
+plot_sex_ratio(M,ylim=c(.2,.8))
+plot_sex_ratio(M,ylim=c(.2,.8),type="Population")
+plot_sex_ratio(M,ylim=c(.2,.8),type="Survey")
 
 plot_age_comps(M,title="Survey age compositions",type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M[1] ,alpha=.6) #Plot model one
-plot_bts(M[c(1,5,8)] ,alpha=.6) #Plot model one
+plot_bts(M ,alpha=.6) #Plot model one
 #make a table of likelihoods
 .get_like_df(M)
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))
 plot_ssb(M[c(1,3,5)],alpha=.26,xlim=c(1990,2018))
-plot_rec(M,alpha=.26,xlim=c(1990,2014))
+plot_rec(M,alpha=.26,xlim=c(1990,2018),ylim=c(0,5000))
+plot_rec(M,alpha=.26)
+,xlim=c(1990,2018),ylim=c(0,5000))
 plot_rec(M[c(1,5,8)],alpha=.26,xlim=c(1990,2014))
 plot_srr(M,alpha=.2)
 plot_srr(M[c(1,3,5)],alpha=.26)
