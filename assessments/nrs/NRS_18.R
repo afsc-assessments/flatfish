@@ -54,14 +54,14 @@ refSet=1
 
 plot_srv_sel(M[refSet])
 plot_srv_sel(M)
-plot_sel(mod1,alpha=.2)
+plot_sel(mod4,alpha=.2)
+
 plot_srv_sel(M,bysex=FALSE)
 plot_srv_sel(M[refSet],bysex=FALSE)
 
 plot_age_comps(M[1])
 plot_age_comps(M[1],type="survey")
-plot_age_comps(M[5])
-args(plot_age_comps)
+plot_age_comps(M[4])
 
 plot_sex_ratio(M,ylim=c(.2,.8))
 plot_sex_ratio(M,ylim=c(.2,.8),type="Population")
@@ -76,18 +76,18 @@ plot_bts(M ,alpha=.6) #Plot model one
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))
 plot_ssb(M[c(1,3,5)],alpha=.26,xlim=c(1990,2018))
 plot_rec(M,alpha=.26,xlim=c(1990,2018),ylim=c(0,5000))
-plot_rec(M,alpha=.26)
+plot_rec(M[1],alpha=.26)
 ,xlim=c(1990,2018),ylim=c(0,5000))
 plot_rec(M[c(1,5,8)],alpha=.26,xlim=c(1990,2014))
 plot_srr(M,alpha=.2)
-plot_srr(M[c(1,3,5)],alpha=.26)
+plot_srr(M[c(1,4)],alpha=.26)
 plot_srr(M[c(1)],alpha=.26)
 
 .OVERlAY=TRUE
 ,xlim=c(0,1100),ylim=c(0,7.2))
 like_tab <- data.table()
 like_tab <- data.frame()
-for (i in 1:9) {
+for (i in 1:4) {
   like_tab <- rbind(like_tab,(M[[i]]$nLogPosterior ))
 }
 dim(like_tab)
@@ -213,10 +213,10 @@ ggplot(srv_sel) + geom_line(aes(x=Age,y=Selectivity),size=2) +mytheme
 # get all retrospectives
 #=====================
 setwd(outdir)
-outdir
+getwd()
 # Read in retro results
-for (i in 0:15) {
-  rn=paste0("retro/r_",i,".rep")
+for (i in 0:10) {
+  rn=paste0("retro/ret1_",i,"_R.rep")
   mn=paste0("retro",i)
   assign(mn,readList(rn))
   print(rn)
@@ -237,12 +237,13 @@ getwd()
 for (i in 1:10) { tab=cbind(tab,retouts[[i]]$SSB)}
 
 #pdf(paste(Figdir,"Retro_Mods.pdf",sep=""),width=9, height=6)
+library(ggthemes)
 names(mod1$SSB)
 rn = "mod1"
 dim(tdf)
-p1 <- ggplot() + scale_y_continuous(limits=c(0,590000)) + ylab("Spawning biomass") + xlab("Year") +  mytheme + geom_line(data=bdf,aes(x=yr,y=SSB),size=4) +
+p1 <- ggplot() + scale_y_continuous(limits=c(0,590000)) + ylab("Spawning biomass") + xlab("Year") + ggthemes::theme_base() + geom_line(data=bdf,aes(x=yr,y=SSB),size=4) +
            geom_ribbon(data=bdf ,aes(x=yr,y=SSB,ymin=lb,ymax=ub),fill="tan",col="grey",alpha=.6)  + guides(fill=FALSE,alpha=FALSE,col=FALSE) 
-for (i in 1:15) {
+for (i in 1:10) {
   rn=paste("retro",i,sep="");
   tdf <- data.frame(get(rn)$SSB); names(tdf) <- c("yr","SSB","SE","lb","ub"); tdf <- filter(tdf,yr>1977)
   p1 <- p1 + geom_line(data=tdf,aes(x=yr,y=SSB),col=i,linetype=i,size=1.25)
@@ -259,12 +260,12 @@ p1
 # p1 <-    p1 + scale_fill_manual(values=cb_palette)
 df <- data.frame(mod1$SSB )
 names(df) <- c("yr","SSB","SE","lb","ub")
-bdf <- filter(df,yr>1977,yr<=2016)
+bdf <- filter(df,yr>1977,yr<=2018)
 bdf2<- filter(df,yr>1977)
 bdf
 bdft <- bdf
-for (i in 1:10) bdft <- cbind(bdft,rep(NA,39))
-names(bdft)[6:15] <- paste0("SSB_",2014:2005)
+for (i in 1:10) bdft <- cbind(bdft,rep(NA,41))
+names(bdft)[6:15] <- paste0("SSB_",2017:2005)
 for (i in 1:10) bdft[1:(39-i),i+5] <- get(paste0("retro",i))$SSB[14:(52-i),2]
 bdft
 for (i in 1:10) bdft[,i+5] <- bdft[,i+5]/bdf$SSB
