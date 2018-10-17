@@ -44,7 +44,8 @@ surv_like$mq <- as.factor(paste0(surv_like$M,"_",surv_like$q))
 ssb$mq <- as.factor(paste0(ssb$M,"_",ssb$q))
 rec$mq <- as.factor(paste0(ssb$M,"_",ssb$q))
 #--Plot likelihoods--------------
-surv_like %>% filter(termyr==2017) %>% mutate(M=as.factor(M)) %>% ggplot(aes(x=q,y=Survey_NLL,color=M)) + 
+#surv_like %>% filter(termyr==2017) %>% mutate(M=as.factor(M)) %>% ggplot(aes(x=q,y=Survey_NLL,color=M)) + ylim(c(80,120)) + geom_line(size=1.5) + ylab("Survey index -log likelihood") + .THEME
+surv_like %>% mutate(M=as.factor(M)) %>% ggplot(aes(x=q,y=Survey_NLL,color=M)) + 
         ylim(c(80,120)) + geom_line(size=1.5) + ylab("Survey index -log likelihood") + .THEME
 
 #--Mohn's rho--------------------
