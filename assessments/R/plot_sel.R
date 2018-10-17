@@ -1,6 +1,6 @@
 plot_sel <- function(mod, title=NULL,alpha=0.3){
-  mdf <- data.frame(Year=1975:2017,sex="males",mod$sel_fsh_m)
-  mdf <- rbind(mdf,data.frame(Year=1975:2017,sex="females",mod$sel_fsh_f))
+  mdf <- data.frame(Year=mod$Yr,sex="males",mod$sel_fsh_m)
+  mdf <- rbind(mdf,data.frame(Year=mod$Yr,sex="females",mod$sel_fsh_f))
   names(mdf)[3:22] <- 1:20
   sdf <- (gather(mdf,age,selectivity,3:22) ) %>% filter(Year>1990) %>% mutate(age=as.numeric(age)) #+ arrange(age,Year)
   ggplot(sdf,aes(x=age,y=fct_rev(as.factor(Year)),height = selectivity,fill=sex,color=sex,alpha=alpha)) + ggtitle(title) +

@@ -1,4 +1,4 @@
-R
+#R
 rm(list=ls())
 source("../R/prelims.R")
 library(tidyverse)
@@ -18,13 +18,13 @@ source("../R/compareRuns.r")
 
 #--To compile fm and copy to working directory
 setwd("../../src")
-system("admb fm")
-system("copy fm.exe ..\assessments\nrs")
-system("copy fm.exe ..\assessments\yfs")
+system("make.bat")
+#system("copy fm.exe ..\assessments\nrs")
+#system("copy fm.exe ..\assessments\yfs")
 setwd("../assessments/nrs")
 #--------------------------------------
 
-for (i in 1:8) {
+for (i in 1:4) {
   system(paste0("run.bat ",i) ) # run each of 8 models in a "system" call (same as commandline)
 }
 .OVERLAY=T
@@ -54,7 +54,7 @@ refSet=1
 
 plot_srv_sel(M[refSet])
 plot_srv_sel(M)
-plot_sel(mod4,alpha=.2)
+plot_sel(mod1,alpha=.2)
 plot_srv_sel(M,bysex=FALSE)
 plot_srv_sel(M[refSet],bysex=FALSE)
 
