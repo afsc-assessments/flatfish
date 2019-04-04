@@ -1,4 +1,4 @@
-# EBS Pollock Model Description
+# BSAI Flatfish Model Description
 
 ## Dynamics
 

@@ -4,7 +4,7 @@ else
     RM=rm -rf
 endif
 
-all: EBSpollock 
+all: BSAIyfin 
 
 R_OPTS=--no-save --no-restore --no-init-file --no-site-file
 #PANDOC_OPTS=-V geometry:margin=1in --to latex --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash --output text.tex --template ms.tex --highlight-style tango --pdf-engine=xelatex
@@ -19,32 +19,12 @@ test: test.Rmd
 	pandoc test.md -o test.pdf ${PANDOC_OPTS}
 	open test.pdf
 
-params: params.Rmd 
-#	cp pm.R pm.Rmd
-	R ${R_OPTS} -e 'library(knitr); knit("params.Rmd");'
-	pandoc params.md -o EBSpollock_params.pdf ${PANDOC_OPTS}
-
-pdf: pm.Rmd 
-#	cp pm.R pm.Rmd
-	R ${R_OPTS} -e 'library(knitr); knit("pm.Rmd");'
-	pandoc pm.md -o pm.pdf ${PANDOC_OPTS}
-
 text: text.Rmd 
 	R ${R_OPTS} -e 'library(knitr); knit("text.Rmd");'
 	pandoc text.md -o text.pdf  ${PANDOC_OPTS}
 # --natbib --bibliography /Users/jim/Dropbox/master.bib
 #	--latex-engine=xelatex
 	open text.pdf
-
-pm1: pm1.Rmd 
-	R ${R_OPTS} -e 'library(knitr); knit("pm1.Rmd");'
-	pandoc pm1.md -o pm1.pdf  ${PANDOC_OPTS}
-	#open pm1.pdf
-
-ref: ref.Rmd 
-	R ${R_OPTS} -e 'library(knitr); knit("ref.Rmd");'
-	pandoc ref.md -o ref.pdf  ${PANDOC_OPTS}
-	#open ref.pdf
 
 tab: tab.Rmd 
 	R ${R_OPTS} -e 'library(knitr); knit("tab.Rmd");'
@@ -61,9 +41,10 @@ model: model.Rmd
 	pandoc model.md -o model.pdf  ${PANDOC_OPTS}
 	#open model.pdf
 
-EBSpollock: EBSpollock.Rmd 
-	R ${R_OPTS} -e 'library(knitr); knit("EBSpollock.Rmd");'
-	pandoc EBSpollock.md -o EBSpollock.pdf ${PANDOC_OPTS}
+BSAIyfin: BSAIyfin.Rmd 
+	R ${R_OPTS} -e 'library(knitr); knit("BSAIyfin.Rmd");'
+	pandoc BSAIyfin.md -o BSAIyfin.pdf ${PANDOC_OPTS}
+	open BSAIyfin.pdf
 
 clean:
 	$(RM) pm.md 
