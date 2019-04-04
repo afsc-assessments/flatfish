@@ -1,5 +1,5 @@
 ---
-title: "Chapter 1: Assessment of the Walleye Pollock Stock \\ in the Eastern Bering Sea"
+title: "Chapter 4: Assessment of the yellowfin sole stock in the \\ Bering Sea and Aleutian Islands
 date: "`r format(Sys.time(), '%H:%M %B %d, %Y')`"
 output:
   pdf_document:
@@ -37,9 +37,7 @@ clean_cache(clean = TRUE)
 
 
 \begin{centering}
-  James Ianelli, Stan Kotwicki, Taina Honkalehto, \\
-  Abigail McCarthy, Sarah Stienessen, Kirstin Holsman,\\
-  Elizabeth Siddon and Ben Fissel \\
+  Ingrid Spies, Thomas K. Wilderbuer, Daniel G. Nichol, and James N. Ianelli \\
 \fontfamily{cmr}
 \fontsize{10}{12}
 \selectfont
@@ -59,20 +57,15 @@ source("../runs/pm_18.R")
 ```
 
 ```{r child = 'text.Rmd'}
-```
-```{r child = 'ref.Rmd'}
-```
-\newpage
-```{r child = 'tab.Rmd'}
-```
-\newpage
-```{r child = 'figs.Rmd'}
+# r child = 'ref.Rmd'}
+# r child = 'tab.Rmd'}
+# r child = 'figs.Rmd'}
 ```
 \newpage
 ```{r child = 'model.Rmd'}
+# r child = 'App.Rmd'}
 ```
 \newpage
-```{r child = 'App.Rmd'}
 # \newpage
 # \tableofcontents
 
