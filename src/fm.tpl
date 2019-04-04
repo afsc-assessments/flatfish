@@ -2256,9 +2256,9 @@ REPORT_SECTION
   
   report << "SARA file for Angie Greig" << endl;
 
-  report << "Yellowfin sole       # stock  " << endl;
+  report << "xxxlowfin sole       # stock  " << endl;
   report << "BSAI       # region     (AI AK BOG BSAI EBS GOA SEO WCWYK)" << endl;
-  report << "2013       # ASSESS_YEAR - year assessment is presented to the SSC" << endl;
+  report << "xxxx       # ASSESS_YEAR - year assessment is presented to the SSC" << endl;
   report << "1a         # TIER  (1a 1b 2a 2b 3a 3b 4 5 6) " << endl;
   report << "none       # TIER2  if mixed (none 1a 1b 2a 2b 3a 3b 4 5 6)" << endl;
   report << "full       # UPDATE (new benchmark full partial)" << endl;
@@ -2267,9 +2267,9 @@ REPORT_SECTION
   report << "5          # ASSES_LEV - SAIP ratings (0 1 2 3 4 5)" << endl;
   report << "5          # CATCH_DAT - SAIP ratings (0 1 2 3 4 5) " << endl;
   report << "3          # ABUND_DAT - SAIP ratings (0 1 2 3 4 5)" << endl;
-  report << "654300     # Minimum B  Lower 95% confidence interval for spawning biomass in assessment year" << endl;
-  report << "499000     # Maximum B  Upper 95% confidence interval for spawning biomass in assessment year" << endl;
-  report << "366000     # BMSY  is equilibrium spawning biomass at MSY (Tiers 1-2) or 7/8 x B40% (Tier 3)" << endl;
+  report << "xxxxx0     # Minimum B  Lower 95% confidence interval for spawning biomass in assessment year" << endl;
+  report << "xxxxx0     # Maximum B  Upper 95% confidence interval for spawning biomass in assessment year" << endl;
+  report << "xxxxx0     # BMSY  is equilibrium spawning biomass at MSY (Tiers 1-2) or 7/8 x B40% (Tier 3)" << endl;
   report << "ADMB       # MODEL - Required only if NMFS toolbox software used; optional otherwise " << endl;
   report << "NA         # VERSION - Required only if NMFS toolbox software used; optional otherwise" << endl;
   report << "2          # number of sexes  if 1 sex=ALL elseif 2 sex=(FEMALE, MALE) " << endl;

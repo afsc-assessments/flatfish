@@ -1,10 +1,22 @@
-plot_sel <- function(mod, title=NULL,alpha=0.3){
+plot_sel <- function(mod, title=NULL,alpha=0.3,styr=1991,endyr=2020,bysex=TRUE,sexoverlay=TRUE){
   mdf <- data.frame(Year=mod$Yr,sex="males",mod$sel_fsh_m)
   mdf <- rbind(mdf,data.frame(Year=mod$Yr,sex="females",mod$sel_fsh_f))
   names(mdf)[3:22] <- 1:20
-  sdf <- (gather(mdf,age,selectivity,3:22) ) %>% filter(Year>1990) %>% mutate(age=as.numeric(age)) #+ arrange(age,Year)
+  sdf <- (gather(mdf,age,selectivity,3:22) ) %>% filter(Year>=styr,Year<=endyr) %>% mutate(age=as.numeric(age)) #+ arrange(age,Year)
+if (bysex)
+{
+if (sexoverlay){
   ggplot(sdf,aes(x=age,y=fct_rev(as.factor(Year)),height = selectivity,fill=sex,color=sex,alpha=alpha)) + ggtitle(title) +
             geom_density_ridges(stat = "identity",scale=1,alpha = alpha) + ylab("Year")+ .THEME #+ facet_grid(~seas) +
+ } else {
+  ggplot(sdf,aes(x=age,y=fct_rev(as.factor(Year)),height = selectivity,fill=sex,color=sex,alpha=alpha)) + ggtitle(title) +
+            geom_density_ridges(stat = "identity",scale=1,alpha = alpha) + ylab("Year")+ .THEME #+ facet_grid(~seas) +
+}
+#else {
+  #ggplot(sdf,aes(x=age,y=fct_rev(as.factor(Year)),height = selectivity,fill=sex,color=sex,alpha=alpha)) + ggtitle(title) +
+            #geom_density_ridges(stat = "identity",scale=1,alpha = alpha) + ylab("Year")+ .THEME #+ facet_grid(~seas) +
+#}
+}
 }
 plot_srv_sel <- function(M, title="Survey selectivity",bysex=TRUE){
   n <- length(M)
@@ -19,12 +31,11 @@ plot_srv_sel <- function(M, title="Survey selectivity",bysex=TRUE){
     }
     names(mdf) <- c("Model","sex","selectivity","age")
 
-if (bysex)
-{
+if (bysex) {
   ggplot(mdf,aes(x=age,y=Model,height = selectivity,fill=sex,color=sex,alpha=.3)) + ggtitle(title) +
             geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
-}
-else
+} else{
   ggplot(mdf,aes(x=age,y=sex,height = selectivity,fill=Model,color=Model,alpha=.3)) + ggtitle(title) +
             geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
+}
 }

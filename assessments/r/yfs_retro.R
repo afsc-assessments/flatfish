@@ -13,6 +13,7 @@ Mspec <- as.vector(mqtext[2,])
 ssb <- data.frame()
 rec <- data.frame()
 surv_like <- data.frame()
+i=2
 for (i in 1:40) {
   rn=paste0("mq_profile/mod",i,"_R.rep")
   mn=paste0("mq_",i)
@@ -29,17 +30,18 @@ for (i in 1:40) {
     #btmp$termyr <- rtmp$termyr <- 2017-j
     ltmp <- data.frame(get(mn)$survey_likelihood)
     names(ltmp) <- "Survey_NLL"
+    surv_like <- rbind(surv_like,ltmp)
     #ltmp$termyr <- 2017-j
     btmp$M <- rtmp$M <- ltmp$M <- Mspec[i]
     btmp$q <- rtmp$q <- ltmp$q <- qspec[i]
-    surv_like <- rbind(surv_like,ltmp)
     ssb       <- rbind(ssb,btmp)
     rec       <- rbind(rec,rtmp)
   #}
 }
 dim(rec)
 dim(ssb)
-dim(surv_like)
+names(M[[2]])
+(surv_like)
 surv_like$mq <- as.factor(paste0(surv_like$M,"_",surv_like$q))
 ssb$mq <- as.factor(paste0(ssb$M,"_",ssb$q))
 rec$mq <- as.factor(paste0(ssb$M,"_",ssb$q))

@@ -1,4 +1,4 @@
-#R
+R
 rm(list=ls())
 source("../R/prelims.R")
 mytheme = .THEME
@@ -22,9 +22,10 @@ for (i in c(1:4)){
 #M <- list( mod2, mod3, mod5, mod6,mod8,mod9,mod10,mod11)
 #M <- list( mod1,mod2,mod3,mod4,mod5,mod6)
 M <- list( mod1,mod2,mod3,mod4)
+names(M)
 #names(M) <- mods[c(2,3,5,6,8,9,10,11)]
 #names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series", "2018 Male M","2018 Male M, selectivity")
-names(M) <- c("2017 Base","2018","Fixed q","2018 full SRR series")
+names(M) <- c("2017.Base","2018.Base","Fixed.q","2018.full.SRR.series")
 #---------------------------------------------------------------
 # Read in MCMC results
 # Read in MCMC header and results
@@ -44,7 +45,9 @@ for (i in c(2,4)){
 #---------------------------------------------------------------
 
 # Plot SSB 
-plot_q(M)
+library(ggridges)
+plot_q(M[2])
+plot_sel(mod2)
 plot_fut_Fs(M[2],alpha=.7)
 names(mod2)
 plot_ssb(M[1:4],alpha=.2,xlim=c(1977,2018),ylim=c(0,1400))
@@ -55,6 +58,7 @@ plot_sex_ratio(M,ylim=c(.25,.75),type="Survey")
 plot_srr(M,alpha=.2)
 plot_srr(M[c(1:4)],alpha=.2,xlim=c(0,1500),ylim=c(0,7.2))
 plot_srr(M[c(2,4)],alpha=.2,xlim=c(0,1500),ylim=c(0,7.2))
+plot_bts(M,alpha=.2)
 plot_bts(M[c(1,2)],alpha=.2)
 plot_rec(M[c(2,3)],alpha=.2)
 # Print out likelihood table for this model set
@@ -171,8 +175,8 @@ mc.df %>% select(Model,Fmsyr,q_2017,ABC_biom1) %>% ggplot(aes(x=q_2017,y=ABC_bio
 #=====================
 # Read in retro results
 for (i in 0:10) {
-  rn=paste0("retro/r_mod5_R",i,".rep")
-  #rn=paste0("retro/r_mod6_R",i,".rep")
+  #rn=paste0("retro/r_mod2_R",i,".rep")
+  rn=paste0("retro/r_mod6_R",i,".rep") #this really is model 2, copied over wrong...
   mn=paste0("retro",i)
   assign(mn,readList(rn))
   print(rn)
@@ -189,9 +193,10 @@ retouts <- list( R0=retro0, R1= retro1, R2= retro2,
   R9= retro9 ,
   R10= retro10 
   ) 
+ret_newbase <- retouts
 plot_ssb(ret_base,alpha=.2,xlim=c(1990,2017),ylim=c(0,1400))
 plot_ssb(ret_fixq,alpha=.2,xlim=c(1990,2017),ylim=c(0,1400))
-plot_ssb(ret_newbase,alpha=.2,xlim=c(1990,2017))
+plot_ssb(ret_newbase,alpha=.2,xlim=c(1960,2017))
 plot_bts(retouts[c(2,1)] ,alpha=.6)
 #SSB ============================================================
 df  <- data.table(Model = "Model 1", mod1$SSB )
