@@ -17,7 +17,7 @@ header-includes:
   - \usepackage{fontspec}
 geometry: margin=1in
 fontfamily: mathpazo
-bibliography: ~/OneDrive/myref.bib
+bibliography: myref.bib
 ---
 \pagenumbering{gobble}
 
