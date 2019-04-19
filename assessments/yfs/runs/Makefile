@@ -1,46 +1,18 @@
-EXEC = fm
-ifeq ($(OPT),TRUE)
-	DIST = ../../../src/build/release/
+# make -j N will do N simultaneous mods (in this case 3...)
+NMODS:=5
+NUMBERS:=$(shell seq 1 ${NMODS})
+JOBS:=$(addprefix m,${NUMBERS})
+DEL:=admodel.cov admodel.dep admodel.hes checkfile.rep fmin.log gmacs.b0* gmacs.bar gmacs.cor gmacs.eva gmacs.log gmacs.p0* gmacs.par gmacs.r0* gmacs.rep gmacs.std gmacs_files_in.dat gmacs_in.ctl gmacs_in.dat gradient.* mcout.rep variance
+MODS_DESC=Models to be run
+ARGS:=
+
+ifdef ComSpec
+    RM=del /F /Q
 else
-	DIST = ../../../src/build/debug/
+    RM=rm -rf
 endif
-ARGS = -nox -iprint 50 
-ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
-pn = fmpl_$(ts)
-R_OPTS=--no-save --no-restore --no-init-file --no-site-file -e 'library(knitr); knit("plot.Rmd")'
-plotscript = plot.md
-all: run
 
-$(EXEC): $(DIST)$(EXEC).tpl
-	ln -sf $(DIST)$(EXEC) $@
+.PHONY: all ${JOBS} clean
 
-$(DIST)$(EXEC).tpl:
-	$(MAKE) --directory=../../../src
-
-run: $(EXEC)
-	 ./$(EXEC) $(ARGS)
-
-mcmc: $(EXEC)
-	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
-png: 
-	R CMD BATCH plot.R
-
-# Need to add test for existence of plot.md...
-html:
-	R ${R_OPTS} # -e 'library(knitr); knit("plot.Rmd")'
-	pandoc -V geometry:margin=1in plot.md -o ${pn}.html 
-	open ${pn}.html
-pdf:
-	R ${R_OPTS} # -e 'library(knitr); knit("plot.Rmd")'
-	pandoc -V geometry:margin=1in plot.md -o ${pn}.pdf 
-	open ${pn}.html
-
-clean:
-	rm -f $(EXEC)
-	rm -f admodel.*
-	rm -f plot.md
-	rm -f plot.html
-	rm -f $(EXEC)  $(EXEC).[brces]* $(EXEC).*[0123456789] *.rpt *.log variance
-
-clobber: clean
-	rm -f *.par *_in.* *.rep
+all: ${JOBS} ; echo "$@ success" ${JOBS} 
+${JOBS}: job%: ; cd $* ; make ${ARGS} ; cd ..;
