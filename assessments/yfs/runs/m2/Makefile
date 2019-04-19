@@ -1,12 +1,10 @@
 EXEC = fm
-ifeq ($(OPT),TRUE)
-	DIST = ../../../../src/build/release/
-else
-	DIST = ../../../../src/build/debug/
-endif
+DIST = ../../../../src/
 ARGS = -nox -iprint 50 
+
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 pn = fmpl_$(ts)
+
 R_OPTS=--no-save --no-restore --no-init-file --no-site-file -e 'library(knitr); knit("plot.Rmd")'
 plotscript = plot.md
 all: run

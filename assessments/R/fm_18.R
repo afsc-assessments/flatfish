@@ -13,7 +13,7 @@ i=5
 for (i in 0:4) {
   rn=paste0("m",i,"/For_R.rep")
   mn=paste0("mod",i)
-  assign(mn,readList(rn))
+  assign(mn,readList(rn)) # USES PBS, got rid of that...
   print(rn)
 }
 file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)

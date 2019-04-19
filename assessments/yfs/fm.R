@@ -1,17 +1,20 @@
 #R
-#source("../R/prelims.R")
+library(here)
+
+source(here("assessments/R","prelims.R"))
+setwd(here("assessments/yfs/doc"))
 doplots <- F
 domcmc  <- F
 doproj  <- F
 doread  <- F
 thisyr    = 2018
-lastyr    = thisyr-
+lastyr    = thisyr-1
 nextyr    = thisyr+1
 
 if (doread) {
 # The model specs
 mod_names <- c("2017 base", "2018 new", "Fixed q", "SRR all years", "Est sex-spp M", "Sex-spp M, selectivity offset males")
-.MODELDIR = c( "../runs/m1", "../runs/m2", "../runs/m3", "../runs/m4", "../runs/m5", "../runs/m6")
+.MODELDIR = c( "../runs/m1/", "../runs/m2/", "../runs/m3/", "../runs/m4/", "../runs/m5/", "../runs/m6/")
 .THEME    = theme_bw(base_size = 11, base_family = "")
 .OVERLAY  = TRUE
 thismod <- 2 # the selected model
@@ -23,12 +26,6 @@ names(modlst) <- mod_names
 # The model picked
 #(modlst[[1]])
 #names(modlst)
-for (i in 1:length(mod_names))
-{
-  #print(i)
-  modlst[[i]] <- c(modlst[[i]],get_vars(modlst[[i]]))
-}
-
 M        <- modlst[[thismod]]
 P        <- modlst[[1]] # Last year's model (P=previous)
 
@@ -55,7 +52,7 @@ if (doplots) {
   #df.g <-  gather(df,Indicator,value=Value,-1)
   #p1 <- df.g %>% filter(Year>1979) %>% ggplot(aes(x=Year,y=Value,color=Indicator)) + geom_line(size=2) + theme_classic() + xlim(c(1980,2018))+ scale_x_continuous(breaks=seq(1980,2018,2))
   #ggsave("figs/diversity.pdf",plot=p1,width=8,height=3.0,units="in")
-  p1 <- plot_recruitment(modlst,xlim=c(2004.5,2018.5))
+  p1 <- plot_rec(modlst,xlim=c(2004.5,2018.5))
   ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst[c(1,2,3,5)],xlim=c(2004.5,2018.5),alpha=.1)
   #plot_recruitment(modlst,xlim=c(2004.5,2018.5))

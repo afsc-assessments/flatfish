@@ -53,7 +53,8 @@ clean_cache(clean = TRUE)
 doplots <- F
 domcmc  <- F
 doproj  <- F
-source("../fm.R")
+library(here)
+source(here("assessments/yfs/","fm.R"))
 ```
 
 ```{r child = 'text.Rmd'}
