@@ -6,6 +6,7 @@
 //  (with added bit) 
 //  check to ensure variances of mean wts are correct
 // 
+// 
 //  To do
 //    --Compute ABC_biom for all projection years and SSB
 //    --add MSE utility...
@@ -2180,6 +2181,7 @@ REPORT_SECTION
   L_report << "F_penalty " << fpen << endl;
 
 
+
   if (phase_env_cov>0)
   {
     // L_report << "alpha= " << q_alpha << endl;
@@ -2906,7 +2908,14 @@ FUNCTION Write_R
   R_report << "#m_Prior "                   << endl << m_prior      << endl;
   R_report << "#F_penalty"                  << endl << fpen         << endl;
   R_report << "#SPR_penalty"                << endl << sprpen       << endl;
-  R_report << "#obj_fun"                    << endl << obj_fun      << endl;
+  R_report << "#obj_fun"                    << endl << obj_fun      << endl; 
+  R_report << "#Obs_catch"<< endl << obs_catch << endl;          //IS 9/2019
+  R_report << "#Pred_catch" << endl << pred_catch << endl;       //IS 9/2019  
+  R_report << "Bottom_temp" << endl << env_cov << endl;         //IS 9/2019  
+  R_report << "pred_srv" << endl << pred_srv << endl;           //IS 9/2019  
+  R_report << "catage_f" << endl << catage_f << endl;           //IS 9/2019  
+  R_report << "catage_m" << endl << catage_m << endl;           //IS 9/2019  
+
   
   R_report<<"#Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
@@ -2969,9 +2978,10 @@ FUNCTION Write_R
     for (i=1;i<=nyrs_srv(k);i++)
       R_report<< q_srv(k,yrs_srv(k,i)) <<" ";
 	  R_report<< endl;
-	}
+	}      
+   
       
-  /* 
+  /*
 
   for (int k=1;k<=5;k++){
     R_report<<"#SSB_fut_"<<k<<endl; 
