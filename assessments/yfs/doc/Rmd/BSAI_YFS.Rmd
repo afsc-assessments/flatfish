@@ -2,7 +2,13 @@
 output:
   pdf_document: default
   html_document: default
+header-includes:
+ \usepackage{float}
 ---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+```
 
 ```{r,echo=FALSE,message=FALSE}
 library(knitr)
@@ -292,11 +298,11 @@ During the 1980s, there was also a major transition in the characteristics of th
 
 The management of the yellowfin sole fishery changed significantly in 2008 with the implementation of Amendment 80 to the BSAI Fisheries Management Plan.  The Amendment directly allocated fishery resources among BSAI trawl harvesters in consideration of their historic harvest patterns and future harvest needs in order to improve retention and utilization of fishery resources by the non-AFA trawl catcher/processor fleet.  This was accomplished by extending the groundfish retention standards to all H&G vessels and also by providing the ability to form cooperatives within the newly formed Amendment 80 sector.  In addition, Amendment 80 also mandated additional monitoring requirements which included observer coverage on all hauls, motion-compensating scales for weighing samples, flow scales to obtain accurate catch weight estimates for the entire catch, no mixing of hauls and no on-deck sorting.  The partitioning of TAC and PSC (prohibited species catch) among cooperatives has significantly changed the way the annual catch has accumulated (Fig 4.1, bottom panel) and the rate of target catch per bycatch ton. There is now a more even and slow attainment of the annual catch relative to the pre-Amendment 80 fishing behavior.  
 
-Yellowfin sole are usually headed and gutted, frozen at sea, and then shipped to Asian countries for further processing (AFSC 2016).  The first wholesale value of Alaska yellowfin sole totaled $97.8 million in 2014.  From 2016 to 2017 the first wholesale price of all Bering Sea flatfish fisheries increased 16% to $192.9 million t and yellowfin sole price increased 19% year over year. In 2010, following a comprehensive assessment process, the yellowfin sole fishery was certified under the Marine Stewardship Council environmental standard for sustainable and well-managed fisheries.  The certification also applies to all the major flatfish fisheries in the BSAI and GOA.  The total annual catch (t) since implementation of the MFCMA in 1977 is shown in Table 4.1.
+Yellowfin sole are usually headed and gutted, frozen at sea, and then shipped to Asian countries for further processing (AFSC 2016).  The first wholesale value of Alaska yellowfin sole totaled $97.8 million in 2014.  From 2016 to 2017 the first wholesale price of all Bering Sea flatfish fisheries increased 16% to $192.9 million t and yellowfin sole price increased 19% year over year. In 2010, following a comprehensive assessment process, the yellowfin sole fishery was certified under the Marine Stewardship Council environmental standard for sustainable and well-managed fisheries.  The certification also applies to all the major flatfish fisheries in the BSAI and GOA.  The total annual catch (t) since 1964 is shown in Table 4.1.
 
-In 2011, federally permitted vessels using non-pelagic trawl gear whose harvest results in flatfish retained catch that is greater than any other retained fishery category were required to use modified trawl gear.  The modifications required the use of elevating devices to raise the section of the trawl warps between the doors and the trawl wing tips by 2.5 inches off the seafloor.  The purpose of the management action was to reduce damage of non-target animals, particularly those that form habitat structure or support other fisheries while not substantially reducing flatfish catch rates or causing gear handling problems (Rose et al. 2010).
+In 2011, federally permitted vessels using non-pelagic trawl gear whose harvest resulted in flatfish retained catch that was greater than any other retained fishery category were required to use modified trawl gear.  The modifications required the use of elevating devices to raise the section of the trawl warps between the doors and the trawl wing tips by 2.5 inches off the seafloor.  The purpose of the management action was to reduce damage of non-target animals, particularly those that form habitat structure or support other fisheries while not substantially reducing flatfish catch rates or causing gear handling problems (Rose et al. 2010).
 
-The 1997 catch of 181,389 t (retained and discards) was the largest since the fishery became completely domestic but was at lower levels from 1998–2010, averaging 94,004 t (Table 4.2).  From 2011-2014 the catch increased, averaging 155,000 t.  The 2013 catch totaled 165,000 t (73% of the ABC), the highest annual catch in the past 19 years.  For `r thisyr`, the catch distribution has been spread out from January through May with the majority coming from four BSAI management areas (509, 513, 514, 517).  As of mid-September `r thisyr`, the fishing season is ongoing.  In order to estimate the total `r thisyr` catch for the stock assessment model, the average proportion of the `r thisyr-8`-`r thisyr-1` cumulative catch attained by the 35th week of the year (mid-September) was applied to the `r thisyr` catch amount at the same time period and results in a `r thisyr` catch estimate of 146,500 t (53% of the ABC).  The size composition of the `r thisyr` catch for both males and females, from observer sampling, are shown in Figure 4.2, the catch proportions by month and area are shown in Figure 4.3, and maps of the locations where yellowfin sole were caught in `r thisyr`, by month (through mid-September), are shown in Figure 4.4.  The average age of yellowfin sole in the `r thisyr-1` catch is estimated at 12.6 and 13.5 years for females and males, respectively.
+The 1997 catch of 181,389 t (retained and discards) was the largest since the fishery became completely domestic, but decreased from 1998–2010, averaging 94,004 t (Table 4.2).  From 2011-2014 the catch increased, averaging 155,000 t.  The 2013 catch totaled 165,000 t (73% of the ABC), the highest annual catch in the past 19 years.  For `r thisyr`, the catch distribution has been spread out from January through May with the majority coming from four BSAI management areas (509, 513, 514, 517).  As of mid-September `r thisyr`, the fishing season is ongoing.  In order to estimate the total `r thisyr` catch for the stock assessment model, the average proportion of the `r thisyr-8`-`r thisyr-1` cumulative catch attained by the 35th week of the year (mid-September) was applied to the `r thisyr` catch amount at the same time period and results in a `r thisyr` catch estimate of 146,500 t (53% of the ABC).  The size composition of the `r thisyr` catch for both males and females, from observer sampling, are shown in Figure 4.2, the catch proportions by month and area are shown in Figure 4.3, and maps of the locations where yellowfin sole were caught in `r thisyr`, by month (through mid-September), are shown in Figure 4.4.  The average age of yellowfin sole in the `r thisyr-1` catch is estimated at 12.6 and 13.5 years for females and males, respectively.
 
 The time-series of catch in Table 4.1 also includes yellowfin sole that were discarded in domestic fisheries from 1987 to the present.  Annual discard estimates were calculated from at-sea sampling (Table 4.2).  The rate of discard has ranged from a low of 2% of the total catch in 2012 (and 2015) to 30% in 1992 and is estimated at 3% in the `r thisyr-1` fishery.  The trend has been toward fuller retention of the catch in recent years, and with the advent of the Amendment 80 harvest practices, discarding is at its lowest level since these estimates have become available.  Historically, discarding primarily occurred in the yellowfin sole directed fishery, with lesser amounts in the Pacific cod, Pollock, rock sole, flathead sole, and “other flatfish” fisheries (Table 4.3).
 
@@ -514,7 +520,7 @@ Tier 1 $F_{ABC}$ = $F_{harmonic_mean}$    0.107        263,200 t
 
 _Status Determination_
 
-A standard set of projections is required for each stock managed under Tiers 1, 2, or 3 of Amendment 56.  This set of projections encompasses seven harvest scenarios designed to satisfy the requirements of Amendment 56, the National Environmental Policy Act, and the Magnuson-Stevens Fishery Conservation and Management Act (MSFCMA).
+A standard set of projections is required for each stock managed under Tiers 1, 2, or 3 of Amendment 56.  This set of projections encompasses seven harvest scenarios designed to satisfy the requirements of Amendment 56, the National Environmental Policy Act, and the 1977 Magnuson-Stevens Fishery Conservation and Management Act (MSFCMA).
 
 For each scenario, the projections begin with the vector of `r thisyr` numbers at age estimated in the assessment.  This vector is then projected forward to the beginning of `r thisyr+1` using the schedules of natural mortality and selectivity described in the assessment and the best available estimate of total (year-end) catch for `r thisyr`.  In each subsequent year, the fishing mortality rate is prescribed on the basis of the spawning biomass in that year and the respective harvest scenario.  In each year, recruitment is drawn from an inverse Gaussian distribution whose parameters consist of maximum likelihood estimates determined from recruitments estimated in the assessment.  Spawning biomass is computed in each year based on the time of peak spawning and the maturity and weight schedules described in the assessment.  Total catch is assumed to equal the catch associated with the respective harvest scenario in all years.  This projection scheme is run 1,000 times to obtain distributions of possible future stock sizes, fishing mortality rates, and catches.
 
@@ -574,9 +580,9 @@ figure_nums <- captioner::captioner(prefix="Figure 4.",levels = 1, auto_space = 
 
 
 
-tab.1_cap <- table_nums(name = "tab_1", caption = paste("Catch (t) of yellowfin sole 1964-",thisyr,".  Catch for ",thisyr," is an estimate through the end of the year.",sep=""))
+tab.1_cap <- table_nums(name = "tab_1", caption = paste("Foreign and domestic datch (t) of yellowfin sole 1964-",thisyr,".  Foreign catches are designated as joint venture processing (JVP) and domestic annual processing (DAP). Catch for ",thisyr," is an estimate through the end of the year.",sep=""))
 
-tab.2_cap <- table_nums(name = "tab_2", caption = "Estimates of retained and discarded (t) yellowfin sole caught in Bering Sea fisheries.")
+tab.2_cap <- table_nums(name = "tab_2", caption = paste("Estimates of retained and discarded (t) yellowfin sole caught in Bering Sea fisheries through September 25th, ",thisyr,", and the proportion discarded.",sep=""))
 
 tab.3_cap <- table_nums(name = "tab_3", caption = paste("Discarded and retained catch of non-CDQ yellowfin sole, by fishery, in ",thisyr-1,". Gear types include longline (HAL), bottom trawl (NPT), pot (POT), and pelagic trawl (PTR). Catch was non-zero for all target-gear combinations shown, but may appear as zero as results were rounded to the nearest metric ton (mt). Source: NMFS AKRO BLEND/Catch Accounting System.",sep=""))
 
@@ -697,18 +703,34 @@ kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE)%>%
 \pagebreak
 `r table_nums('tab_2')`
 ```{r tab_2,message=FALSE,echo=FALSE}
-retdis=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/RetDis.csv",header=TRUE)
+retdis=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/RetDis_full.csv",header=TRUE)#Sept 25 2019
 
-kable(retdis,"latex",booktabs=T,linesep="",longtable=TRUE)
+Year=names(table(retdis$Year))
+rdtable_full=matrix(0,length(Year),3)
+colnames(rdtable_full)=c("Year","Retained (mt)","Discarded (mt)")
+rdtable_full[,1]=Year
+for (i in 1:length(Year)){
+ rdtable_full[i,2]=round(sum(retdis$Retained..mt.[which(retdis$Year==Year[i])]))
+ rdtable_full[i,3]=round(sum(retdis$Discards..mt.[which(retdis$Year==Year[i])]))
+}
+ret=formatC(as.numeric(as.character(rdtable_full[,2])),format="d",big.mark=",")
+dis=formatC(as.numeric(as.character(rdtable_full[,3])),format="d",big.mark=",")
+prop=round(as.numeric(as.character(rdtable_full[,3]))/(as.numeric(as.character(rdtable_full[,2]))+as.numeric(as.character(rdtable_full[,3]))),2)
+
+rdfull=cbind(Year,ret,dis,prop)
+colnames(rdfull)=c("Year","Retained (mt)","Discarded (mt)","Proportion discarded")
+
+kable(rdfull,"latex",booktabs=T,linesep="",longtable=TRUE,align='r')
 ```
 
 \pagebreak
 `r table_nums('tab_3')`
 ```{r tab_3,message=FALSE,echo=FALSE}
 #note: get FMP groundfish total discards and discard rate by regulatory area in BSAI
-retdis2018=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/retdisYFS.csv",header=TRUE)
-target=names(table(retdis2018$Target))
-gear=names(table(retdis2018$Gear))
+#retdis2018=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/retdis2018.csv",header=TRUE)
+retdis2018=retdis[which(retdis$Year=="2018"),]
+target=names(table(retdis2018$Target))[2:18]
+gear=c("HAL","NPT","POT","PTR")
 rdtab=matrix(0,length(target)*4,3)
 rownames(rdtab)=rep(target,4)
 colnames(rdtab)=c("Gear","Discarded","Retained")
@@ -752,6 +774,38 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
 
 ```
 
+\pagebreak
+`r figure_nums('fig_3')`
+```{r fig_3, message=FALSE, echo=FALSE}  
+library(scales)
+par(mar=c(5,6,6,1))
+area=names(table(retdis2018$Reporting.Area.Code))
+areaz=vector()
+for(i in 1:length(area)){
+ areaz[i]=sum(retdis2018$Total.Catch..mt.[which(retdis2018$Reporting.Area.Code==area[i])])
+}
+area_res=as.data.frame(cbind(area,round(areaz)))
+area_res2=area_res[which(as.numeric(as.character(area_res[,2]))>1000),]
+area_res3=data.frame(as.factor(as.character(area_res2[,1])),as.numeric(as.character(area_res2[,2])))
+area_res4=cbind(area_res3,area_res3[,2]/sum(area_res3[,2]))
+colnames(area_res4)=c("NMFS.Area","Catch_full","Catch")
+area_res5=cbind(area_res4,cumsum(area_res4$Catch)-(area_res4$Catch/2))
+colnames(area_res5)=c("NMFS.Area","Catch_full","Catch","pos")
+
+blank_theme <- theme_minimal()+
+  theme(
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  panel.border = element_blank(),
+  panel.grid=element_blank(),
+  axis.ticks = element_blank(),
+  plot.title=element_text(size=14, face="bold")
+  )
+
+ggplot(area_res5, aes(x="", y=Catch, fill=NMFS.Area))+
+geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+blank_theme+theme(axis.text.x=element_blank()) +geom_text(aes(label = NMFS.Area),position = position_stack(vjust = 0.5), size=c(9,5,5,5,9,9,9))+ scale_fill_discrete(name = "NMFS Area")+ theme(legend.text=element_text(size=15),legend.title=element_text(size=16))
+
+```
 
 \pagebreak
 `r figure_nums('fig_6')`
