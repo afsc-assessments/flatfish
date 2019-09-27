@@ -4,13 +4,13 @@ output:
   html_document: default
 header-includes:
  \usepackage{float}
+ \usepackage{graphicx}
+geometry:
+  left=1in,right=1in,top=1in,bottom=1in
 ---
 
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.pos = 'H')
-```
 
-```{r,echo=FALSE,message=FALSE}
+```{r global_options, include=FALSE,message=FALSE}
 library(knitr)
 library(ggplot2)
 library(kableExtra)
@@ -23,10 +23,9 @@ library(cowplot)
 library(magick)
 library(tidyr)
 library(bookdown)
+#source("/Users/ingridspies/admbtest/YFS/YFS/fmr/R/read-admb.R") why does this not work?
 
-thisyr    = 2018
-lastyr    = thisyr-1
-nextyr    = thisyr+1
+knitr::opts_chunk$set(fig.pos = 'H')
 
 read.rep <- 
  function(fn)
@@ -57,7 +56,12 @@ read.rep <-
   return(A)
  }
 
-setwd("/Users/ingridspies/admbtest/YFS/YFS/")
+thisyr    = 2018
+lastyr    = thisyr-1
+nextyr    = thisyr+1
+
+
+knitr::opts_chunk$set(setwd("/Users/ingridspies/admbtest/YFS/YFS/"))
 YFS=read.rep("./assessments/yfs/runs/m1/fm.rep")
 #YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
 
@@ -725,7 +729,7 @@ kable(rdfull,"latex",booktabs=T,linesep="",longtable=TRUE,align='r')
 
 \pagebreak
 `r table_nums('tab_3')`
-```{r tab_3,message=FALSE,echo=FALSE}
+```{r tab_3,message=FALSE, echo=FALSE}
 #note: get FMP groundfish total discards and discard rate by regulatory area in BSAI
 #retdis2018=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/retdis2018.csv",header=TRUE)
 retdis2018=retdis[which(retdis$Year=="2018"),]
@@ -760,10 +764,21 @@ kable(a,"latex",booktabs=T,linesep="")%>%
 ```
 
 \pagebreak
+`r table_nums('tab_10')`
+```{r tab_10,message=FALSE,echo=FALSE}
+mat=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/maturity_T10.csv",header=TRUE)
+colnames(mat)=c("Age","1992, 1993 samples","2012 samples","Combined")
+kable(mat,"latex",booktabs=T,linesep="")
+
+```
+
+
+
+\pagebreak
 # Figures
 
 \pagebreak
-`r figure_nums('fig_1')`
+
 ```{r fig_1, message=FALSE, echo=FALSE}  
 catchtab=data.frame(cbind(YFS$`#Yr`,YFS$`#Obs_catch`))
 colnames(catchtab)=c("Year","Catch")
@@ -773,10 +788,11 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
  theme(legend.position="right")+scale_color_discrete(name="")
 
 ```
+`r figure_nums('fig_1')`
 
 \pagebreak
-`r figure_nums('fig_3')`
-```{r fig_3, message=FALSE, echo=FALSE}  
+
+```{r fig_3,fig.align='center',message=FALSE, echo=FALSE}  
 library(scales)
 par(mar=c(5,6,6,1))
 area=names(table(retdis2018$Reporting.Area.Code))
@@ -803,12 +819,13 @@ blank_theme <- theme_minimal()+
   )
 
 ggplot(area_res5, aes(x="", y=Catch, fill=NMFS.Area))+
-geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+blank_theme+theme(axis.text.x=element_blank()) +geom_text(aes(label = NMFS.Area),position = position_stack(vjust = 0.5), size=c(9,5,5,5,9,9,9))+ scale_fill_discrete(name = "NMFS Area")+ theme(legend.text=element_text(size=15),legend.title=element_text(size=16))
+geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+blank_theme+theme(axis.text.x=element_blank()) +geom_text(aes(label = NMFS.Area),position = position_stack(vjust = 0.5), size=c(8,4,4,4,8,8,8))+ scale_fill_discrete(name = "NMFS Area")+ theme(legend.text=element_text(size=15),legend.title=element_text(size=16))
 
 ```
+`r figure_nums('fig_3')`
 
 \pagebreak
-`r figure_nums('fig_6')`
+
 ```{r fig_6, message=FALSE, echo=FALSE}  
 LCI=YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`
 HCI=YFS$`#ob_bts`+1.96*YFS$`#sd_ob_bts`
@@ -820,10 +837,10 @@ ggplot(data=srv_bio,aes(x=Year,y=Biomass))+geom_point(aes(x=Year,y=Biomass))+geo
  theme(legend.position="right")+scale_color_discrete(name="")
 
 ```
-
+`r figure_nums('fig_6')`
 
 \pagebreak
-`r figure_nums('fig_8')`
+
 ```{r fig_8, message=FALSE, echo=FALSE}  
 wts2=data.frame(cbind(seq(1,20,1)),colMeans(YFS$`#wt_srv_f`),colMeans(YFS$`#wt_srv_m`))
 colnames(wts2)=c("Age","Females","Males")
@@ -832,20 +849,20 @@ ggplot(data=wts2)+geom_line(aes(x=Age,y=Females,colour="Females"))+geom_line(aes
  theme(legend.position="right")+scale_color_discrete(name="Sex")
 
 ```
-
+`r figure_nums('fig_8')`
 
 \pagebreak
-`r figure_nums('fig_10')`
+
 ```{r fig_10, message=FALSE, echo=FALSE}  
 env=data.frame(cbind(YFS$`#yrs_srv`,YFS$Bottom_temp))
 colnames(env)=c("Year","Temp")
 ggplot(data=env)+geom_line(aes(x=Year,y=Temp))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+ylab("Temperature Anomaly")+theme(legend.position="right")+scale_color_discrete(name="")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+theme(axis.text.x=element_text(angle=90,hjust=1))+geom_hline(yintercept=0,linetype=1)
 
 ```
-
+`r figure_nums('fig_10')`
 
 \pagebreak
-`r figure_nums('fig_16')`
+
 ```{r fig_16, message=FALSE, echo=FALSE}  
 #fit to survey biomass
 LCI=YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`
@@ -875,3 +892,4 @@ ggplot(data=srvsel)+geom_line(aes(x=Age,y=Female,col="Female"))+geom_line(aes(x=
  theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Proportion selected")+scale_x_continuous(breaks = seq(1,20, by = 2))+scale_color_discrete(name="")
 ```
+`r figure_nums('fig_16')`
