@@ -1,3 +1,15 @@
+# Yellowfin sole 2019 developments
+## Models for considerations
+   1. 2018 "base" with updated data   
+	 2. recommended model (with temp-startdate-interaction included on q)
+   2. Model 1 but with male mortality estimated 
+   3. Model 2 but with male selectivity offset estimated
+
+## Retrospective
+
+Testing to see if google-docs would be good way to create model specifications. The following is planned to evaluate setting and tracking control files:
+https://docs.google.com/spreadsheets/d/1Jw--X8M61LFjPUFNv5vFXozBwmQCpf7FwIDhQFs38lM/edit#gid=1701376339
+
 # Yellowfin sole 2018 developments
 ## Models for considerations
    1. 2018 "base" with updated data   
