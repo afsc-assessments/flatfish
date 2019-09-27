@@ -54,7 +54,7 @@ doplots <- F
 domcmc  <- F
 doproj  <- F
 library(here)
-source(here("assessments/yfs/","fm.R"))
+source(here("assessments/yfs","fm.R"))
 ```
 
 ```{r child = 'text.Rmd'}
