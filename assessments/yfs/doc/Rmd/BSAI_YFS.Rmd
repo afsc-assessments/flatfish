@@ -66,6 +66,7 @@ YFS=read.rep("./assessments/yfs/runs/m1/fm.rep")
 #YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
 
 AI=read.rep("/Users/ingridspies/admbtest/AI_Pcod/AI_Pcod.rep")
+extra_sd=read.table("./assessments/yfs/runs/m1/extra_sd.rep") 
 
 
 ```
@@ -393,7 +394,7 @@ _Survey Catchability_
 A past assessment (Wilderbuer and Nichol 2001) first examined the relationship between estimates of survey biomass and bottom water temperature.  To better understand how water temperature may affect the catchability of yellowfin sole to the survey trawl, catchability was estimated for each year in the stock assessment model as:
 
 \begin{align}
-q=e^{-\alpha+\beta*T},
+q=e^{-{\alpha}+{\beta}T},
 \end{align}
 
 where $q$ is catchability, $T$ is the average annual bottom water temperature anomaly at survey stations less than 100 m, and $\alpha$ and $\beta$ are parameters estimated by the model.  The catchability equation has two parts.  The $e^-\alpha$ term is a constant or time-independent estimate of $q$. The second term, $e^{\beta*T}$  is a time-varying (annual) $q$ which responds to metabolic aspects of herding or distribution (availability) which can vary annually with bottom water temperature.  The result of incorporating bottom temperature to estimate annual $q$ has resulted in an improved fit to the survey (shown in Figure 4.12 for the base model).  
@@ -401,7 +402,7 @@ where $q$ is catchability, $T$ is the average annual bottom water temperature an
 In this assessment we introduce a revised survey catchability model (Model 18_1) where survey start date (expressed as deviation in days (- and +) from the average survey start date of June 4th) and its interaction with annual bottom water temperature is added to the catchability equation as:
 
 \begin{align}
-q=e^{-\alpha+\beta*T+\gamma*S+\mu*T:S},
+q=e^{-{\alpha}+{\beta}T+{\gamma}S+{\mu}T:S},
 \end{align}
 
 where $T$=survey bottom temperature (averaged per year for all stations <100 m), $S$=survey start date, and $T:S$=interaction of $T$ and $S$.  Earlier survey start dates usually encounter colder water and since the timing of the survey start date is positively correlated with bottom water temperature, improvement in fitting the survey biomass estimates can be gained by estimating two new parameters ($\mu$ and $\gamma$).  Akaike information criterion (AIC) were used to determine if the additional variables ($S$ and $T:S$) improved the regression fit.  The improvement in fit was more than offset by the additional two parameters (Nichol et al. In review).
@@ -411,7 +412,7 @@ _Spawner-Recruit Estimation_
 Annual recruitment estimates from 1978-2012 were constrained to fit a Ricker (1958) form of the stock recruitment relationship as follows:
 
 \begin{align}
-R=\alpha*Se^{-\beta*S},
+R={\alpha}Se^{-{\beta}S},
 \end{align}
 
 where $R$ is age 1 recruitment, $S$ is female spawning biomass in metric tons the previous year, and $\alpha$ and $\beta$ are parameters estimated by the model.  The spawner-recruit fitting is estimated in a later phase after initial estimates of survival, numbers-at-age and selectivity are obtained.
@@ -763,6 +764,31 @@ kable(a,"latex",booktabs=T,linesep="")%>%
 
 ```
 
+
+\pagebreak
+`r table_nums('tab_5')`
+```{r tab_5, message=FALSE,echo=FALSE}
+srvbio=cbind(YFS$`#yr_bts`,formatC(1000*YFS$`#ob_bts`,format="d",big.mark=","),formatC(1000*YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`,format="d",big.mark=","),formatC(1000*YFS$`#ob_bts`+1.96*YFS$`#sd_ob_bts`,format="d",big.mark=","))
+kable(srvbio,"latex",booktabs=T,linesep="")
+```
+
+
+\pagebreak
+`r table_nums('tab_8')`
+```{r tab_8, message=FALSE,echo=FALSE}
+rescatch=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/YFS_research_catch.csv",header=TRUE)
+yr=names(table(rescatch$Collection_Year))
+res_mat=matrix(0,length(names(table(rescatch$Collection_Year))),2)
+res_mat[,1]=names(table(rescatch$Collection_Year))
+for (i in 1:nrow(res_mat)){
+ res_mat[i,2]=sum(rescatch$Weight[which(rescatch$Collection_Year==yr[i])])
+}
+cat=as.numeric(as.character(res_mat[,2]))
+res_mat2=cbind(as.numeric(as.character(yr)),formatC(cat,format="d",big.mark="m"))
+kable(res_mat2,"latex",booktabs=T,linesep="")
+```
+
+
 \pagebreak
 `r table_nums('tab_10')`
 ```{r tab_10,message=FALSE,echo=FALSE}
@@ -772,7 +798,36 @@ kable(mat,"latex",booktabs=T,linesep="")
 
 ```
 
+\pagebreak
+`r table_nums('tab_11')`
+```{r tab_11,message=FALSE,echo=FALSE}
 
+
+
+```
+
+
+Total mortality $Z$ in the model is the sum of fishing mortality $F$ and natural mortality $M$, such that total mortality in year $t$ at age $a$ is  $Z_{t,a}=F_{t,a}+M$. Fishing mortality at each year and age $F_{t,a}$ is the product of age-specific fishing gear selectivity $s_a$ and the median year-effect of fishing mortality ${\mu}^F$, with normally distributed error, $F_{t,a}=s_a{{\mu}^F}e^{{\epsilon}^F_t}, {{\epsilon}^F_t}\backsim N(0,{{\sigma}_F^2})$, where ${\epsilon}^F_t$ is the residual year-effect of fishing mortality and ${\sigma}_F$ is the standard deviation of the residual year-effect of fishing mortality. 
+
+Recruitment 1956-1975:  $N_{t,1}=R_{t}=R_{0}e^{\tau_{t}}, \tau \backsim\ N(0,\delta^2_R)$, where $R_0$ is the geometric mean of age 1 recruitment, 1956-1975.
+
+Recruitment 1976-`r thisyr` was determined using the Ricker stock recruitment curve, $R={\alpha}Se^{-{\beta}S}$, with parameters determined using data from the period 1976-`r thisyr-6`.
+
+$N_{t,1}=R_t=R_{\gamma}e^{\tau_{t}},$ where $R_\gamma$ is the geometric mean value of age 1 recruitment, 1976-2014.
+
+Catch in year $t$ for age $a$ fish:  $C_{t,a}={\displaystyle\frac{F_{t,a}}{Z_{t,a}}}(1-e^{Z_{t,a}})N_{t,a},$ where $C$ is catch, $F$ is instantaneous annual fishing mortality, $Z$ is instantaneous total mortality, and $N$ is the number of fish.
+
+Number of fish in year $t+1$ at age $a$: $N_{t+1,a+1}=N_{t,a}e^{-Z_{t,a}}$.
+
+Number of fish in the "plus group": $N_{t+1,A}=N_{t,a}e^{-Z_{t,A-1}}+N_{t,A}e^{-Z_{t,A}}$.
+
+Spawning biomass: $S_t={\sum}N_{t,a}W_{t,a}{\phi}_a$, where ${\phi}_a$ is the proportion of mature females at age $a$ and $W_{a,t}$ is the mean body weight in kg of fish age $a$ in year $t$.
+
+
+
+The age-specific fishing selectivity 
+
+$Length={\displaystyle\frac{S_{inf}}{1+e^{-K*(age-t_0))}}}.$
 
 \pagebreak
 # Figures
@@ -850,6 +905,18 @@ ggplot(data=wts2)+geom_line(aes(x=Age,y=Females,colour="Females"))+geom_line(aes
 
 ```
 `r figure_nums('fig_8')`
+
+\pagebreak
+
+```{r fig_9, message=FALSE, echo=FALSE}  
+
+```
+
+\begin{center}
+\includegraphics[width=5in,angle=270,origin=c]{/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/Black_Fig3.pdf}
+\end{center}
+`r figure_nums('fig_9')`
+
 
 \pagebreak
 
