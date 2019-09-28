@@ -54,8 +54,8 @@ read.rep <-
 
 #setwd("/Users/ingridspies/admbtest/YFS/YFS/")
 source("../../../R/prelims.R")
-#source("../../../R/read-admb.R")
-YFS=read_rep("../runs/m0/fm.rep")
+source("../../../R/read-admb.R")
+YFS=read_rep("../../runs/m0/fm.rep")
 #YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
 ```
 
