@@ -9,6 +9,7 @@ library(knitr)
 library(ggplot2)
 library(kableExtra)
 options(knitr.kable.NA = '')
+knitr::opts_knit$set(root.dir = '../../' )
 library(captioner)
 library(stringr)
 library(bibtex)
@@ -51,13 +52,11 @@ read.rep <-
   return(A)
  }
 
-setwd("/Users/ingridspies/admbtest/YFS/YFS/")
-YFS=read.rep("./assessments/yfs/runs/m1/fm.rep")
+#setwd("/Users/ingridspies/admbtest/YFS/YFS/")
+source("../../../R/prelims.R")
+#source("../../../R/read-admb.R")
+YFS=read_rep("../runs/m0/fm.rep")
 #YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
-
-AI=read.rep("/Users/ingridspies/admbtest/AI_Pcod/AI_Pcod.rep")
-
-
 ```
 
 ---
