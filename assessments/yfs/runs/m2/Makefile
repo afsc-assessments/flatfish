@@ -1,6 +1,7 @@
 EXEC = fm
 DIST = ../../../../src/
 ARGS = -nox -iprint 50 
+ARGS = -nox -iprint 50 -hbf 1
 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 pn = fmpl_$(ts)

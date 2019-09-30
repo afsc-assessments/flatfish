@@ -1,5 +1,5 @@
-Full_SRR
-../data/yfs_2018_new_base.dat
+Fixed_Q
+../data/yfs_2018_nocov.dat
 1
 6
 -1
@@ -45,6 +45,7 @@ Full_SRR
 1
 1
 1955
+1978
 2012
 1982
 2012

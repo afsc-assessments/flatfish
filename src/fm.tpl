@@ -1815,16 +1815,22 @@ FUNCTION write_srec
          " "  << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<
          " "  << sigmaR         << endl;
   R_report << "#Bzero" <<endl;
+  R_report << "Bzero" <<endl;
   R_report << Bzero    <<endl;
   R_report << "#phizero" <<endl;
+  R_report << "phizero" <<endl;
   R_report << phizero/1000<<endl;
   R_report << "#alpha_sr" <<endl;
+  R_report << "alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
   R_report << "#R_alpha" <<endl;
+  R_report << "R_alpha" <<endl;
   R_report << R_alpha <<endl;
   R_report << "#R_beta" <<endl;
+  R_report << "R_beta" <<endl;
   R_report << R_beta <<endl;
   R_report << "#sigmaR" <<endl;
+  R_report << "sigmaR" <<endl;
   R_report << sigmaR    <<endl;
 
 FUNCTION compute_spr_rates_2

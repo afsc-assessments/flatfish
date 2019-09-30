@@ -1,7 +1,10 @@
 R
 rm(list=ls())
 source("../R/prelims.R")
+source("../../R/prelims.R")
 mytheme = .THEME
+# Run model from last year
+
 #mods <- c("Base","Base","Const. fish sel.","Short_dat","Sex specific M","Constant survey q","Est_Sex_M_G2","Temperature-growth","Sigma R estimated","Sigma R 1.0","Full SRR Series")
 #---------------------------------------------------------------
 #for (i in c(2,3,5:6,8:11)){
