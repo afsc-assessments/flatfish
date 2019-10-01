@@ -1,6 +1,7 @@
 ---
 output:
   pdf_document: default
+  word_document: default
   html_document: default
 ---
 
@@ -577,11 +578,11 @@ tab.4_cap <- table_nums(name = "tab_4", caption ="Yellowfin sole fishery catch-a
 
 tab.5_cap <- table_nums(name = "tab_5", caption = "Yellowfin sole biomass estimates (t) from the annual Bering Sea shelf bottom trawl survey (top table) and northern Bering Sea surveys (bottom table) with upper and lower 95% confidence intervals.")
 
-tab.6_cap <- table_nums(name = "tab_6", caption = "Yellowfin sole population numbers-at-age (millions) estimated from the annual EBS bottom trawl surveys, 1982-2017.")
+tab.6_cap <- table_nums(name = "tab_6", caption = paste("Yellowfin sole population numbers-at-age (millions) estimated from the annual EBS bottom trawl surveys, 1982-",thisyr,". Numbers-at-age from 1982-1986 come from the standard survey area, and years 1987 forward come from the 'plusnw' extended survey area. Females are presented first, followed by males.",sep=""))
 
 tab.7_cap <- table_nums(name = "tab_7", caption = "Occurence of yellowfin sole in the Bering Sea trawl survey and collections of length and age structures and the number of otoliths aged from each survey.")
 
-tab.8_cap <- table_nums(name = "tab_8", caption = "Total tonnage of yellowfin sole caught in resource assessment surveys in the eastern Bering Sea from 1977-2018.")
+tab.8_cap <- table_nums(name = "tab_8", caption = paste("Total tonnage of yellowfin sole caught in resource assessment surveys in the eastern Bering Sea from 1977-",thisyr,"."))
 
 tab.9_cap <- table_nums(name = "tab_9", caption = "Mean length and weight at age for yellowfin sole (unsmoothed).")
 
@@ -641,7 +642,7 @@ fig.7_cap = figure_nums(name="fig_7",caption = "Difference between the 1985-2016
 fig.8_cap = figure_nums(name="fig_8",caption = "Average yellowfin sole weight-at-age (g) from trawl survey observations.
                         ")
 
-fig.9_cap = figure_nums(name="fig_9",caption = "Master chronology for yellowfin sole and time series of mean summer bottom temperature and May sea surface temperature for the southeastern Bering Sea (Panel A).  All data re normalized to a mean of 0 and standard deviation of 1.  Correlations of chronologies with bottom temperature and sea surface temperature are shown in panels B and C, respectively (Matta et al. 2010)")
+fig.9_cap = figure_nums(name="fig_9",caption = "Master chronology for yellowfin sole and time series of mean summer bottom temperature and May sea surface temperature for the southeastern Bering Sea (Panel A).  All data re normalized to a mean of 0 and standard deviation of 1.  Correlations of chronologies with bottom temperature and sea surface temperature are shown in panels B and C, respectively (Matta et al. 2010).")
 
 fig.10_cap = figure_nums(name="fig_10",caption = "Yellowfin sole length-at-age anomalies, for males and females, and bottom temperature anomalies.  Correspondence in these residuals is apparent with a 2-3 year lag effect from the mid-1990s to 2017.  Late 1980s and early 1990s pattern may be a density-dependent response in growth from the large 1981 and 1983 year-classes.")
 
@@ -679,7 +680,7 @@ fig.23_cap = figure_nums(name="fig_23",caption = "Phase plane figure of the time
 
 `r table_nums('tab_1')`
 ```{r tab_1,message=FALSE,echo=FALSE}
-catchZ=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/catch_YFS.csv",header=TRUE,skip=1)
+catchZ=read.csv(here("/doc/Rmd/catch_YFS.csv"),header=TRUE,skip=1)
 #catchZ1=cbind(catchZ[,1],formatC(catchZ[,2],big.mark=",",format="d"),formatC(catchZ[,3],big.mark=",",format="d"),formatC(catchZ[,4],big.mark=",",format="d"),formatC(catchZ[,5],big.mark=",",format="d"))
 colnames(catchZ)=c("Year","Foreign","JVP","DAP","Total")
 kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE)%>%
@@ -689,7 +690,7 @@ kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE)%>%
 \pagebreak
 `r table_nums('tab_2')`
 ```{r tab_2,message=FALSE,echo=FALSE}
-retdis=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/RetDis_full.csv",header=TRUE)#Sept 25 2019
+retdis=read.csv(here("/doc/Rmd/RetDis_full.csv"),header=TRUE)#Sept 25 2019
 
 Year=names(table(retdis$Year))
 rdtable_full=matrix(0,length(Year),3)
@@ -713,7 +714,7 @@ kable(rdfull,"latex",booktabs=T,linesep="",longtable=TRUE,align='r')
 `r table_nums('tab_3')`
 ```{r tab_3,message=FALSE, echo=FALSE}
 #note: get FMP groundfish total discards and discard rate by regulatory area in BSAI
-#retdis2018=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/retdis2018.csv",header=TRUE)
+#retdis2018=read.csv(here("/doc/Rmd/retdis2018.csv"),header=TRUE)
 retdis2018=retdis[which(retdis$Year=="2018"),]
 target=names(table(retdis2018$Target))[2:18]
 gear=c("HAL","NPT","POT","PTR")
@@ -754,27 +755,70 @@ colnames(srvbio)=c("Year","Biomass (t)","Lower confidence interval","Upper confi
 kable(srvbio,"latex",booktabs=T,linesep="")
 ```
  
+\pagebreak
+`r table_nums('tab_6')`
+```{r tab_6}
+catage_p=read.csv(here("doc/Rmd/YFS_EBS_survey/yfs_agecomp_ebs_plusnw.csv"),header=TRUE)
+catage_s=read.csv(here("doc/Rmd/YFS_EBS_survey/yfs_agecomp_ebs_standard.csv"),header=TRUE)
+
+age=seq(2,17,1)
+yrs=names(table(catage_p$YEAR))
+
+catage_f=matrix(0,length(yrs),length(age))
+catage_m=matrix(0,length(yrs),length(age))
+
+isEmpty <- function(x) 
+ {
+ return(identical(x, numeric(0)))
+ }
+
+for(i in 1:length(yrs)){
+ for(j in 1:16)
+ {
+  if (yrs[i] %in% c(1982:1986)){
+   if(!isEmpty(catage_s$AGEPOP[which(catage_s$YEAR==yrs[i]&catage_s$SEX==2&catage_s$AGE==(j+1)&catage_s$SUBAREA==999999)]))
+   {catage_f[i,j]=catage_s$AGEPOP[which(catage_s$YEAR==yrs[i]&catage_s$SEX==2&catage_s$AGE==(j+1)&catage_s$SUBAREA==999999)]}
+      if(!isEmpty(catage_s$AGEPOP[which(catage_s$YEAR==yrs[i]&catage_s$SEX==1&catage_s$AGE==(j+1)&catage_s$SUBAREA==999999)]))
+    {catage_m[i,j]=catage_s$AGEPOP[which(catage_s$YEAR==yrs[i]&catage_s$SEX==1&catage_s$AGE==(j+1)&catage_s$SUBAREA==999999)]}
+  }
+  if (yrs[i] >=1987){
+   if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]))
+  catage_f[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]
+      if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]))
+  catage_m[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]
+  }
+ }
+}
+
+rownames(catage_f)=yrs
+colnames(catage_f)=c(seq(2,16,1),"17+")
+
+print(kable(formatC(catage_f/1000000,format="d",big.mark=","),"latex",booktabs=T,linesep="",align='r')%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Females)"=16 )))
+
+rownames(catage_m)=yrs
+colnames(catage_m)=c(seq(2,16,1),"17+")
+
+print(kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T,linesep="",align='r')%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Males)"=16 )))
+         
+
+#kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T,linesep="",longtable=TRUE, caption = "Males", table.envir = "table*")%>% 
+#  kable_styling(latex_options="scale_down")
+
+```
 
 \pagebreak
 `r table_nums('tab_8')`
 ```{r tab_8, message=FALSE,echo=FALSE}
-rescatch=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/YFS_research_catch.csv",header=TRUE)
-yr=names(table(rescatch$Collection_Year))
-res_mat=matrix(0,length(names(table(rescatch$Collection_Year))),2)
-res_mat[,1]=names(table(rescatch$Collection_Year))
-for (i in 1:nrow(res_mat)){
- res_mat[i,2]=sum(rescatch$Weight[which(rescatch$Collection_Year==yr[i])])
-}
-cat=as.numeric(as.character(res_mat[,2]))
-res_mat2=cbind(as.numeric(as.character(yr)),formatC(cat,format="d",big.mark=","))
-kable(res_mat2,"latex",booktabs=T,linesep="")
+rescatch=read.csv(here("/doc/Rmd/ResearchCatch.csv"),header=TRUE)
+colnames(rescatch)=c("Year","Research catch (t)")
+kable(rescatch,"latex",booktabs=T,linesep="")
 ```
 
 
 \pagebreak
 `r table_nums('tab_10')`
 ```{r tab_10,message=FALSE,echo=FALSE}
-mat=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/maturity_T10.csv",header=TRUE)
+mat=read.csv(here("/doc/Rmd/maturity_T10.csv"),header=TRUE)
 colnames(mat)=c("Age","1992, 1993 samples","2012 samples","Combined")
 kable(mat,"latex",booktabs=T,linesep="")
 
@@ -808,7 +852,7 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
 
 ```{r fig_1b, message=FALSE, echo=FALSE,fig.width = 6.25, fig.height = 4}
 #Figure 1 lower panel
-#blend_catchYFS=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/YFS_Blend_CAS.csv",header=TRUE)
+#blend_catchYFS=read.csv(here("/doc/Rmd/YFS_Blend_CAS.csv"),header=TRUE)
 #yrs=c(2003:2018)
 #cat_month=matrix(0,length(yrs),12)
 #cat_month2=matrix(0,length(yrs),12)
@@ -825,9 +869,9 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
 #Year=rep(yrs,12)
 #Month=rep(seq(1,12,1),each=length(yrs))
 #catch_month=data.frame(Cat,Year,Month)
-#write.csv(catch_month,"/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/catch_month.csv")
+#write.csv(catch_month,here("/doc/Rmd/catch_month.csv"))
 
-catch_month=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/catch_month.csv")
+catch_month=read.csv(here("/doc/Rmd/catch_month.csv"))
 ggplot(data=catch_month, aes(x=Month,y=Cat,group=factor(Year)))+geom_line(aes(colour=Year),size=1.2)+scale_x_continuous(breaks = seq(1,12, by = 1))+theme(legend.position="right")+labs(y = "Relative cumulative catch")+scale_colour_gradient(low="lightblue",high="darkblue")+theme_few(base_size=14)
 
 ```
@@ -872,8 +916,8 @@ geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+bla
 #blend_catch2018=blend_catchYFS[which(blend_catchYFS$Year==2018),]
 #cat_mo2018=data.frame(cbind(c("January","February","March","April","May","June","July","August","September","October","November","December"),table(blend_catch2018$Month)))
 #cat_mo2018b=cbind(as.character(cat_mo2018[,1]),formatC(as.numeric(as.character(cat_mo2018[,2])),format="d",big.mark=","))
-#write.csv(cat_mo2018b,"/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/cat_mo2018b.csv")
-cat_mo2018b=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/cat_mo2018b.csv")
+#write.csv(cat_mo2018b,here("/doc/Rmd/cat_mo2018b.csv"))
+cat_mo2018b=read.csv(here("/doc/Rmd/cat_mo2018b.csv"))
 colnames(cat_mo2018b)=c("N","Month","Catch")
 cat_mo2018b$Month=factor(cat_mo2018b$Month,levels=cat_mo2018b$Month)
 cat_mo2018b$Catch=as.numeric(as.character(cat_mo2018b$Catch))
