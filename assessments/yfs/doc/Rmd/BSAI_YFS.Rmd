@@ -2,6 +2,12 @@
 output:
   pdf_document: default
   html_document: default
+---
+setwd("/Users/ingridspies/admbtest/YFS/YFS/")
+---
+output:
+  pdf_document: default
+  html_document: default
 header-includes:
  \usepackage{float}
  \usepackage{graphicx}
@@ -58,7 +64,7 @@ read.rep <-
   return(A)
  }
 
-<<<<<<< HEAD
+#HEAD
 thisyr    = 2018
 lastyr    = thisyr-1
 nextyr    = thisyr+1
@@ -69,22 +75,17 @@ YFS=read.rep("./runs/m1/fm.rep")
 
 B0=YFS$`#Bzero`*1000
 
-AI=read.rep("/Users/ingridspies/admbtest/AI_Pcod/AI_Pcod.rep")
 extra_sd=read.table("./runs/m1/extra_sd.rep",header=TRUE) 
 
+source(here("../R","prelims.R"))
 
-=======
-#setwd("/Users/ingridspies/admbtest/YFS/YFS/")
-source("../../../R/prelims.R")
-#source("../../../R/read-admb.R")
-YFS=read_rep("../runs/m0/fm.rep")
-#YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
->>>>>>> 0f4208822786d3cee92fbc6a2ba7ebe0ab0e4855
+YFS=read_rep(here("/runs/m1/fm.rep"))
+
 ```
 
 ---
 title: 'Assessment of the Yellowfin Sole Stock\ in the Bering Sea and Aleutian Islands'
-#author: <h4 style="font-style:normal">"Ingrid Spies, Thomas K. Wilderbuer, Daniel G. Nichol, and James Ianelli"</h4> 
+
 output:
   pdf_document: 
   highlight: zenburn
