@@ -3,11 +3,13 @@ output:
   pdf_document: default
   html_document: default
 ---
-setwd("/Users/ingridspies/admbtest/YFS/YFS/")
+
+```{r global options, include=FALSE, message=FALSE}
+library(here)
+set_here("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs")
+```
+
 ---
-output:
-  pdf_document: default
-  html_document: default
 header-includes:
  \usepackage{float}
  \usepackage{graphicx}
@@ -17,70 +19,19 @@ geometry:
 
 
 ```{r global_options, include=FALSE,message=FALSE}
-library(knitr)
-library(ggplot2)
-library(kableExtra)
-options(knitr.kable.NA = '')
-knitr::opts_knit$set(root.dir = '../../' )
-library(captioner)
-library(stringr)
-library(bibtex)
-library(knitcitations)
-library(cowplot)
-library(magick)
-library(tidyr)
-library(bookdown)
-library(ggthemes)
-#source("/Users/ingridspies/admbtest/YFS/YFS/fmr/R/read-admb.R") why does this not work?
 
 knitr::opts_chunk$set(fig.pos = 'H')
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache=FALSE,results="asis")
+#clean_cache(clean = TRUE)
 
-read.rep <- 
- function(fn)
- {
-  # The following reads a report file
-  options(warn=-1)  #Suppress the NA message in the coercion to double
-  ifile=scan(fn,what="character",flush=TRUE,blank.lines.skip=FALSE,quiet=TRUE)
-  idx=sapply(as.double(ifile),is.na)
-  vnam=ifile[idx] #list names
-  nv=length(vnam) #number of objects
-  A=list()
-  ir=0
-  for(i in 1:nv)
-  {
-   ir=match(vnam[i],ifile)
-   if(i!=nv) irr=match(vnam[i+1],ifile) else irr=length(ifile)+1 #next row
-   dum=NA
-   if(irr-ir==2) dum=as.double(scan(fn,skip=ir,nlines=1,quiet=TRUE,what=""))
-   if(irr-ir>2) dum=as.matrix(read.table(fn,skip=ir,nrow=irr-ir-1,fill=TRUE))
-   
-   if(is.numeric(dum))#Logical test to ensure dealing with numbers
-   {
-    A[[vnam[i]]]=dum
-   }
-  }
-  options(warn=0)
-  
-  return(A)
- }
-
-#HEAD
 thisyr    = 2018
 lastyr    = thisyr-1
 nextyr    = thisyr+1
 
-
-knitr::opts_chunk$set(setwd("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs"))
-YFS=read.rep("./runs/m1/fm.rep")
-
-B0=YFS$`#Bzero`*1000
-
-extra_sd=read.table("./runs/m1/extra_sd.rep",header=TRUE) 
-
 source(here("../R","prelims.R"))
-
 YFS=read_rep(here("/runs/m1/fm.rep"))
-
+B0=YFS$`#Bzero`*1000
+extra_sd=read.table(here("runs/m1/extra_sd.rep"),header=TRUE) 
 ```
 
 ---
@@ -672,16 +623,13 @@ tab.27_cap <- table_nums(name = "tab_27", caption = "Catch and bycatch (t) of ot
 
 tab.28_cap <- table_nums(name = "tab_28", caption = "Catch and bycatch (t) of other BSAI target species in the yellowfin sole directed fishery from 1992-2016 estimated from a combination of regional office reported catch and observer sampling of the catch.")
 
-fig.1_cap = figure_nums(name="fig_1",caption = paste("Yellowfin sole annual total catch (1,000s t) in the Eastern Bering Sea from 1954-",thisyr,".",sep="")) 
+fig.1_cap = figure_nums(name="fig_1",caption = paste("Yellowfin sole annual total catch (1,000s t) in the Eastern Bering Sea from 1954-",thisyr," (upper panel). Yellowfin sole annual cumulative catch by month and year (non CDQ) 2003-",thisyr-1," (lower panel).",sep="")) 
 
-fig.2_cap = figure_nums(name="fig_2",caption = paste("Yellowfin sole annual cumulative catch by month and year (non CDQ) 2003-",thisyr-1,".",sep=""))
-
-fig.3_cap = figure_nums(name="fig_3",caption = paste("Size composition of the yellowfin sole catch in ",thisyr,"(through mid-September), by subarea and total.
+fig.2_cap = figure_nums(name="fig_2",caption = paste("Size composition of the yellowfin sole catch in ",thisyr,"(through mid-September), by subarea and total.
                                                      "))
 
-fig.4_cap = figure_nums(name="fig_4",caption = "Yellowfin sole catch by month and area in the Eastern Bering Sea in 2018.")
+fig.3_cap = figure_nums(name="fig_3",caption = paste("Yellowfin sole catch proportion by area (upper panel) and by month (lower panel) in the Eastern Bering Sea in ",thisyr,"."))
 
-fig.4_cap = figure_nums(name="fig_4",caption = paste("Yellowfin sole fishery catch proportion by month in the eastern Bering Sea,"thisyr,".",sep=""))
 
 fig.5_cap = figure_nums(name="fig_5",caption = "Yellowfn sole CPUE (catch per unit effort in kg/ha) from the annual Bering Sea shelf trawl surveys, 1982-2018.")
 
@@ -849,21 +797,17 @@ kable(mat,"latex",booktabs=T,linesep="")
 \pagebreak
 # Figures
 
-\pagebreak
-
-```{r fig_1, message=FALSE, echo=FALSE}  
+```{r fig_1, message=FALSE, echo=FALSE,fig.width = 5.1, fig.height = 4}  
 catchtab=data.frame(cbind(YFS$`#Yr`,YFS$`#Obs_catch`))
 colnames(catchtab)=c("Year","Catch")
 ggplot(data=catchtab,aes(x=Year,y=Catch))+geom_line(aes(x=Year,y=Catch))+
 theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Catch (x 1,000 t)")+scale_x_continuous(breaks = seq(1954,2018, by = 2))+theme(axis.text.x=element_text(angle=90,hjust=1))+
  theme(legend.position="right")+scale_color_discrete(name="")
-
 ```
-`r figure_nums('fig_1')`
 
-\pagebreak
-```{r fig_1b, message=FALSE, echo=FALSE}  
+```{r fig_1b, message=FALSE, echo=FALSE,fig.width = 6.25, fig.height = 4}
+#Figure 1 lower panel
 #blend_catchYFS=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/YFS_Blend_CAS.csv",header=TRUE)
 #yrs=c(2003:2018)
 #cat_month=matrix(0,length(yrs),12)
@@ -887,12 +831,12 @@ catch_month=read.csv("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rm
 ggplot(data=catch_month, aes(x=Month,y=Cat,group=factor(Year)))+geom_line(aes(colour=Year),size=1.2)+scale_x_continuous(breaks = seq(1,12, by = 1))+theme(legend.position="right")+labs(y = "Relative cumulative catch")+scale_colour_gradient(low="lightblue",high="darkblue")+theme_few(base_size=14)
 
 ```
-\\
-`r figure_nums('fig_1b')`
+\
+`r figure_nums('fig_1')`
 
 \pagebreak
 
-```{r fig_3,fig.align='center',message=FALSE, echo=FALSE}  
+```{r fig_3,fig.align='center',message=FALSE, echo=FALSE,fig.align='center'}  
 library(scales)
 par(mar=c(5,6,6,1))
 area=names(table(retdis2018$Reporting.Area.Code))
@@ -923,10 +867,8 @@ geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+bla
 
 ```
 \
-`r figure_nums('fig_3')`
-
-\pagebreak  
-```{r fig_4, message=FALSE, echo=FALSE} 
+ 
+```{r fig_3b, message=FALSE, echo=FALSE,fig.align='center'} 
 #blend_catch2018=blend_catchYFS[which(blend_catchYFS$Year==2018),]
 #cat_mo2018=data.frame(cbind(c("January","February","March","April","May","June","July","August","September","October","November","December"),table(blend_catch2018$Month)))
 #cat_mo2018b=cbind(as.character(cat_mo2018[,1]),formatC(as.numeric(as.character(cat_mo2018[,2])),format="d",big.mark=","))
@@ -943,7 +885,8 @@ geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=-1)+bl
  
 ```
 \
-`r figure_nums('fig_4')`
+\
+`r figure_nums('fig_3')`
 
 \pagebreak
 
