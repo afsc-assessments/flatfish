@@ -584,7 +584,7 @@ tab.7_cap <- table_nums(name = "tab_7", caption = "Occurence of yellowfin sole i
 
 tab.8_cap <- table_nums(name = "tab_8", caption = paste("Total tonnage of yellowfin sole caught in resource assessment surveys in the eastern Bering Sea from 1977-",thisyr,"."))
 
-tab.9_cap <- table_nums(name = "tab_9", caption = "Mean length and weight at age for yellowfin sole (unsmoothed).")
+tab.9_cap <- table_nums(name = "tab_9", caption = "Mean length and weight at age for yellowfin sole (unsmoothed), females presented first, followed by males.")
 
 tab.10_cap <- table_nums(name = "tab_10", caption = "Female yellowfin sole proportion mature at age from Nichol (1995) and TenBrink and Wilderbuer (2015).")
 
@@ -799,12 +799,18 @@ rownames(catage_m)=yrs
 colnames(catage_m)=c(seq(2,16,1),"17+")
 
 print(kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T,linesep="",align='r')%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Males)"=16 )))
-         
-
-#kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T,linesep="",longtable=TRUE, caption = "Males", table.envir = "table*")%>% 
-#  kable_styling(latex_options="scale_down")
 
 ```
+
+
+\pagebreak
+`r table_nums('tab_7')`
+```{r tab_7}
+haul_oto=read.csv(here("/doc/Rmd/Hauls_otoliths.csv"),header=TRUE)
+colnames(haul_oto)=c("Year","Total hauls","Hauls with length","Number of lengths","Hauls with otoliths","Hauls with ages","Number of otoliths","Number of ages")
+kable(haul_oto,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")
+```
+
 
 \pagebreak
 `r table_nums('tab_8')`
@@ -812,6 +818,20 @@ print(kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T
 rescatch=read.csv(here("/doc/Rmd/ResearchCatch.csv"),header=TRUE)
 colnames(rescatch)=c("Year","Research catch (t)")
 kable(rescatch,"latex",booktabs=T,linesep="")
+```
+
+\pagebreak
+`r table_nums('tab_9')`
+```{r tab_9}
+wt_f=YFS$`#wt_srv_f`[11:65,]
+wt_m=YFS$`#wt_srv_m`[11:65,]
+colnames(wt_f)=seq(1,20,1)
+rownames(wt_f)=seq(1964,thisyr,1)
+colnames(wt_m)=seq(1,20,1)
+rownames(wt_m)=seq(1964,thisyr,1)
+print(kable(wt_f,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Females)"=19 )))
+
+print(kable(wt_m,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Males)"=19 )))
 ```
 
 
