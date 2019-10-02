@@ -1,5 +1,6 @@
 R
 rm(list=ls())
+source("../R/prelims.R")
 source("../../R/prelims.R")
 mytheme = .THEME
 # Run model from last year
