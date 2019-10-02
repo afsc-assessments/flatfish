@@ -1,7 +1,6 @@
 ---
 output:
   pdf_document: default
-  word_document: default
   html_document: default
 ---
 
@@ -29,15 +28,46 @@ thisyr    = 2018
 lastyr    = thisyr-1
 nextyr    = thisyr+1
 
-source(here("../R","prelims.R"))
-YFS=read_rep(here("/runs/m1/fm.rep"))
-B0=YFS$`#Bzero`*1000
-extra_sd=read.table(here("runs/m1/extra_sd.rep"),header=TRUE) 
+read.rep <- 
+ function(fn)
+ {
+  # The following reads a report file
+  options(warn=-1)  #Suppress the NA message in the coercion to double
+  ifile=scan(fn,what="character",flush=TRUE,blank.lines.skip=FALSE,quiet=TRUE)
+  idx=sapply(as.double(ifile),is.na)
+  vnam=ifile[idx] #list names
+  nv=length(vnam) #number of objects
+  A=list()
+  ir=0
+  for(i in 1:nv)
+  {
+   ir=match(vnam[i],ifile)
+   if(i!=nv) irr=match(vnam[i+1],ifile) else irr=length(ifile)+1 #next row
+   dum=NA
+   if(irr-ir==2) dum=as.double(scan(fn,skip=ir,nlines=1,quiet=TRUE,what=""))
+   if(irr-ir>2) dum=as.matrix(read.table(fn,skip=ir,nrow=irr-ir-1,fill=TRUE))
+   
+   if(is.numeric(dum))#Logical test to ensure dealing with numbers
+   {
+    A[[vnam[i]]]=dum
+   }
+  }
+  options(warn=0)
+  
+  return(A)
+ }
+
+#setwd("/Users/ingridspies/admbtest/YFS/YFS/")
+source("../../../R/prelims.R")
+source("../../../R/read-admb.R")
+YFS=read_rep("../../runs/m0/fm.rep")
+#YFSL=read.rep("./assessments/yfs/runs/m1/fm_legacy.rep")
 ```
 
 ---
 title: 'Assessment of the Yellowfin Sole Stock\ in the Bering Sea and Aleutian Islands'
 
+#author: <h4 style="font-style:normal">"Ingrid Spies, Thomas K. Wilderbuer, Daniel G. Nichol, and James Ianelli"</h4> 
 output:
   pdf_document: 
   highlight: zenburn
@@ -267,9 +297,10 @@ During the 1980s, there was also a major transition in the characteristics of th
 
 The management of the yellowfin sole fishery changed significantly in 2008 with the implementation of Amendment 80 to the BSAI Fisheries Management Plan.  The Amendment directly allocated fishery resources among BSAI trawl harvesters in consideration of their historic harvest patterns and future harvest needs in order to improve retention and utilization of fishery resources by the non-AFA trawl catcher/processor fleet.  This was accomplished by extending the groundfish retention standards to all H&G vessels and also by providing the ability to form cooperatives within the newly formed Amendment 80 sector.  In addition, Amendment 80 also mandated additional monitoring requirements which included observer coverage on all hauls, motion-compensating scales for weighing samples, flow scales to obtain accurate catch weight estimates for the entire catch, no mixing of hauls and no on-deck sorting.  The partitioning of TAC and PSC (prohibited species catch) among cooperatives has significantly changed the way the annual catch has accumulated (Fig 4.1, bottom panel) and the rate of target catch per bycatch ton. There is now a more even and slow attainment of the annual catch relative to the pre-Amendment 80 fishing behavior.  
 
-Yellowfin sole are usually headed and gutted, frozen at sea, and then shipped to Asian countries for further processing (AFSC 2016).  The first wholesale value of Alaska yellowfin sole totaled $97.8 million in 2014.  From 2016 to 2017 the first wholesale price of all Bering Sea flatfish fisheries increased 16% to $192.9 million t and yellowfin sole price increased 19% year over year. In 2010, following a comprehensive assessment process, the yellowfin sole fishery was certified under the Marine Stewardship Council environmental standard for sustainable and well-managed fisheries.  The certification also applies to all the major flatfish fisheries in the BSAI and GOA.  The total annual catch (t) since 1964 is shown in Table 4.1.
+Yellowfin sole are usually headed and gutted, frozen at sea, and then shipped to Asian countries for further processing (AFSC 2016).  The first wholesale value of Alaska yellowfin sole totaled $97.8 million in 2014.  From 2016 to 2017 the first wholesale price of all Bering Sea flatfish fisheries increased 16% to $192.9 million t and yellowfin sole price increased 19% year over year. In 2010, following a comprehensive assessment process, the yellowfin sole fishery was certified under the Marine Stewardship Council environmental standard for sustainable and well-managed fisheries.  The certification also applies to all the major flatfish fisheries in the BSAI and GOA.  The total annual catch (t) since implementation of the MFCMA in 1977 is shown in Table 4.1.
 
 In 2011, federally permitted vessels using non-pelagic trawl gear whose harvest resulted in flatfish retained catch that was greater than any other retained fishery category were required to use modified trawl gear.  The modifications required the use of elevating devices to raise the section of the trawl warps between the doors and the trawl wing tips by 2.5 inches off the seafloor.  The purpose of the management action was to reduce damage of non-target animals, particularly those that form habitat structure or support other fisheries while not substantially reducing flatfish catch rates or causing gear handling problems (Rose et al. 2010).
+In 2011, federally permitted vessels using non-pelagic trawl gear whose harvest results in flatfish retained catch that is greater than any other retained fishery category were required to use modified trawl gear.  The modifications required the use of elevating devices to raise the section of the trawl warps between the doors and the trawl wing tips by 2.5 inches off the seafloor.  The purpose of the management action was to reduce damage of non-target animals, particularly those that form habitat structure or support other fisheries while not substantially reducing flatfish catch rates or causing gear handling problems (Rose et al. 2010).
 
 The 1997 catch of 181,389 t (retained and discards) was the largest since the fishery became completely domestic, but decreased from 1998–2010, averaging 94,004 t (Table 4.2).  From 2011-2014 the catch increased, averaging 155,000 t.  The 2013 catch totaled 165,000 t (73% of the ABC), the highest annual catch in the past 19 years.  For `r thisyr`, the catch distribution has been spread out from January through May with the majority coming from four BSAI management areas (509, 513, 514, 517).  As of mid-September `r thisyr`, the fishing season is ongoing.  In order to estimate the total `r thisyr` catch for the stock assessment model, the average proportion of the `r thisyr-8`-`r thisyr-1` cumulative catch attained by the 35th week of the year (mid-September) was applied to the `r thisyr` catch amount at the same time period and results in a `r thisyr` catch estimate of 146,500 t (53% of the ABC).  The size composition of the `r thisyr` catch for both males and females, from observer sampling, are shown in Figure 4.2, the catch proportions by month and area are shown in Figure 4.3, and maps of the locations where yellowfin sole were caught in `r thisyr`, by month (through mid-September), are shown in Figure 4.4.  The average age of yellowfin sole in the `r thisyr-1` catch is estimated at 12.6 and 13.5 years for females and males, respectively.
 
