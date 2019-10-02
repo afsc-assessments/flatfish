@@ -2920,7 +2920,12 @@ FUNCTION Write_R
   R_report << "Bottom_temp" << endl << env_cov << endl;         //IS 9/2019  
   R_report << "pred_srv" << endl << pred_srv << endl;           //IS 9/2019  
   R_report << "catage_f" << endl << catage_f << endl;           //IS 9/2019  
-  R_report << "catage_m" << endl << catage_m << endl;           //IS 9/2019  
+  R_report << "catage_m" << endl << catage_m << endl;           //IS 9/2019
+  R_report << "natage_f" << endl << natage_f << endl;           //IS 10/2019
+  R_report << "natage_m" << endl << natage_m << endl;           //IS 10/2019 
+  R_report << "Fmort" << endl << Fmort << endl;           //IS 10/2019 
+  R_report << "sel_fsh_f" << endl << sel_fsh_f << endl; //IS 10/2019
+  R_report << "sel_fsh_m" << endl << sel_fsh_m << endl; //IS 10/2019 
 
   
   R_report<<"#Future_F"<<endl; 
