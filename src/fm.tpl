@@ -1814,22 +1814,22 @@ FUNCTION write_srec
          " "  << phizero/1000   <<
          " "  << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<
          " "  << sigmaR         << endl;
-  R_report << "#Bzero" <<endl;
+  R_report << "Bzero" <<endl;
   R_report << "Bzero" <<endl;
   R_report << Bzero    <<endl;
-  R_report << "#phizero" <<endl;
+  R_report << "phizero" <<endl;
   R_report << "phizero" <<endl;
   R_report << phizero/1000<<endl;
-  R_report << "#alpha_sr" <<endl;
+  R_report << "alpha_sr" <<endl;
   R_report << "alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
-  R_report << "#R_alpha" <<endl;
+  R_report << "R_alpha" <<endl;
   R_report << "R_alpha" <<endl;
   R_report << R_alpha <<endl;
-  R_report << "#R_beta" <<endl;
+  R_report << "R_beta" <<endl;
   R_report << "R_beta" <<endl;
   R_report << R_beta <<endl;
-  R_report << "#sigmaR" <<endl;
+  R_report << "sigmaR" <<endl;
   R_report << "sigmaR" <<endl;
   R_report << sigmaR    <<endl;
 
@@ -1994,15 +1994,15 @@ REPORT_SECTION
     {
       if (nyrs_fsh_age_c(k) >0)
       {
-        R_report << "#yrs_fsh_age_c" <<endl;
+        R_report << "yrs_fsh_age_c" <<endl;
         R_report << yrs_fsh_age_c(k) <<endl;
-        R_report << "#eac_fsh_c"<<endl;
+        R_report << "eac_fsh_c"<<endl;
         for (i=1;i<=nyrs_fsh_age_c(k);i++)
           R_report << eac_fsh_c(k,i) << endl; 
-        R_report << "#oac_fsh_c"<<endl;
+        R_report << "oac_fsh_c"<<endl;
         for (i=1;i<=nyrs_fsh_age_c(k);i++)
           R_report << oac_fsh_c(k,i) << endl; 
-        R_report << "#effN_fsh_c"<<endl;
+        R_report << "effN_fsh_c"<<endl;
         for (i=1;i<=nyrs_fsh_age_c(k);i++)
           R_report <<Eff_N(oac_fsh_c(k,i),eac_fsh_c(k,i)) <<" ";
         R_report <<endl;
@@ -2010,12 +2010,12 @@ REPORT_SECTION
   
       if (nyrs_fsh_age_s(k) >0)
       {
-        R_report << "#yrs_fsh_age_s" <<endl;
+        R_report << "yrs_fsh_age_s" <<endl;
         R_report << yrs_fsh_age_s(k) <<endl;
-        R_report << "#eac_fsh_s"<<endl;
+        R_report << "eac_fsh_s"<<endl;
         for (i=1;i<=nyrs_fsh_age_s(k);i++)
           R_report << eac_fsh_s(k,i) << endl; 
-        R_report << "#oac_fsh_s"<<endl;
+        R_report << "oac_fsh_s"<<endl;
         for (i=1;i<=nyrs_fsh_age_s(k);i++)
           R_report << oac_fsh_s(k,i) << endl; 
         R_report << "#effN_fsh_s"<<endl;
@@ -2053,15 +2053,15 @@ REPORT_SECTION
     {
       if (nyrs_srv_age_c(k) >0)
       {
-        R_report << "#yrs_srv_age_c" <<endl;
+        R_report << "yrs_srv_age_c" <<endl;
         R_report << yrs_srv_age_c(k) <<endl;
-        R_report << "#eac_srv_c"<<endl;
+        R_report << "eac_srv_c"<<endl;
         for (i=1;i<=nyrs_srv_age_c(k);i++)
           R_report << eac_srv_c(k,i) << endl; 
-        R_report << "#oac_srv_c"<<endl;
+        R_report << "oac_srv_c"<<endl;
         for (i=1;i<=nyrs_srv_age_c(k);i++)
           R_report << oac_srv_c(k,i) << endl; 
-        R_report << "#effN_srv_c"<<endl;
+        R_report << "effN_srv_c"<<endl;
         for (i=1;i<=nyrs_srv_age_c(k);i++)
           R_report <<Eff_N(oac_srv_c(k,i),eac_srv_c(k,i)) <<" ";
         R_report <<endl;
@@ -2069,15 +2069,15 @@ REPORT_SECTION
   
       if (nyrs_srv_age_s(k) >0)
       {
-        R_report << "#yrs_srv_age_s" <<endl;
+        R_report << "yrs_srv_age_s" <<endl;
         R_report << yrs_srv_age_s(k) <<endl;
-        R_report << "#eac_srv_s"<<endl;
+        R_report << "eac_srv_s"<<endl;
         for (i=1;i<=nyrs_srv_age_s(k);i++)
           R_report << eac_srv_s(k,i) << endl; 
-        R_report << "#oac_srv_s"<<endl;
+        R_report << "oac_srv_s"<<endl;
         for (i=1;i<=nyrs_srv_age_s(k);i++)
           R_report << oac_srv_s(k,i) << endl; 
-        R_report << "#effN_srv_s"<<endl;
+        R_report << "effN_srv_s"<<endl;
         for (i=1;i<=nyrs_srv_age_s(k);i++)
           R_report <<Eff_N(oac_srv_s(k,i),eac_srv_s(k,i))<<" ";
         R_report <<endl;
@@ -2415,7 +2415,7 @@ GLOBALS_SECTION
 	Prints name and value of \a object on ADMB report %ofstream file.
 	*/
 	#undef REPORT
-	#define REPORT(object) R_report << "#" #object "\n" << object << endl;
+	#define REPORT(object) R_report << #object "\n" << object << endl;
 
   #undef WriteData
   #define WriteData(object) SimDat << "#" #object "\n" << object << endl;
@@ -2830,26 +2830,26 @@ FUNCTION Get_Pred_wt
     }
 
 FUNCTION Write_R_wts
-  R_report<<"#Yr"<<endl; for (i=styr;i<=endyr;i++) R_report<<i<<" "; R_report<<endl;
-  R_report<<"#Yr_wt"<<endl; for (i=styr_wt;i<=endyr_wt;i++) R_report<<i<<" "; R_report<<endl;
+  R_report<<"Yr"<<endl; for (i=styr;i<=endyr;i++) R_report<<i<<" "; R_report<<endl;
+  R_report<<"Yr_wt"<<endl; for (i=styr_wt;i<=endyr_wt;i++) R_report<<i<<" "; R_report<<endl;
 
-  R_report<<"#wt_obs_f" <<endl;
+  R_report<<"wt_obs_f" <<endl;
   R_report<<  wt_obs_f  <<endl;
-  R_report<<"#wt_pred_f"<<endl;
+  R_report<<"wt_pred_f"<<endl;
   R_report<<  wt_pred_f <<endl;
 
-  R_report<<"#wt_obs_m" <<endl;
+  R_report<<"wt_obs_m" <<endl;
   R_report<<  wt_obs_m  <<endl;
-  R_report<<"#wt_pred_m"<<endl;
+  R_report<<"wt_pred_m"<<endl;
   R_report<< wt_pred_m  <<endl;
 
-  R_report<<"#wt_srv_f" <<endl;
+  R_report<<"wt_srv_f" <<endl;
   R_report<<  wt_srv_f  <<endl;
 
-  R_report<<"#wt_srv_m" <<endl;
+  R_report<<"wt_srv_m" <<endl;
   R_report<<  wt_srv_m  <<endl;
 
-  R_report<<"#wt_like"  <<endl;
+  R_report<<"wt_like"  <<endl;
   R_report <<  wt_like(1)<<endl;
 
   // Make a dataframe (long) with year, Population, report << "Estimated_sex_ratio Year Total Mature Age_7+"<< endl;
@@ -2903,20 +2903,20 @@ FUNCTION Write_R
   REPORT(sel_fsh_f);
   REPORT(sel_fsh_m);
 
-  R_report << "#survey_likelihood "         << endl << srv_like     << endl;
-  R_report << "#catch_likelihood "          << endl << catch_like   << endl;
-  R_report << "#age_likelihood_for_fishery" << endl << age_like_fsh << endl;
-  R_report << "#age_likeihood_for_survey "  << endl << age_like_srv << endl;
-  R_report << "#recruitment_likelilhood "   << endl << rec_like     << endl;
-  R_report << "#selectivity_likelihood "    << endl << sel_like     << endl;
-  R_report << "#q_Prior "                   << endl << q_prior      << endl;
-  R_report << "#sigmaR_Prior "              << endl << sigmaR_prior << endl;
-  R_report << "#m_Prior "                   << endl << m_prior      << endl;
-  R_report << "#F_penalty"                  << endl << fpen         << endl;
-  R_report << "#SPR_penalty"                << endl << sprpen       << endl;
-  R_report << "#obj_fun"                    << endl << obj_fun      << endl; 
-  R_report << "#Obs_catch"<< endl << obs_catch << endl;          //IS 9/2019
-  R_report << "#Pred_catch" << endl << pred_catch << endl;       //IS 9/2019  
+  R_report << "survey_likelihood "         << endl << srv_like     << endl;
+  R_report << "catch_likelihood "          << endl << catch_like   << endl;
+  R_report << "age_likelihood_for_fishery" << endl << age_like_fsh << endl;
+  R_report << "age_likeihood_for_survey "  << endl << age_like_srv << endl;
+  R_report << "recruitment_likelilhood "   << endl << rec_like     << endl;
+  R_report << "selectivity_likelihood "    << endl << sel_like     << endl;
+  R_report << "q_Prior "                   << endl << q_prior      << endl;
+  R_report << "sigmaR_Prior "              << endl << sigmaR_prior << endl;
+  R_report << "m_Prior "                   << endl << m_prior      << endl;
+  R_report << "F_penalty"                  << endl << fpen         << endl;
+  R_report << "SPR_penalty"                << endl << sprpen       << endl;
+  R_report << "obj_fun"                    << endl << obj_fun      << endl; 
+  R_report << "Obs_catch"<< endl << obs_catch << endl;          //IS 9/2019
+  R_report << "Pred_catch" << endl << pred_catch << endl;       //IS 9/2019  
   R_report << "Bottom_temp" << endl << env_cov << endl;         //IS 9/2019  
   R_report << "pred_srv" << endl << pred_srv << endl;           //IS 9/2019  
   R_report << "catage_f" << endl << catage_f << endl;           //IS 9/2019  
@@ -2928,21 +2928,21 @@ FUNCTION Write_R
   R_report << "sel_fsh_m" << endl << sel_fsh_m << endl; //IS 10/2019 
 
   
-  R_report<<"#Future_F"<<endl; 
+  R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
   {
     double lb=value(future_Fs(i)/exp(2.*sqrt(log(1+square(future_Fs.sd(i))/square(future_Fs(i))))));
     double ub=value(future_Fs(i)*exp(2.*sqrt(log(1+square(future_Fs.sd(i))/square(future_Fs(i))))));
     R_report<<i<<" "<<future_Fs(i)<<" "<<future_Fs.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-  R_report<<"#SSB"<<endl; 
+  R_report<<"SSB"<<endl; 
 	for (i=styr;i<=endyr;i++) 
   {
     double lb=value(SSB(i)/exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));
     double ub=value(SSB(i)*exp(2.*sqrt(log(1+square(SSB.sd(i))/square(SSB(i))))));
     R_report<<i<<" "<<SSB(i)<<" "<<SSB.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-  R_report<<"#TotBiom"<<endl; 
+  R_report<<"TotBiom"<<endl; 
   for (i=styr;i<=endyr;i++) 
   {
     double lb=value(TotBiom(i)/exp(2.*sqrt(log(1+square(TotBiom.sd(i))/square(TotBiom(i))))));
@@ -2950,9 +2950,9 @@ FUNCTION Write_R
     R_report<<i<<" "<<TotBiom(i)<<" "<<TotBiom.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
 
-  R_report<<"#yr_bts"<<endl;
+  R_report<<"yr_bts"<<endl;
   R_report<<yrs_srv(1)<<endl;
-  R_report<<"#eb_bts"<<endl;
+  R_report<<"eb_bts"<<endl;
   double rmse=0.;
   for (int i=1;i<=nyrs_srv(1);i++)
   {
@@ -2960,13 +2960,13 @@ FUNCTION Write_R
     rmse += value(square(log(obs_srv(1,i)) - log(pred_srv(1,yrs_srv(1,i)))));
   }
   rmse = sqrt(rmse/nyrs_srv(1));
-  R_report << "#rmse_srv"                   << endl << rmse         << endl;
-  R_report<<"#ob_bts"<<endl;
+  R_report << "rmse_srv"                   << endl << rmse         << endl;
+  R_report<<"ob_bts"<<endl;
   R_report<<obs_srv(1)<<endl;
-  R_report<<"#sd_ob_bts"<<endl;
+  R_report<<"sd_ob_bts"<<endl;
   R_report<<obs_se_srv(1)<<endl;
 
-  R_report<<"#R"<<endl; for (i=styr;i<=endyr;i++) 
+  R_report<<"R"<<endl; for (i=styr;i<=endyr;i++) 
   {
     double lb=value(pred_rec(i)/exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     double ub=value(pred_rec(i)*exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
@@ -2974,7 +2974,7 @@ FUNCTION Write_R
   }
 
   int k=1;
-  R_report<<"#q"<<endl; for (i=1982;i<=endyr;i++) 
+  R_report<<"q"<<endl; for (i=1982;i<=endyr;i++) 
   {
     double lb=value(q_srv(k,i)/exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
     double ub=value(q_srv(k,i)*exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
@@ -2983,409 +2983,13 @@ FUNCTION Write_R
 
   for (k=1;k<=nsrv;k++)
   {
-    R_report << endl<< "#yrs_srv"<<endl;
+    R_report << endl<< "yrs_srv"<<endl;
     R_report << yrs_srv(k) << endl;
-    R_report << "#q_srv"<<endl;
+    R_report << "q_srv"<<endl;
     for (i=1;i<=nyrs_srv(k);i++)
       R_report<< q_srv(k,yrs_srv(k,i)) <<" ";
 	  R_report<< endl;
 	}      
-   
-      
-  /*
-
-  for (int k=1;k<=5;k++){
-    R_report<<"#SSB_fut_"<<k<<endl; 
-    for (i=styr_fut;i<=endyr_fut;i++) 
-    {
-      double lb=value(future_biomass(k,i)/exp(2.*sqrt(log(1+square(future_biomass.sd(k,i))/square(future_biomass(k,i))))));
-      double ub=value(future_biomass(k,i)*exp(2.*sqrt(log(1+square(future_biomass.sd(k,i))/square(future_biomass(k,i))))));
-      R_report<<i<<" "<<future_biomass(k,i)<<" "<<future_biomass.sd(k,i)<<" "<<lb<<" "<<ub<<endl;
-    }
-  }
-  double ctmp;
-  for (int k=1;k<=5;k++){
-    R_report<<"#Catch_fut_"<<k<<endl; 
-    for (i=styr_fut;i<=endyr_fut;i++) 
-    {
-      if (k==5) ctmp=0.;else ctmp=value(future_catch(k,i));
-      R_report<<i<<" "<<ctmp<<endl;
-    }
-  }
-    R_report << "#N"<<endl;
-    for (i=styr;i<=endyr;i++) 
-      R_report <<   i << " "<< natage(i) << endl;
-      R_report   << endl;
-
-    for (int k=1;k<=nfsh;k++)
-    {
-      R_report << "#F_age_"<< (k) <<""<< endl ;
-      for (i=styr;i<=endyr;i++) 
-        R_report <<i<<" "<<F(k,i)<<" "<< endl;
-        R_report   << endl;
-    }
-
-    R_report <<endl<< "#Fshry_names"<< endl;
-    for (int k=1;k<=nfsh;k++)
-      R_report << fshname(k) << endl ;
-
-    R_report <<endl<< "#Index_names"<< endl;
-    for (int k=1;k<=nsrv;k++)
-      R_report << srvname(k) << endl ;
-
-    for (int k=1;k<=nsrv;k++)
-    {
-      int ii=1;
-      R_report <<endl<< "#Obs_Survey_"<< k <<""<< endl ;
-      for (i=styr;i<=endyr;i++)
-      {
-        if (ii<=yrs_srv(k).indexmax())
-        {
-          if (yrs_srv(k,ii)==i)
-          {
-            R_report << i<< " "<< obs_srv(k,ii) << " "<< pred_srv(k,i) <<" "<< obs_se_srv(k,ii) <<endl; //values of survey index value (annual)
-            ii++;
-          }
-          else
-            R_report << i<< " -1 "<< " "<< pred_srv(k,i)<<" -1 "<<endl;
-        }
-        else
-          R_report << i<< " -1 "<< " "<< pred_srv(k,i)<<" -1 "<<endl;
-      }
-      R_report   << endl;
-    }
-
-    R_report   << endl;
-    for (int k=1;k<=nfsh;k++)
-    {
-      if (nyrs_fsh_age(k)>0) 
-      { 
-        R_report << "#pobs_fsh_"<< (k) <<""<< endl;
-        for (i=1;i<=nyrs_fsh_age(k);i++) 
-          R_report << yrs_fsh_age(k,i)<< " "<< oac_fsh(k,i) << endl;
-        R_report   << endl;
-      }
-    }
-    for (int k=1;k<=nfsh;k++)
-    {
-      if (nyrs_fsh_age(k)>0) 
-      { 
-        R_report << "#phat_fsh_"<< (k) <<""<< endl;
-        for (i=1;i<=nyrs_fsh_age(k);i++) 
-          R_report << yrs_fsh_age(k,i)<< " "<< eac_fsh(k,i) << endl;
-          R_report   << endl;
-      }
-    }
-    for (int k=1;k<=nsrv;k++)
-    {
-      if (nyrs_srv_age(k)>0) 
-      { 
-        R_report << "#pobs_srv_"<<(k)<<""<<  endl;
-        for (i=1;i<=nyrs_srv_age(k);i++) 
-          R_report << yrs_srv_age(k,i)<< " "<< oac_srv(k,i) << endl;
-          R_report   << endl;
-      }
-    }
-    for (int k=1;k<=nsrv;k++)
-    {
-      if (nyrs_srv_age(k)>0) 
-      { 
-        R_report << "#phat_srv_"<<(k)<<""<<  endl;
-        for (i=1;i<=nyrs_srv_age(k);i++) 
-          R_report << yrs_srv_age(k,i)<< " "<< eac_srv(k,i) << endl;
-          R_report   << endl;
-      }
-    }
-    for (int k=1;k<=nfsh;k++)
-    {
-      R_report << endl<< "#Obs_catch_"<<(k) << endl;
-      R_report << obs_catch(k)(styr,endyr)<< endl;
-      R_report   << endl;
-      R_report << "#Pred_catch_" <<(k) << endl;
-      R_report << pred_catch(k) << endl;
-      R_report   << endl;
-    }
-
-    for (int k=1;k<=nfsh;k++)
-    {
-      R_report << "#F_fsh_"<<(k)<<" "<<endl;
-      for (i=styr;i<=endyr;i++)
-      {
-        R_report<< i<< " ";
-        R_report<< mean(F(k,i)) <<" "<< mean(F(k,i))*max(sel_fsh(k,i)) << " ";
-        R_report<< endl;
-      }
-    }
-
-    for (int k=1;k<=nfsh;k++)
-    {
-      R_report << endl<< "#sel_fsh_"<<(k)<<"" << endl;
-      for (i=styr;i<=endyr;i++)
-        R_report << k <<"  "<< i<<" "<<sel_fsh(k,i) << endl; 
-      R_report   << endl;
-    }
-
-    for (int k=1;k<=nsrv;k++)
-    {
-      R_report << endl<< "#sel_srv_"<<(k)<<"" << endl;
-      for (i=styr;i<=endyr;i++)
-        R_report << k <<"  "<< i<<" "<<sel_srv(k,i) << endl;
-        R_report << endl;
-
-    }
-    R_report << endl<< "#Stock_Rec"<< endl;
-    for (i=styr_rec;i<=endyr;i++)
-      if (active(log_Rzero))
-        R_report << i<< " "<<Sp_Biom(i-rec_age)<< " "<< SRecruit(Sp_Biom(i-rec_age))<< " "<< mod_rec(i)<<endl;
-      else 
-        R_report << i<< " "<<Sp_Biom(i-rec_age)<< " "<< " 999" << " "<< mod_rec(i)<<endl;
-        
-        R_report   << endl;
-
-    R_report <<"#stock_Rec_Curve"<<endl;
-    R_report <<"0 0"<<endl;
-    dvariable stock;
-    for (i=1;i<=30;i++)
-    {
-      stock = double (i) * Bzero /25.;
-      if (active(log_Rzero))
-        R_report << stock <<" "<< SRecruit(stock)<<endl;
-      else
-        R_report << stock <<" 99 "<<endl;
-    }
-    R_report   << endl;
-
-    R_report   << endl<<"#Like_Comp" <<endl;
-    obj_comps(11)= obj_fun - sum(obj_comps) ; // Residual
-    obj_comps(12)= obj_fun ;
-
-    R_report   <<obj_comps<<endl;
-    R_report   << endl;
-    R_report   << endl<<"#Like_Comp_names" <<endl;
-    R_report   <<"catch_like     "<<endl
-             <<"age_like_fsh     "<<endl
-             <<"sel_like_fsh     "<<endl
-             <<"surv_like        "<<endl
-             <<"age_like_srv     "<<endl
-             <<"sel_like_srv     "<<endl
-             <<"rec_like         "<<endl
-             <<"fpen             "<<endl
-             <<"post_priors_srvq "<<endl
-             <<"post_priors      "<<endl
-             <<"residual         "<<endl
-             <<"total            "<<endl;
-    for (int k=1;k<=nfsh;k++)
-    {
-      R_report << "#Sel_Fshry_"<< (k) <<""<<endl;
-      R_report << sel_like_fsh(k) << endl;
-    }
-    R_report   << endl;
-  
-    for (int k=1;k<=nsrv;k++)
-    {
-      R_report << "#Survey_Index_"<< (k) <<"" <<endl;
-      R_report<< surv_like(k)<<endl;
-    }
-    R_report   << endl;
-
-    R_report << setw(10)<< setfixed() << setprecision(5) <<endl;
-    for (int k=1;k<=nsrv;k++)
-    {
-      R_report << "#Age_Survey_"<< (k) <<"" <<endl;
-      R_report << age_like_srv(k)<<endl;
-    }
-    R_report   << endl;
-
-    for (int k=1;k<=nsrv;k++)
-    {
-      R_report << "#Sel_Survey_"<< (k) <<""<<endl;
-      R_report<< sel_like_srv(k,1) <<" "<<sel_like_srv(k,2)<<" "<<sel_like_srv(k,3)<< endl;
-    }
-    R_report   << endl;
-
-    R_report << setw(10)<< setfixed() << setprecision(5) <<endl;
-    R_report   << "#Rec_Pen" <<endl<<sigmaR<<"  "<<rec_like<<endl;
-    R_report   << endl;
-
-    R_report   << "#F_Pen" <<endl;
-    R_report<<fpen(1)<<"  "<<fpen(2)<<endl;
-    R_report   << endl;
-    for (int k=1;k<=nsrv;k++)
-    {
-      R_report << "#Q_Survey_"<< (k) <<""<<endl
-             << " "<<post_priors_srvq(k)
-             << " "<< q_srv(k)
-             << " "<< qprior(k)
-             << " "<< cvqprior(k)<<endl;
-      R_report << "#Q_power_Survey_"<< (k) <<""<<endl
-             << " "<<post_priors_srvq(k)
-             << " "<< q_power_srv(k)
-             << " "<< q_power_prior(k)
-             << " "<< cvq_power_prior(k)<<endl;
-    }
-             R_report   << endl;
-    R_report << "#M"<<endl;
-    R_report << " "<< post_priors(1)
-             << " "<< M
-             << " "<< natmortprior
-             << " "<< cvnatmortprior <<endl;
-    R_report   << endl;
-    R_report << "#Steep"<<endl;
-    R_report << " "<< post_priors(2)
-             << " "<< steepness
-             << " "<< steepnessprior
-             << " "<< cvsteepnessprior <<endl;
-    R_report   << endl;
-    R_report << "#Sigmar"<<endl;
-    R_report << " "<< post_priors(3)
-             << " "<< sigmaR
-             << " "<< sigmaRprior
-             << " "<< cvsigmaRprior <<endl;
-    R_report   << endl;
-    R_report<<"#Num_parameters_Est"<<endl;
-    R_report<<initial_params::nvarcalc()<<endl;
-    R_report   << endl;
-    
-  R_report<<"#Steep_Prior" <<endl;
-  R_report<<steepnessprior<<" "<<
-    cvsteepnessprior<<" "<<
-    phase_srec<<" "<< endl;
-    R_report   << endl;
-
-  R_report<<"#sigmaRPrior " <<endl;
-  R_report<<sigmaRprior<<" "<<  cvsigmaRprior <<" "<<phase_sigmaR<<endl;
-  R_report   << endl;
-
-  R_report<<"#Rec_estimated_in_styr_endyr " <<endl;
-  R_report<<styr_rec    <<" "<<endyr        <<" "<<endl;
-  R_report   << endl;
-  R_report<<"#SR_Curve_fit__in_styr_endyr " <<endl;
-  R_report<<styr_rec_est<<" "<<endyr_rec_est<<" "<<endl;
-  R_report   << endl;
-  R_report<<"#Model_styr_endyr" <<endl;
-  R_report<<styr        <<" "<<endyr        <<" "<<endl;
-  R_report   << endl;
-
-  R_report<<"#M_prior "<<endl;
-  R_report<< natmortprior<< " "<< cvnatmortprior<<" "<<phase_M<<endl;
-  R_report   << endl;
-  R_report<<"#qprior " <<endl;
-  R_report<< qprior<<" "<<cvqprior<<" "<< phase_q<<endl;
-  R_report<<"#q_power_prior " <<endl;
-  R_report<< q_power_prior<<" "<<cvq_power_prior<<" "<< phase_q_power<<endl;
-  R_report   << endl;
-
-  R_report<<"#cv_catchbiomass " <<endl;
-  R_report<<cv_catchbiomass<<" "<<endl;
-  R_report   << endl;
-  R_report<<"#Projection_years"<<endl;
-  R_report<< nproj_yrs<<endl;
-  R_report   << endl;
-  
-  R_report << "#Fsh_sel_opt_fish "<<endl;
-  for (int k=1;k<=nfsh;k++)
-    R_report<<k<<" "<<fsh_sel_opt(k)<<" "<<sel_change_in_fsh(k)<<endl;
-    R_report   << endl;
-   R_report<<"#Survey_Sel_Opt_Survey " <<endl;
-  for (int k=1;k<=nsrv;k++)
-  R_report<<k<<" "<<(srv_sel_opt(k))<<endl;
-  R_report   << endl;
-    
-  R_report <<"#Phase_survey_Sel_Coffs "<<endl;
-  R_report <<phase_selcoff_srv<<endl;
-  R_report   << endl;
-  R_report <<"#Fshry_Selages " << endl;
-  R_report << nselages_in_fsh  <<endl;
-  R_report   << endl;
-  R_report <<"#Survy_Selages " <<endl;
-  R_report <<nselages_in_srv <<endl;
-  R_report   << endl;
-
-  R_report << "#Phase_for_age_spec_fishery"<<endl;
-  R_report <<phase_selcoff_fsh<<endl;
-  R_report   << endl;
-  R_report << "#Phase_for_logistic_fishery"<<endl;
-  R_report <<phase_logist_fsh<<endl;
-  R_report   << endl;
-  R_report << "#Phase_for_dble_logistic_fishery "<<endl;
-  R_report <<phase_dlogist_fsh<<endl;
-  R_report   << endl;
-
-  R_report << "#Phase_for_age_spec_survey  "<<endl;
-  R_report <<phase_selcoff_srv<<endl;
-  R_report   << endl;
-  R_report << "#Phase_for_logistic_survey  "<<endl;
-  R_report <<phase_logist_srv<<endl;
-  R_report   << endl;
-  R_report << "#Phase_for_dble_logistic_srvy "<<endl;
-  R_report <<phase_dlogist_srv<<endl;
-  R_report   << endl;
-  
-  for (int k=1;k<=nfsh;k++)
-  {
-    if (nyrs_fsh_age(k)>0)
-    {
-      R_report <<"#EffN_Fsh_"<<(k)<<""<<endl;
-      for (i=1;i<=nyrs_fsh_age(k);i++)
-      {
-        double sda_tmp = Sd_age(oac_fsh(k,i));
-        R_report << yrs_fsh_age(k,i);
-        R_report<< " "<<Eff_N(oac_fsh(k,i),eac_fsh(k,i)) ;
-        R_report << " "<<Eff_N2(oac_fsh(k,i),eac_fsh(k,i));
-        R_report << " "<<mn_age(oac_fsh(k,i));
-        R_report << " "<<mn_age(eac_fsh(k,i));
-        R_report << " "<<sda_tmp;
-        R_report << " "<<mn_age(oac_fsh(k,i)) - sda_tmp *2. / sqrt(n_sample_fsh_age(k,i));
-        R_report << " "<<mn_age(oac_fsh(k,i)) + sda_tmp *2. / sqrt(n_sample_fsh_age(k,i));
-        R_report <<endl;
-      }
-    }
-  }
-
-  for (int k=1;k<=nfsh;k++)
-  {
-    R_report <<"#C_fsh_" <<(k)<<"" << endl; 
-    for (i=styr;i<=endyr;i++)
-      R_report <<i<<" "<<catage(k,i)<< endl;
-  }
-
-  R_report <<"#wt_a_pop" << endl<< wt_pop  <<endl;
-  R_report <<"#mature_a" << endl<< maturity<<endl;
-  for (int k=1;k<=nfsh;k++)
-  {
-    R_report <<"#wt_fsh_"<<(k)<<""<<endl;
-    for (i=styr;i<=endyr;i++)
-      R_report <<i<<" "<<wt_fsh(k,i)<< endl;
-  }
-  
-  for (int k=1;k<=nsrv;k++)
-  {
-    R_report <<"#wt_srv_"<<(k)<<""<<endl;
-    for (i=styr;i<=endyr;i++)
-      R_report <<i<<" "<<wt_srv(k,i)<< endl;
-  }
-  for (int k=1;k<=nsrv;k++)
-  {
-    if (nyrs_srv_age(k)>0)
-    {
-      R_report <<"#EffN_Survey_"<<(k)<<""<<endl;
-      for (i=1;i<=nyrs_srv_age(k);i++)
-      {
-        double sda_tmp = Sd_age(oac_srv(k,i));
-        R_report << yrs_srv_age(k,i)
-                << " "<<Eff_N(oac_srv(k,i),eac_srv(k,i)) 
-                 << " "<<Eff_N2(oac_srv(k,i),eac_srv(k,i))
-                 << " "<<mn_age(oac_srv(k,i))
-                 << " "<<mn_age(eac_srv(k,i))
-                 << " "<<sda_tmp
-                 << " "<<mn_age(oac_srv(k,i)) - sda_tmp *2. / sqrt(n_sample_srv_age(k,i))
-                 << " "<<mn_age(oac_srv(k,i)) + sda_tmp *2. / sqrt(n_sample_srv_age(k,i))
-                 <<endl;
-      }
-    }
-  }
-  */ 
-
   R_report.close();
 
 FINAL_SECTION

@@ -3,18 +3,18 @@ source("../R/prelims.R")
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
-#source("../R/compareRuns.r")
+source("../R/compareRuns.r")
 
 # Read in the output of the assessment
 # Read in model results
 .THEME
-plot_age_comps(m_temp_date_int)
+plot_age_comps(m0)
 i=5
-for (i in 0:4) {
-  rn=paste0("m",i,"/For_R.rep")
-  mn=paste0("mod",i)
-  assign(mn,readList(rn)) # USES PBS, got rid of that...
+for (i in 0:1) {
+  rn=paste0("../yfs/runs/m",i,"/fm.rep")
   print(rn)
+  mn=paste0("mod",i)
+  assign(mn,read_rep(rn)) # USES PBS, got rid of that...
 }
 file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)
 system("../../src/fm -nox -iprint 500")

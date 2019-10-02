@@ -11,15 +11,17 @@
     n <- length(M)
     ldf <- list()
     mdf <- mpf <- mrf <- NULL
+    colnames <- tolower(c("Model", "Sex", "Year",as.character(1:nages) ))
     for(i in 1:n)
     {
         A <- M[[i]]
         if (type=="fishery"){
           if (sex=="split"){
-            df <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_fsh_age_s,A$oac_fsh_s[,1:nages]) )
-            pf <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,1:nages]) )
-            df <- rbind(df,data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_fsh_age_s,A$oac_fsh_s[,(nages+1):(2*nages)])))
-            pf <- rbind(pf,data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,(nages+1):(2*nages)])))
+            dff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_fsh_age_s,A$oac_fsh_s[,1:nages]) )
+            dfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_fsh_age_s,A$oac_fsh_s[,(nages+1):(2*nages)]))
+            pff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,1:nages]) ) 
+            pfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,(nages+1):(2*nages)]))
+            colnames(dff) <- colnames(dfm) <- colnames(pff) <- colnames(pfm) <- colnames
           }
           else
           {
@@ -28,10 +30,13 @@
         else # survey
         {
           if (sex=="split"){
-            df <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_srv_age_s,A$oac_srv_s[,1:nages]) )
-            pf <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_srv_age_s,A$eac_srv_s[,1:nages]) )
-            df <- rbind(df,data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_srv_age_s,A$oac_srv_s[,(nages+1):(2*nages)])))
-            pf <- rbind(pf,data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_srv_age_s,A$eac_srv_s[,(nages+1):(2*nages)])))
+            dff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_srv_age_s,A$oac_srv_s[,1:nages]) )
+            dfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_srv_age_s,A$oac_srv_s[,(nages+1):(2*nages)]))
+            pff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_srv_age_s,A$eac_srv_s[,1:nages]) )
+            pfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_srv_age_s,A$eac_srv_s[,(nages+1):(2*nages)]))
+            colnames(dff) <- colnames(dfm) <- colnames(pff) <- colnames(pfm) <- colnames
+            df <- rbind(dff,dfm)
+            pf <- rbind(pff,pfm)
           }
           else
           {
@@ -45,8 +50,9 @@
         mdf <- rbind(mdf,df)
         mpf <- rbind(mpf,pf)
     }
-    mdf <- melt(mdf,id.var=1:3)
-    mpf <- melt(mpf,id.var=1:3)
+    mdf <- reshape2::melt(mdf,id.var=1:3)
+    mpf <- reshape2::melt(mpf,id.var=1:3)
+    head(mpf)
     
     for(i in 1:n)
     {
@@ -78,7 +84,7 @@ plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion",
     ylab <- paste0(ylab, "\n")
 
     mdf <- .get_ageComps_df(M,nages,type,sex)
-    
+   head(mdf) 
     ix <- pretty(1:nages)
     tdf <- mdf %>% mutate(pred=if_else(sex=="Males",-pred,pred),value=if_else(sex=="Males",-value,value))
     p <- ggplot(tdf,aes(variable,value,fill=sex)) +
