@@ -1,4 +1,6 @@
 plot_sel <- function(mod, title=NULL,alpha=0.3,styr=1991,endyr=2020,bysex=TRUE,sexoverlay=TRUE){
+#mod=M[[1]]; title="stuff";alpha=0.3;styr=1991;endyr=2020;bysex=TRUE;sexoverlay=TRUE
+names(mod)
   mdf <- data.frame(Year=mod$Yr,sex="males",mod$sel_fsh_m)
   mdf <- rbind(mdf,data.frame(Year=mod$Yr,sex="females",mod$sel_fsh_f))
   names(mdf)[3:22] <- 1:20

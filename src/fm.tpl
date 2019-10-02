@@ -21,6 +21,8 @@ DATA_SECTION
   int oper_mod
   int mcmcmode
   int mcflag
+  !! *(ad_comm::global_datafile) >>  model_name; 
+  !! *(ad_comm::global_datafile) >>  datafile; 
  LOCAL_CALCS
   oper_mod = 0;
   mcmcmode = 0;
@@ -65,9 +67,8 @@ DATA_SECTION
   }
  END_CALCS
   // Start reading control file......................................................
+	!! cout<<model_name<<endl<<datafile<<endl;
   !!ad_comm::change_datafile_name("mod.ctl");  // GRID
-  !! *(ad_comm::global_datafile) >>  model_name; 
-  !! *(ad_comm::global_datafile) >>  datafile; 
   init_int Growth_Option
   int phase_grwth
   int phase_wt
@@ -1815,21 +1816,15 @@ FUNCTION write_srec
          " "  << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<
          " "  << sigmaR         << endl;
   R_report << "Bzero" <<endl;
-  R_report << "Bzero" <<endl;
   R_report << Bzero    <<endl;
-  R_report << "phizero" <<endl;
   R_report << "phizero" <<endl;
   R_report << phizero/1000<<endl;
   R_report << "alpha_sr" <<endl;
-  R_report << "alpha_sr" <<endl;
   R_report << (log(R_alpha)-R_beta*Btmp+log(phizero))/(1.-Btmp/Bzero) <<endl;
-  R_report << "R_alpha" <<endl;
   R_report << "R_alpha" <<endl;
   R_report << R_alpha <<endl;
   R_report << "R_beta" <<endl;
-  R_report << "R_beta" <<endl;
   R_report << R_beta <<endl;
-  R_report << "sigmaR" <<endl;
   R_report << "sigmaR" <<endl;
   R_report << sigmaR    <<endl;
 

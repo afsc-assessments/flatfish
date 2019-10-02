@@ -54,10 +54,10 @@
     mpf <- reshape2::melt(mpf,id.var=1:3)
     head(mpf)
     
-    for(i in 1:n)
-    {
-      mdf <-cbind(mdf,pred=mpf$value)
-    }   
+    #for(i in 1:n)
+    #{
+    #  mdf <-cbind(mdf,pred=mpf$value)
+    #}   
     return(mdf)
 }
 
