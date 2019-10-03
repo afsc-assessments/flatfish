@@ -8,6 +8,7 @@ setwd(paste0("../../src"))
 system("make")
 setwd(owd)
 runmod=TRUE
+runmod=F
 i=0
 setwd(paste0("../yfs/runs/m",i))
 system("make")
@@ -18,7 +19,7 @@ for (i in 0:1) {
   setwd(paste0("../yfs/runs/m",i))
   if (runmod) system("make")
   mn=paste0("mod",i)
-  assign(mn,read_rep("fm.rep")) # USES PBS, got rid of that...
+  assign(mn,read_rep("fm.rep")) 
   setwd(owd)
 }
 # make model set into list
@@ -29,6 +30,11 @@ plot_q(M)
 plot_sel(M[[2]],title="2019 base case model")
 plot_age_comps(M[1])
 plot_sex_ratio(M[[1]])
+
+#####################################
+# ignore from here down...
+#####################################
+
 
 file.copy("mod1.ctl", "mod.ctl",overwrite=TRUE)
 system("../../src/fm -nox -iprint 500")

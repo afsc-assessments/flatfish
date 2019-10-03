@@ -8,12 +8,13 @@
 #'
 .get_ageComps_df <- function(M,nages=20,type="fishery",sex="split")
 {
+  #nages=20;type="fishery";sex="split";M=M[1]
     n <- length(M)
     ldf <- list()
     mdf <- mpf <- mrf <- NULL
     colnames <- tolower(c("Model", "Sex", "Year",as.character(1:nages) ))
-    for(i in 1:n)
-    {
+    i=1
+    for(i in 1:n) {
         A <- M[[i]]
         if (type=="fishery"){
           if (sex=="split"){
@@ -26,9 +27,7 @@
           else
           {
           }
-        }
-        else # survey
-        {
+        } else {
           if (sex=="split"){
             dff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_srv_age_s,A$oac_srv_s[,1:nages]) )
             dfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_srv_age_s,A$oac_srv_s[,(nages+1):(2*nages)]))
@@ -44,20 +43,20 @@
           }
           
         }
-        colnames(df) <- tolower(c("Model", "Sex", "Year",as.character(1:nages) ))
-        colnames(pf) <- colnames(df)
+        #colnames(df) <- tolower(c("Model", "Sex", "Year",as.character(1:nages) ))
+        #colnames(pf) <- colnames(df)
 		
         mdf <- rbind(mdf,df)
         mpf <- rbind(mpf,pf)
     }
     mdf <- reshape2::melt(mdf,id.var=1:3)
     mpf <- reshape2::melt(mpf,id.var=1:3)
-    head(mpf)
+    head(mdf)
     
-    #for(i in 1:n)
-    #{
-    #  mdf <-cbind(mdf,pred=mpf$value)
-    #}   
+    for(i in 1:n)
+    {
+      mdf <-cbind(mdf,pred=mpf$value)
+    }   
     return(mdf)
 }
 
@@ -78,8 +77,8 @@
 #' @export
 #'
 plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion", 
-                           nages=20,type="fishery",sex="split",title="Fishery age compositions")
-{
+                           nages=20,type="fishery",sex="split",title="Fishery age compositions") {
+M; xlab = "Age (yrs)"; ylab = "Proportion"; nages=20;type="fishery";sex="split";title="Fishery age compositions")
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
 
