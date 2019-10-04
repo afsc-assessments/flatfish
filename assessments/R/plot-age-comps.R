@@ -6,9 +6,8 @@
 #' @author Jim Ianelli
 #' @export
 #'
-.get_ageComps_df <- function(M,nages=20,type="fishery",sex="split")
-{
-  #nages=20;type="fishery";sex="split";M=M[1]
+.get_ageComps_df <- function(M,nages=20,type="fishery",sex="split") {
+  #nages=20;type="fishery";sex="split";M=M[2]
     n <- length(M)
     ldf <- list()
     mdf <- mpf <- mrf <- NULL
@@ -23,6 +22,8 @@
             pff <- data.frame(Model=names(M)[i], sex="Females",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,1:nages]) ) 
             pfm <- data.frame(Model=names(M)[i], sex="Males",cbind(A$yrs_fsh_age_s,A$eac_fsh_s[,(nages+1):(2*nages)]))
             colnames(dff) <- colnames(dfm) <- colnames(pff) <- colnames(pfm) <- colnames
+            df <- rbind(dff,dfm)
+            pf <- rbind(pff,pfm)
           }
           else
           {
@@ -78,7 +79,7 @@
 #'
 plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion", 
                            nages=20,type="fishery",sex="split",title="Fishery age compositions") {
-M; xlab = "Age (yrs)"; ylab = "Proportion"; nages=20;type="fishery";sex="split";title="Fishery age compositions")
+ #xlab = "Age (yrs)"; ylab = "Proportion"; nages=20;type="fishery";sex="split";title="Fishery age compositions"
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
 

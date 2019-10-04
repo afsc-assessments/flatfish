@@ -28,9 +28,9 @@ plot_bts(M ,alpha=.6)
 plot_q(M)
 #plot_sel(M[[1]],title="Last year's selectivity ")
 plot_sel(M[[2]],title="2019 base case model")
-plot_age_comps(M[1])
-plot_sex_ratio(M[[1]])
 
+plot_age_comps(M[2])
+plot_age_comps(M[2],type="survey",title="Survey age compositions")   
 #####################################
 # ignore from here down...
 #####################################
