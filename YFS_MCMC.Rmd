@@ -1,0 +1,56 @@
+---
+title: "YFS flatfish mcmc"
+author: "SSMA Authors"
+date: "10/9/2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("../R/prelims.R")
+mytheme = .THEME
+#---------------------------------------------------------------
+# Read in MCMC header and results
+hdr <- read.table("hdr.dat",as.is=T,header=F)
+mc.df <-tibble()
+mods  <- c("Base","Model 18.1","FixQ", "Model 14.2")
+i=2
+for (i in c(2,4)){
+  mctmp.df <-read_table2(paste0("arc/mod",i,"_evalout.rep"),col_names=FALSE) 
+  names(mctmp.df) <- hdr
+  mctmp.df$Model <- mods[i]
+  mctmp.df$ModNum <- i
+  mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
+  mc.df <- rbind(mc.df,mctmp.df)
+}
+#---------------------------------------------------------------
+
+```
+
+## Marginals from MCMC runs
+Model 2 (called Model 18_1 in SAFE) and Model 4 (called Model 14_2 in SAFE) need posterior of Fmsy, maybe on one figure?.
+For Model 18.1 (new base) need posteriors of Fmsy Bmsy, ABC biomass 2018, ABC biomass 2019, FSB and mean log recruitment.
+
+```{r fmsyr, echo=FALSE}
+# All Fmsy
+ mc.df %>% select(Model,Fmsyr) %>% 
+  ggplot(aes(x=Fmsyr,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.3))
+```
+
+## Other plots
+You can also embed plots, for example:
+
+```{r Biomass, echo=FALSE}
+# Biomass 
+mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% ggplot(aes(x=ABC_biom1,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Biomass (kt)") 
+
+```
+
+```{r catch, echo=FALSE}
+# Catch 
+mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% mutate(Catch = Fmsyr*ABC_biom1) %>% ggplot(aes(x=Catch,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("2019 Fmsy x Biomass")
+ABC.df <- mc.df %>% select(Model,Fmsyr,ABC_biom1) %>% summarise(FABC=1/mean(1/Fmsyr),Biomass=exp(mean(log(ABC_biom1))),ABC=FABC*Biomass)
+kable(ABC.df,format="html")
+
+```
+
