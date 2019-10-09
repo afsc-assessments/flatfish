@@ -9,9 +9,9 @@ system("make")
 setwd(owd)
 runmod=TRUE
 runmod=F
-i=0
+i=2
 setwd(paste0("../yfs/runs/m",i))
-system("make")
+system("make")  #or system("make mcmc")
 ctl<-read_dat("mod.ctl")
 #Read in model results
 runmod=FALSE
