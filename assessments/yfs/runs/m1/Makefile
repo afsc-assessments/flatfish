@@ -19,6 +19,14 @@ $(DIST)$(EXEC).tpl:
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
 
+future: $(EXEC)
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS)
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS)
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS)
+
 mcmc: $(EXEC)
 	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
 png: 
