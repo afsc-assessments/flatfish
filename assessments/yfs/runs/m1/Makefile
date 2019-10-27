@@ -21,11 +21,13 @@ run: $(EXEC)
 
 future: $(EXEC)
 	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS)
+	 ./$(EXEC) $(ARGS)  -nohess
 	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS)
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
 	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS)
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22
 
 mcmc: $(EXEC)
 	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
