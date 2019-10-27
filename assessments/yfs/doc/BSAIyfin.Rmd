@@ -1,37 +1,72 @@
 ---
 output:
   pdf_document: default
-  html_document: default
+  html_document: 
+      df_print: paged
 ---
-
-```{r global options, include=FALSE, message=FALSE}
-library(here)
-set_here("/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs")
-```
 
 ---
 header-includes:
+ \usepackage{booktabs}
  \usepackage{float}
  \usepackage{graphicx}
+ \usepackage{floatrow}
+ \usepackage{caption}
+ \usepackage{subcaption}
+ \usepackage{subfigure}
 geometry:
   left=1in,right=1in,top=1in,bottom=1in
 ---
 
+```{r global options, include=FALSE, message=FALSE}
+library(here)
+library(here)
+library(adnuts)
+library(ggplot2)
+library(RColorBrewer)
+library(doBy)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(tidyverse)
+library(purrr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+options(knitr.kable.NA = '')
+knitr::opts_knit$set(root.dir = '../../' )
+library(captioner)
+library(bibtex)
+library(knitcitations)
+library(cowplot)
+library(magick)
+library(bookdown)
+library(ggthemes)
+library(scales)
+library(gridExtra)
+library(RColorBrewer)
+require(knitr)
+require(kfigr) # devtools::install_github("github mkoohafkan/kfigr")
+opts_chunk$set(message=FALSE, warning=FALSE)
 
-```{r global_options, include=FALSE,message=FALSE}
+table_nums <- captioner::captioner(prefix = "Table 4.",levels=1,auto_space = FALSE)
+figure_nums <- captioner::captioner(prefix="Figure 4.",levels = 1, auto_space = FALSE)
 
 knitr::opts_chunk$set(fig.pos = 'H')
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache=FALSE,results="asis")
 #clean_cache(clean = TRUE)
 
-thisyr    = 2018
+thisyr    = 2019
 lastyr    = thisyr-1
 nextyr    = thisyr+1
 
-source(here("../R/prelims.R"))
-YFS=read_rep(here("/runs/m1/fm.rep"))
-extra_sd=read.table(here("/runs/m1/extra_sd.rep"),header=TRUE)
-B0=formatC(1000*YFS$`#Bzero`,format="d",big.mark=",")
+#source("/Users/ingridspies/admbmodels/flatfish/assessments/R/prelims.R")
+source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
+YFS=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/fm.rep")
+YFS2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/fm.rep")
+extra_sd2=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/extra_sd.rep",header=TRUE)
+B0=formatC(1000*YFS2$Bzero,format="d",big.mark=",")
 ```
 
 ---
@@ -65,18 +100,21 @@ following substantive changes have been made in the BSAI Yellowfin Sole assessme
 
 #### Changes in the data
 
-   1.	The `r thisyr-1` NMFS bottom-trawl survey biomass estimates were included.
-   2. The `r thisyr-1` fishery age composition.
-   3. The `r thisyr` survey age composition.
-   4. The estimates of the retained and discarded portions of the `r thisyr-1` catch.
-   5. The estimate of the total catch made through the end of `r thisyr+1`. Catch of 150,000 t was assumed for the `r thisyr+1` and `r thisyr+2` projections.
+   1.	The `r thisyr` NMFS eastern Bering Sea shelf bottom-trawl survey biomass estimates and standard error were included.
+   2. The `r thisyr-1` fishery age composition was included.
+   3. The `r thisyr-1` survey age composition was included.
+   4. Estimates of the retained and discarded portions of the `r thisyr-1` catch were added.
+   5. The estimate of the total catch made through the end of `r thisyr+1` was used. Catch of 150,000 t was assumed for the `r thisyr+1` and `r thisyr+2` projections.
 
 ### Changes in the assessment methods
 
-Explored incorporating survey start date and its interaction term with annual bottom water temperature in the survey catchability equation.  
+Two models are considered in this assessment. 
+1. The model used in the `r thisyr-1` is referred to as Model 18.1. 
+2. Model 18.1 used the same natural mortality for males and females, M=0.12. A second model is presented (Model 18.2) that used a fixed value for female natural mortality (M=0.12) and allowed male natural mortality to be estimated by within the model. Model 18.2 was the preferred model.
 
 ## Summary of Results
-The assessment updates last year’s with results and management quantities that are lower than the `r thisyr-1` assessment primarily due to 1) the `r thisyr` survey biomass point estimate is 32% lower than the `r thisyr-1` estimate and 2) the assessment model estimated a slightly lower survey catchability.  Yellowfin sole continue to be well-above $B_{MSY}$ and the annual harvest remains below the $ABC$ level.  The female spawning stock is in a slow downward trend.  Management quantities are given below for the current base model (Model 14_1) and a new base model (Model 18_1).
+
+This assessment updates last year’s with results and management quantities that are lower than the `r thisyr-1` assessment primarily due to 1) the `r thisyr` survey biomass point estimate is 32% lower than the `r thisyr-1` estimate and 2) the assessment model estimated a slightly lower survey catchability.  Yellowfin sole continue to be well-above $B_{MSY}$ and the annual harvest remains below the $ABC$ level.  The female spawning stock is in a slow downward trend.  Management quantities are given below for the current base model (Model 14_1) and a new base model (Model 18_1).
 
 \begin{table}[ht]
 \centering
@@ -86,20 +124,20 @@ The assessment updates last year’s with results and management quantities that
        & \multicolumn{2}{c|}{$\mathit{last}$ year for:}  & \multicolumn{2}{c}{$\mathit{this}$ year for: }               \\
         Quantity & `r thisyr`      &`r thisyr+1`   & `r thisyr+1`      &`r thisyr+2` \\ 
   \hline
-	M (natural mortality rate, ages 3+)	&	0.3	&	0.3	&	0.3	&	0.3 \\
+	M (natural mortality rate)	&	0.12	&	0.12	&	0.12, 0.135	&	0.12,0.135 \\
 Tier	&	1a	&	1a	&	1a	&	1a \\
-Projected total (age 6+) biomass (t)	& 2,553,100 t & 2,460,700 t &	`r formatC(extra_sd[1,4]*1000,format="d",big.mark=",")` t	   &	`r formatC(extra_sd[2,4]*1000,format="d",big.mark=",")` t  \\
-Projected female spawning biomass (t) &	895,600 t	&	890,000 t	&		`r formatC(extra_sd$SSB[1]*1000,format="d",big.mark=",")` t	         &	`r formatC(extra_sd$SSB[2]*1000,format="d",big.mark=",")` t	 \\
-$   B_0$                                 &	1,204,000 t	&		&		`r formatC(B0,format="d",big.mark=",")` t	       &	    \\
-$   B_{msy}$                             &	456,000 t 	&	 	&		`r formatC(1000*extra_sd$Bmsy[1],format="d",big.mark=",")` t	     &		  \\
-$F_{OFL}$                             &	0.12	      &	0.12	      &		`r round(extra_sd$AM_Fmsyr[1],3)`	   &	`r round(extra_sd$AM_Fmsyr[2],3)`	\\
-$maxF_{ABC}$                          & 0.109	      &	0.109	      &	  `r round(extra_sd$HM_Fmsyr[1],3)`	     &	`r round(extra_sd$HM_Fmsyr[2],3)`  	\\
-$F_{ABC}$                             &	0.109       &	0.109       &		`r round(extra_sd$HM_Fmsyr[1],3)`           &	`r round(extra_sd$HM_Fmsyr[2],3)`        \\
-$OFL$    	                            &	306,700 t	&	295,600 t	&	  `r formatC(1000*extra_sd$OFL_AM[1],format="d",big.mark=",")` t          &	`r formatC(1000*extra_sd$OFL_AM[2],format="d",big.mark=",")` t       \\
-$maxABC$    	                        &	277,500 t	&	267,500 t	&		`r formatC(1000*extra_sd$ABC_HM[1],format="d",big.mark=",") ` t      &	`r formatC(1000*extra_sd$ABC_HM[2],format="d",big.mark=",") ` t   \\
-$ABC$ 	                             &	277,500 t	&	267,500 t	&		`r formatC(1000*extra_sd$ABC_HM[1],format="d",big.mark=",") ` t         &	`r formatC(1000*extra_sd$ABC_HM[2],format="d",big.mark=",")` t       \\
+Projected total (age 6+) biomass (t)	& 2,388,000 t & 2,331,500 t &	`r formatC(extra_sd2[1,4]*1000,format="d",big.mark=",")` t	   &	`r formatC(extra_sd2[2,4]*1000,format="d",big.mark=",")` t  \\
+Projected female spawning biomass (t) &	827,900 t	&	796,600 t	&		`r formatC(extra_sd2$SSB[1]*1000,format="d",big.mark=",")` t	         &	`r formatC(extra_sd2$SSB[2]*1000,format="d",big.mark=",")` t	 \\
+$\:\:\:\:\:\:B_{100\%}$                                 &	1,236,000 t	&	1,236,000 t	&		`r B0` t	       &	`r B0` t    \\
+$\:\:\:\:\:\:B_{MSY\%}$                             &	451,600 t 	&	 451,600 t	&		`r formatC(1000*extra_sd2$Bmsy[1],format="d",big.mark=",")` t	     &	`r formatC(1000*extra_sd2$Bmsy[1],format="d",big.mark=",")` t		  \\
+$F_{OFL}$                             &	0.118	      &	0.118	      &		`r round(extra_sd2$AM_Fmsyr[1],3)`	   &	`r round(extra_sd2$AM_Fmsyr[2],3)`	\\
+$maxF_{ABC}$                          & 0.107	      &	0.107	      &	  `r round(extra_sd2$HM_Fmsyr[1],3)`	     &	`r round(extra_sd2$HM_Fmsyr[2],3)`  	\\
+$F_{ABC}$                             &	0.107       &	0.107       &		`r round(extra_sd2$HM_Fmsyr[1],3)`           &	`r round(extra_sd2$HM_Fmsyr[2],3)`        \\
+$OFL$    	                            &	281,800 t	&	275,100 t	&	  `r formatC(1000*extra_sd2$OFL_AM[1],format="d",big.mark=",")` t          &	`r formatC(1000*extra_sd2$OFL_AM[2],format="d",big.mark=",")` t       \\
+$maxABC$    	                        &	255,100 t	&	249,100 t	&		`r formatC(1000*extra_sd2$ABC_HM[1],format="d",big.mark=",") ` t      &	`r formatC(1000*extra_sd2$ABC_HM[2],format="d",big.mark=",") ` t   \\
+$ABC$ 	                             &	255,100 t	&	249,100 t	&		`r formatC(1000*extra_sd2$ABC_HM[1],format="d",big.mark=",") ` t         &	`r formatC(1000*extra_sd2$ABC_HM[2],format="d",big.mark=",")` t       \\
 \hline
-Status	                              &	2016	      &	2017	      &		`r lastyr`             &	`r thisyr`          \\
+Status	                              &	`r thisyr-2`	      &	 `r thisyr-1`	      &		`r thisyr-1`             &	`r thisyr`          \\
 \hline
 Overfishing	                          &	No	        &	n/a	      &	No	                       &	n/a                 \\
 Overfished	                          &	n/a	        &	No	      &	n/a	                       &	No                  \\
@@ -113,85 +151,25 @@ Projections are based on estimated catches of 150,000 t used in place of maximum
 ## Responses to SSC and Plan Team Comments on Assessments in General
 In this section, we list new or outstanding comments on assessments in general from the last full assessment in `r thisyr-1`. 
 
-_“The SSC recommends that, for those sets of environmental and fisheries observations that support the inference of an impending severe decline in stock biomass, the issue of concern be brought to the SSC, with an integrated analysis of the indices in future stock assessment cycles. To be of greatest value, to the extent possible, this information should be presented at the October Council meeting so that there is sufficient time for the Plan Teams and industry to react to the possible reduction in fishing opportunity.”_ (SSC October 2017)
-
-To facilitate a coordinated response to this request, the co-chairs and coordinators of the BSAI and GOA Groundfish Plan Teams, with concurrence from stock assessment program leadership at the AFSC, have suggested that authors address it by using the previous year’s Ecosystem Status Report (ESR) as follows:
-
-_“No later than the summer of each year, the lead author of each assessment should review the previous year’s ESR and determine whether any factor or set of factors described in that ESR implies an impending severe decline in stock/complex biomass, where “severe decline” means a decline of at least 20% (or any alternative value that may be established by the SSC), and where biomass is measured as spawning biomass for Tiers 1-3 and survey biomass as smoothed by the standard Tier 5 random effects model for Tiers 4-5. If an author determines that an impending severe decline is likely and if that decline was not anticipated in the most recent stock assessment, he or she should summarize that evidence in a document that will be reviewed by the respective Team in September of that year and by the SSC in October of that year, including a description of at least one plausible mechanism linking the factor or set of factors to an impending severe decline in biomass, and also including an estimate or range of estimates regarding likely impacts on ABC. In the event that new survey or relevant ESR data become available after the document is produced but prior to the October Council meeting of that year, the document should be amended to include those data prior to its review by the SSC, and the degree to which they corroborate or refute the predicted severe decline should be noted, with the estimate or range of estimates regarding likely impacts on ABC modified in light of the new data as necessary.”_
-
-_“Stock assessment authors are encouraged to work with ESR analysts to identify a small subset of indicators prior to analysis, and preferably based on mechanistic hypotheses.”_ (SSC October 2018)
-
-It has been demonstrated that annual bottom water temperature is at least a partial determinate of yellowfin sole late spring/summertime distribution.  However it is unclear how temperature is related to the productivity of the stock.  This species does not rely on ocean/atmosphere advective properties but instead migrates directly to nursery areas to spawn, so may be more resilient to changing ocean conditions.  We also know that somatic growth is positively related to bottom temperature that may result in increased fecundity.  Stock assessment authors would welcome the chance to work with an ESR analysist to think about indicators.
-
-_“The SSC also recommends explicit consideration and documentation of ecosystem and stock assessment status for each stock ... during the December Council meeting to aid in identifying stocks of concern.”_ (SSC October 2017)
-
-Clarification during December 2017 SSC meeting and then re-clarified during June 2018 SSC meeting. In the interest of efficiency, the clarification from the December 2017 minutes is not included here. The relevant portion of the clarification from the June 2018 minutes reads as follows:
-
-_“This request was recently clarified by the SSC by replacing the terms ‘ecosystem status’ and ‘stock assessment status’ with ‘Ecosystem Status Report information’ and ‘Stock Assessment Information,’ where the potential determinations for each will consist of ‘Okay’ and ‘Not Okay,’ and by issuing the following guidance:_
-
-_* The SSC clarifies that ‘stock assessment status’ is a fundamental requirement of the SAFEs and is not really very useful to this exercise, because virtually all stocks are never overfished nor is overfishing occurring._
-_* Rather the SSC suggests that recent trends in recruitment and stock abundance could indicate warning signs well before a critical official status determination is reached. It may also be useful to consider some sort of ratio of how close a stock is to a limit or target reference point (e.g., B/B35). Thus, additional results for the stock assessments will need to be considered to make the ‘Okay’ or ‘Not Okay’ determinations._
-_* The SSC retracts its previous request for development of an ecosystem status for each stock/complex. Instead, while considering ecosystem status report information, it may be useful to attempt to develop thresholds for action concerning broad-scale ecosystem changes that are likely to impact multiple stocks/complexes._
-_* Implementation of these stock and ecosystem determinations will be an iterative process and will require a dialogue between the stock assessment authors, Plan Teams, ecosystem modelers, ESR editors, and the SSC.”_
-
-_“The Teams recommend that the terms ‘current and future ecosystem condition’ and ‘current and future stock condition’ be used in place of ‘ESR information’ and ‘stock assessment information’.”_ (Plan Team September 2018)
-
-_“The SSC recognized that because formal criteria for these categorizations have not been developed by the PT, they will not be presented in December 2018.”_ (SSC October 2018)
-
-The iterative process described in the final bullet above was scheduled to begin at the September 2018 meeting of the Joint BSAI and GOA Plan Teams. However, no formal criteria for these categorizations were developed by the Plan Teams in September 2018. As specified by the SSC in October, we will not provide determinations for yellowfin sole at this time and will provide determinations when formal criteria are established. 
-
-_“The Team recommended that the authors simply report in words or a table whether catches exceed ABC as an indicator for “partial update” stocks._ (Plan Team November 2017)
-
-Does not apply to yellowfin sole SAFE report since it is not a “partial update stock”.
-
-_“The SSC reminds authors of the need to balance the desire to improve model fit with increased risk of model misspecification.”_ (SSC December 2017)
-
-Clarification: _“In the absence of strict objective guidelines, the SSC recommends that thorough documentation of model evaluation and the logical basis for changes in model complexity be provided in all cases.”_ (SSC June 2018)
-
-Important point as the 2018 yellowfin sole assessment has increased the number of parameters estimated by 2 to improve fit to survey biomass.  Hopefully our model evaluation is sound by providing a mechanism for the increased complexity from a new paper on availability/temperature correlations.
-
-_“Report a consistent metric (or set of metrics) to describe fish condition among assessments and ecosystem documents where possible.”_ (SSC December 2017)
-
-We do not yet report fish condition for yellowfin sole. However, if we do report this metric in the future then we will be consistent with the weight-length residual approach to report fish condition as described in the Ecosystem Status Report. 
-
-_“Projections ... clearly illustrate the lack of uncertainty propagation in the ‘proj’ program used by assessment authors. The SSC encourages authors to investigate alternative methods for projection that incorporate uncertainty in model parameters in addition to recruitment deviations. Further, the SSC noted that projections made on the basis of fishing mortality rates (Fs) only will tend to underestimate the uncertainty (and perhaps introduce bias if the population distribution is skewed). Instead, a two-stage approach that first includes a projection using F to find the catch associated with that F and then a second projection using that fixed catch may produce differing results that may warrant consideration.”_ (SSC December 2017)
-
-Please see model evaluation section for alternative Tier 1 projection with uncertainty in F.
-
-_“The Teams recommend that the appropriate use, or non-use, of new model based estimates in this assessment cycle be left to individual authors’ discretion. The Teams further recommend that, if an author chooses to incorporate these into the assessment, the assessment should also contain appropriate comparative models and a full set of diagnostics.”_ (Plan Team September 2018)
-
-_“The SSC supports the PT recommendation to make the use of model-based survey estimates at the individual author’s discretion for 2018.”_ (SSC October 2018)
-
-This assessment did not utilize any model based survey estimates. In the future, model-based estimates produced by the Groundfish Assessment Program (GAP) will be used to fit the assessment model as a contrast to the current use of survey estimates. A working group was formed to investigate criteria for use of the model-based estimates in a variety of groundfish life histories. We will consult the guidelines from this working group for determining the usefulness of the model-based estimates for yellowfin sole when they become available. 
-
-_“The SSC also noted that, in order to save resources, authors should not conduct additional assessments beyond the prioritized schedule unless they specifically trigger one or more of the criteria identified.”_ (SSC October 2018)
-
-Yellowfin sole is a Tier 1 stock assessment conducted every year and as such it’s frequency for completion is not determined by a specific external criteria.
-
-
 ## Responses to SSC and Plan Team Comments Specific to this Assessment
-_The Team recommends plotting the estimated spawning biomass trajectory with a fixed pair of M and q values that reduces the retrospective pattern (e.g., M=0.09 and q=1.0) on top of the estimated spawning biomass trajectory, with confidence intervals, from the base model run. This comparison will help to determine if the different combination of M and q values is within the estimated uncertainty of the base model, or is describing a completely different population size._
 
-Please see Retrospective Analysis section of this report.
- 
-The M=0.09 and q=1.0 retrospective model runs are outside the confidence intervals of the assessment model spawning biomass trajectory for about a 17 year period from 1978-1995.  Otherwise it is generally within the uncertainty of the assessment model results.
+1. The SSC encourages further exploration of the way mortality is handled in the model, for example through the use of sex-specific or time-varying mortality and the authors noted that they may be able to explore this more fully in 2019.
 
-_The Team recommends continuing to explore the retrospective patterns in relation to values of M and q, with fixed values of M and fixed values of q, reporting values of Mohn’s rho for each combination (range to be decided by the authors). Additionally, using those same model runs, report the total likelihood for each combination to create a bivariate likelihood profile for those parameters. Realizing that this will require a considerable number of model runs, the Team leaves it up to the authors to decide whether using the model runs done for the 2017 assessment will suffice, or if important differences arise from a 2018 model that warrant redoing those model runs._
+_Authors' response_
 
-_One ongoing concern with the assessment is a strong retrospective pattern in female spawning biomass, whereby more recent assessments tend to yield higher biomass estimates (Figure 4.21). Pursuant to requests by the Plan Team and SSC, the authors explored the effects of M and q on these patterns. Lower values of q and M resulted in better retrospective patterns and lower Mohn’s test statistics. The SSC supports the Plan Team’s recommendation to select a parameterization (e.g., M=0.09 and q=1.0) that reduces the retrospective pattern and to determine whether spawning biomass projections from this parameterization fall within the uncertainty of the base model or if it describes different population trends. The SSC also endorses the Plan Team’s recommendation to continue to explore effects of M and q on the retrospective patterns in biomass._
+In the current assessment, a model was explored that used a fixed value for female natural mortality, and allowed male natural mortality to be estimated by within the model (Model 18.2).
 
-The M-q analysis of 2017 was repeated in 2018 but focused on the pattern of model fit (-log likelihood) instead of Mohn’s test statistic and indicated that the best fit to the stock assessment model occurs at M and q values higher than where the best retrospective pattern occurs.  
+2. Given recent changes in the distribution of other species, the SSC encourages authors to explore variability over time in the proportion of the stock that occurs in the Northern Bering Sea. While the model may account for this portion of the stock through the catchability parameter this assumes that the fraction of the biomass occurring in the NBS has not changed substantially. There is little evidence for a change in the NBS biomass within the area that was surveyed in all three years, but this does not account for the possibly large fraction of yellowfin sole in nearshore areas that were not surveyed in 2018. The SSC suggests a few avenues to explore possible changes in distribution of yellowfin sole, including a comparison of the full NBS survey area between 2010 and 2017, the application of the VAST model to estimate the proportion of yellowfin sole in the NBS over time, and an examination of other available data sources, in particular the ADF&G survey in Norton Sound that has been conducted triennially since 1978 and annually since 2017. The SSC encourages the authors to consider approaches for including the substantial biomass of NBS yellowfin sole in the model, with the expectations that NBS surveys will be conducted regularly in the future.
 
-_The SSC notes that potential improved performance of the model with lower values of M are interesting, given that M appears to have been well specified both outside the model (based on multiple methods of estimation, including analysis of old Japanese pair trawl effort data) as well as inside the model (profile of M over a range of values). A natural mortality value of 0.12 is used for both sexes in the base model. Pending the outcome of efforts to explore effects of M and q on the retrospective pattern, the SSC recommends that the authors reexamine alternative methods and data available to estimate M independent of the model in attempts to independently “validate” the plausibility of the results._
+_Authors' response_
 
-Natural mortality modeling was not attempted in 2018 but can be done in 2019, for both sex-specific M and also time-varying M.
-
-_The SSC notes that there appears to be a strong time trend in the proportion of fish in the final age bin (age 17+) in the fishery catch at age data for both males and females (Table 4.4). Prior to 1980, there were no fish in this category. This proportion has generally increased from the mid 1980s to a maximum of 19% for males in 2004 and 23% for females in 1999, and fluctuated at relatively high levels through 2016. Such a pattern could be consistent with time-varying M, although there may be other explanations. For next year’s assessment, the SSC recommends that the assessment authors consider the evidence for time-varying M and evaluate the ability of time-varying M to address the retrospective biomass pattern in an alternative model._
-
-The pattern of increasing proportion of fish in the plus group for our time-series can also be explained by overfishing the stock in the early 1960s by foreign fleets where the yellowfin sole stock was reduced to very low levels and the larger fish were mostly gone.  By 1980 the age 15+ fish were beginning to accumulate in the population again and increased thereafter (to the present) with more prudent management.
+The distribution of yellowfin sole in the eastern Bering Sea is shown in `r figure_nums("NBS",display="cite")`, based on results from the four most recent NBS surveys. There does not appear to be a large shift in distribution since 2010. The distribution of yellowfin sole will continue to be monitored and approaches for including the substantial biomass of yellowfin sole in the NBS will be considered in future assessments.
 
 # Introduction
 
+A new base model (18.1) and several variants were introduced in 2018, motivated in part by an unexpected 32% decrease in the survey biomass. Model 18.1 includes the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as in the old model, but adds survey start date as an additional covariate within the model, based on a recent study by Nichol et al. (2018). Natural mortality remains fixed at 0.12 for both sexes in the new model. The model resulted in substantial improvements to the likelihood and AIC, and both the author and PT recommend model 18.1. The SSC agreed with the choice of model 18.1 to set the ABC and OFL for 2019/2020.
+
+Although total biomass and spawning biomass have been declining slowly since 1994, spawning biomass estimated by the new model remains high at 1.85 * BMSY. Therefore, yellowfin sole continues to qualify for management under Tier 1a. As in recent years, the 1978-2012 age-1 recruitments and the corresponding spawning biomass estimates were used to determine the Tier 1 harvest recommendations. The SSC supports this time period for determining stock productivity and agrees with the authors’ and PT’s recommendations for ABC and OFL under Tier 1a.
 The yellowfin sole (_Limanda aspera_) is one of the most abundant flatfish species in the eastern Bering Sea (EBS) and currently is the target of the largest flatfish fishery in the world.  They inhabit the EBS shelf and are considered one stock.  Abundance in the Aleutian Islands region is negligible.
 Yellowfin sole are distributed in North American waters from off British Columbia, Canada, (approx. lat. 49o N) to the Chukchi Sea (about lat. 70o N) and south along the Asian coast off the South Korean coast in the Sea of Japan (to about lat. 35o N).  Adults exhibit a benthic lifestyle and occupy separate winter, spawning and summertime feeding distributions on the eastern Bering Sea shelf.  From over-winter grounds near the shelf margins, adults begin a migration onto the inner shelf in April or early May each year for spawning and feeding.  The directed fishery historically occurred from winter through autumn (Wilderbuer et al. 1992).  Yellowfin sole are managed as a single stock in the BSAI management area as there is presently no direct evidence of stock structure.
 
@@ -476,6 +454,25 @@ The best retrospective patterns (lower values of $M$ and $q$ in top panel) did n
 Figures of yellowfin sole spawning biomass for selected retrospective M-q combinations:
 RETROSPECTIVE FIGURES
 
+# Risk assessment table
+
+## Assessment related considerations
+
+The BSAI Yellowfin sole assessment is based on surveys conducted annually on the EBS shelf from 1982-2018 (no skipped years).  Fish ages, derived from otoliths collected during the surveys and the fishery to calculate annual estimates of population and fishery age composition, have been validated.  The assessment model exhibits good fits to all compositional and abundance data and converges to a single minima in the likelihood surface.  Recruitment estimates track strong year classes that are consistent with the data.  
+The retrospective pattern from the current assessment model was less than desirable and has been the subject of some concern for the assessment.  Peculiar to the yellowfin sole assessment, in comparison to the northern rock sole and Alaska plaice assessments (that have nice patterns), is the large amount of variability in the annual survey biomass assessments for this stock due to the temperature-influenced availability to the survey.  This large variability in the annual estimates can contribute to undesirable patterns since the earlier years are not fitting the same highly variable information as the current year.  
+In the 2017 assessment it was demonstrated that low values of Mohn’s rho and desirable retrospective patterns of female spawning biomass were obtainable if lower values of M and q were used relative to the base model.  However, the best retrospective patterns do not occur at the corresponding values of best overall model fit of M and q (which occur at higher levels of M and q).  The retrospective technique may not always be the best tool for model selection, at least for BSAI yellowfin sole as there is tension between model fit and good retrospective pattern over the range of parameterization examined.
+
+## Population dynamics considerations
+
+Stock assessment model results indicate that yellowfin sole total biomass (age 2+) was at low levels during most of the 1960s and early 1970s (700,000-1,000,000 t) after a period of high exploitation.  Sustained above average recruitment from 1967-76 combined with light exploitation resulted in a biomass increase to a peak of 3.6 million t by 1985.  The population biomass has since been in a slow decline as the strong 1981 and 1983 year-classes have passed through the population, with only the 1991, 1995 and 2003 year-classes at levels observed during the 1970s, although the 2006-2010 year-classes all look about average according to the 2018 stock assessment.  The present biomass is estimated at 78% of the peak 1985 level and is at twice the level of BMSY.  Projections indicate that the FSB will remain well-above the BMSY level through 2028.  Population dynamics are not a concern for this assessment.
+
+## Environmental/ecosystem considerations
+
+It is unknown how particular environmental factors affect the sustainability of yellowfin sole.  It has been demonstrated that the migration to spawning grounds and subsequent spawning occurs sooner in warm years.  Somatic growth has also been shown to increase in warmer temperatures. The prey field for this species consists primarily of polycheate worms and clam siphons, species whose distribution and abundance patterns relative to a changing environment are unknown. It is also unknown what effect environmental variability has on the distribution of yellowfin sole predators.  Given the high level of sustained abundance of this species, there is a low level of concern for a variable environment, at least for the levels observed over the past 40 years.
+These results are summarized in the table below.
+
+## Fishery performance considerations
+Recent surveys of the northern Bering sea have not indicated a large shift in the spatial distribution of the eastern Bering Sea stock of yellowfin sole. If the stock moves northward out of the eastern Bering Sea under climate change into untrawlable areas in the northern Bering sea, then fisheries would be unable to target the stock in the untrawlable zone. A NOAA Coastal and Oceans Climate Applications proposal will be submitted examine the implications to the fishery and the region of the northern Bering Sea if the stock of yellowfin sole shifts northward. At the current time, fishery CPUE is not showing a contrasting pattern from the stock biomass trend, unusual spatial pattern of fishing, or changes in the percent of TAC taken, changes in the duration of fishery openings.
 
 
 ## Harvest Recommendations
@@ -560,8 +557,65 @@ The following factors should be discussed:
 List areas where a significant improvement in the amount of available information would likely result in a significant improvement in the quality of the assessment and the estimates of critical parameters.
 
 # Literature Cited
-List all references cited in the assessment (and make sure that the current assessment cites appropriate previous assessments containing any analyses that are still mentioned but no longer included in the current assessment).
-Omit all references not cited in the assessment (i.e., vestigial references from previous assessments).
+
+Alaska Fisheries Science Center.  2016. Wholesale market profiles for Alaska groundfish and crab fisheries.  134 p. Alaska Fish. Sci. Cent., NOAA, Natl. Mar. Fish. Serv. 7600 Sand Point Way NE. Seattle, WA.
+
+Bakkala, R. G. and V. Wespestad.  1984.  Yellowfin sole.  In R. G. Bakkala and L. resources of the eastern Bering Sea and Aleutian Islands region in 1983, p. 37-60. U.S. Dep. Commer., NOAA Tech. Memo.  NMFS F/NWC-53.
+
+Bakkala, R. G., V. Wespestad, and L. Low.  1982.  The yellowfin sole (Limanda aspera) resource of the eastern Bering Sea--its current and future potential for commercial fisheries.  U.S. Dep. Commer., NOAA Tech. Memo.  NMFS F/NWC-33, 43p.
+
+Bakkala, R. G., and T. K. Wilderbuer.  1990.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands     Region as Projected for 1990, p. 60-78.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak 99510.
+
+Clark, W. G., Hare, S. R., Parms, A. M., Sullivan, P, J., Trumble, R. J.  1999.  Decadal changes in growth and recruitment of Pacific halibut (Hipplglossus stenolepis).  Can. J. fish. Aquat. Sci. 56, 242-252.
+
+Fournier, D. A., H.G. Skaug, J. Ancheta, J. Ianelli, A. Magnusson, M. N. Maunder, A. Nielsen, and J. Sibert.  2012.  AD Model Builder: using automatic differentiation for statistical inference of highly parameterized complex nonlinear models.  Optim. Methods Softw. 27:233-239.
+
+Fournier, D. A. and C.P. Archibald.  1982.  A general theory for analyzing catch-at-age data.  Can. J. Fish Aquat. Sci.  39:1195-1207.
+
+Greiwank, A. and G. F. Corliss (eds) 1991.  Automatic differentiation of algorithms: theory, implementation and application.  Proceedings of the SIAM Workshop on the Automatic Differentiation of Algorithms, held Jan. 6-8, Breckenridge, CO. Soc. Indust. And Applied Mathematics, Philadelphia.
+
+Haflinger, K.  1981.  A survey of benthic infaunal communities of the Southeastern Bering Sea shelf.  In Hood and Calder (editors) The Eastern Bering Sea Shelf: Oceanography and Resources, Vol. 2. P. 1091-1104.  Office Mar. Pol. Assess., NOAA. Univ. Wash. Press, Seattle, Wa 98105.
+
+Ianelli, J. N. and D. A. Fournier.  1998.  Alternative age-structured analyses of the NRC simulated stock assessment data.  In Restrepo, V. R. [ed.]  Analyses of simulated data sets in support of the NRC study on stock assessment methods.  NOAA Tech. Memo.  NMFS-F/SPO-30.  96 p.
+
+Kastelle, C., T. Helser, S. Wischniowski, T. Loher, B. Geotz and L. Kautzi.  2016. Incorporation of bomb-produced 14C into fish otoliths: A novel approach for evaluating age validation and bias with an application to yellowfin sole and northern rockfish. Ecological modeling 320 (2016) 79-91.
+
+Low, L. and R.E. Narita.  1990.  Condition of groundfish resources in the Bering Sea-Aleutian Islands region as assessed in 1988.  U.S. Dep. Commer., NOAA Tech. Memo.  NMFS-F/NWC-178, 224 p.
+
+Matta, M. E., B. A. Black and T. K. Wilderbuer.  2010.  Climate-driven synchrony in otolith growth-increment chronologies for three Bering Sea flatfish species.  MEPS, Vol. 413:137-145, 2010.
+
+Nichol, D. R .  1995.  Spawning and maturation of female yellowfin sole in the eastern Bering Sea.  In Proceedings of the international flatfish symposium, October 1994, Anchorage, Alaska, p. 35-50.  Univ. Alaska, Alaska Sea Grant Rep. 95-04.
+
+Nichol, D. R.  1998.  Annual and between sex variability of yellowfin sole, Pleuronectes asper, spring-summer distributions in the eastern Bering Sea.  Fish. Bull., U.S. 96: 547-561.
+
+Nichol, D.G., Kotwicki, S., Wilderbuer, T.K., Lauth, R.R. and Ianelli, J.N., 2019. Availability of yellowfin sole Limanda aspera to the eastern Bering Sea trawl survey and its effect on estimates of survey biomass. Fisheries Research, 211, pp.319-330.
+
+Ricker, W. E.  1958.  Handbook of computations for biological statistics of fish populations.  Bull. Fish. Res. Bd. Can.,  (119) 300 p.
+
+Rose, C. S., J. R. Gauvin and C. F. Hammond.  2010. Effective herding of flatfish by cables with minimal seafloor contact.  Fishery Bulletin 108(2):136-144.
+
+Somerton, D. A. and P. Munro.  2001.  Bridle efficiency of a survey trawl for flatfish.  Fish. Bull. 99:641-652 (2001).
+
+TenBrink, T. T. and T. K. Wilderbuer.  2015.  Updated maturity estimates for flatfishes (Pleuronectidae) in the eastern Bering Sea, with notes on histology and implications to fisheries management.  Coastal and Marine Fisheries: Dynamics, Management and Ecosystem Science. O:1-9. 2015. DOI: 10.1080/19425120.2015.1091411.
+
+Wakabayashi, K.   1989.  Studies on the fishery biology of yellowfin sole in the eastern Bering Sea. [In Jpn., Engl. Summ.] Bull. Far Seas Fish. Res. Lab. 26:21-152.
+
+Wakabayashi, K., R. Bakkala, and L. Low.  1977.  Status of the yellowfin sole resource in the eastern Bering Sea through    1976.  Unpubl. manuscr., 45p.  Northwest and Alaska Fish. Cent., Natl. Mar. Fish. Serv., NOAA, 7600 Sand Point Way N.E., Bin C 15700, Seattle, Wa  98115.
+
+Walters, G. E. and T. K. Wilderbuer.  2000.  Decreasing length at age in a rapidly expanding population of northern rock sole in the eastern Bering Sea and its effect on management advice.  Journal of Sea Research 44(2000)17-26.
+
+Wilderbuer, T. K.  1992.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands     Region as Projected for 1993, chapter 3.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak 99510.
+
+Wilderbuer, T. K.  1993.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 1994, chapter 3.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
+
+Wilderbuer, T. K. and D. Nichol.  2001.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2004, chapter 4.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
+
+Wilderbuer, T. K. and D. Nichol.  2003.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2004, chapter 4.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
+
+Wilderbuer, T. K. D. G. Nichol, and J. Ianelli.  2010.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2011, chapter 4.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
+
+Wilderbuer, T.K., G.E. Walters, and R.G. Bakkala   1992.  Yellowfin sole, Pleuronectes asper, of the eastern Bering Sea: biological characteristics, history of exploitation, and management.  Mar Fish. Rev. 54(4):1-18.
+
 
 ```{r, echo=FALSE, hierarchy}
 table_nums <- captioner::captioner(prefix = "Table 4.",levels=1,auto_space = FALSE)
@@ -681,8 +735,7 @@ fig.23_cap = figure_nums(name="fig_23",caption = "Phase plane figure of the time
 
 `r table_nums('tab_1')`
 ```{r tab_1,message=FALSE,echo=FALSE}
-catchZ=read.csv(here("/doc/Rmd/catch_YFS.csv"),header=TRUE,skip=1)
-#catchZ1=cbind(catchZ[,1],formatC(catchZ[,2],big.mark=",",format="d"),formatC(catchZ[,3],big.mark=",",format="d"),formatC(catchZ[,4],big.mark=",",format="d"),formatC(catchZ[,5],big.mark=",",format="d"))
+catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/catch_YFS.csv",header=TRUE,skip=1)
 colnames(catchZ)=c("Year","Foreign","JVP","DAP","Total")
 kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE)%>%
   add_header_above(c(" ", " ","Domestic" = 2, " " ))
@@ -691,7 +744,7 @@ kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE)%>%
 \pagebreak
 `r table_nums('tab_2')`
 ```{r tab_2,message=FALSE,echo=FALSE}
-retdis=read.csv(here("/doc/Rmd/RetDis_full.csv"),header=TRUE)#Sept 25 2019
+retdis=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/RetDis_full.csv",header=TRUE)#Sept 25 2019
 
 Year=names(table(retdis$Year))
 rdtable_full=matrix(0,length(Year),3)
@@ -738,9 +791,9 @@ kable(rd1,"latex",booktabs=T,linesep="",longtable=FALSE)
 \pagebreak
 `r table_nums('tab_4')`
 ```{r tab_4,message=FALSE,echo=FALSE}
-#YFS$catage_f from 1954-thisyr, want from 1975, ages 7 - 17+
+#YFS2$catage_f from 1954-thisyr, want from 1975, ages 7 - 17+
 #select 1975 to last year
-a=data.frame(round(YFS$catage_f,4)[22:(nrow(YFS$catage_f)-1),7:17])
+a=data.frame(round(YFS2$catage_f,4)[22:(nrow(YFS2$catage_f)-1),7:17])
 colnames(a)=c(seq(7,16,1),"17+")
 kable(a,"latex",booktabs=T,linesep="")%>% 
   kable_styling(latex_options="scale_down")
@@ -751,7 +804,7 @@ kable(a,"latex",booktabs=T,linesep="")%>%
 \pagebreak
 `r table_nums('tab_5')`
 ```{r tab_5, message=FALSE,echo=FALSE}
-srvbio=cbind(YFS$`#yr_bts`,formatC(1000*YFS$`#ob_bts`,format="d",big.mark=","),formatC(1000*YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`,format="d",big.mark=","),formatC(1000*YFS$`#ob_bts`+1.96*YFS$`#sd_ob_bts`,format="d",big.mark=","))
+srvbio=cbind(YFS2$yr_bts,formatC(1000*YFS2$ob_bts,format="d",big.mark=","),formatC(1000*YFS2$ob_bts-1.96*YFS2$sd_ob_bts,format="d",big.mark=","),formatC(1000*YFS2$ob_bts+1.96*YFS2$sd_ob_bts,format="d",big.mark=","))
 colnames(srvbio)=c("Year","Biomass (t)","Lower confidence interval","Upper confidence interval")
 kable(srvbio,"latex",booktabs=T,linesep="")
 ```
@@ -759,8 +812,8 @@ kable(srvbio,"latex",booktabs=T,linesep="")
 \pagebreak
 `r table_nums('tab_6')`
 ```{r tab_6}
-catage_p=read.csv(here("doc/Rmd/YFS_EBS_survey/yfs_agecomp_ebs_plusnw.csv"),header=TRUE)
-catage_s=read.csv(here("doc/Rmd/YFS_EBS_survey/yfs_agecomp_ebs_standard.csv"),header=TRUE)
+catage_p=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/YFS_EBS_survey/yfs_agecomp_ebs_plusnw.csv",header=TRUE)
+catage_s=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/YFS_EBS_survey/yfs_agecomp_ebs_standard.csv",header=TRUE)
 
 age=seq(2,17,1)
 yrs=names(table(catage_p$YEAR))
@@ -804,10 +857,34 @@ print(kable(formatC(catage_m/1000000,format="d",big.mark=","),"latex",booktabs=T
 ```
 
 
+```{r liketab, echo=FALSE}
+totallike2=sum(YFS2$wt_like,YFS2$age_likeihood_for_survey,YFS2$age_likelihood_for_fishery,YFS2$catch_likelihood,YFS2$selectivity_likelihood,YFS2$survey_likelihood,YFS2$recruitment_likelilhood) #recommended
+totallike1=sum(YFS$wt_like,YFS$age_likeihood_for_survey,YFS$age_likelihood_for_fishery,YFS$catch_likelihood,YFS$selectivity_likelihood,YFS$survey_likelihood,YFS$recruitment_likelilhood)  
+```
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ lrr }
+\hline
+ Likelihood component & Model $18.1$ & Model $18.2$ \\
+\hline
+Survey age	        &       `r round(YFS$age_likeihood_for_survey,2)`  &  `r round(YFS2$age_likeihood_for_survey,2)`   \\
+Fishery age  	  &       `r round(YFS$age_likelihood_for_fishery,2)` &  `r round(YFS2$age_likelihood_for_fishery,2)`  \\
+Selectivity     &       `r round(sum(YFS$selectivity_likelihood),2)`& `r round(sum(YFS2$selectivity_likelihood),2)`\\
+Survey biomass     &       `r round(YFS$survey_likelihood,2)`& `r round(YFS2$survey_likelihood,2)`\\
+Recruitment     &       `r round(sum(YFS$recruitment_likelilhood),2)`& `r round(sum(YFS2$recruitment_likelilhood),2)`  \\
+\hline
+Total              &       `r round(totallike1,2)`      &`r round(totallike2,2)`      \\ 
+\hline
+\end{tabular}
+\end{table}
+`r table_nums(name="liketab2",caption="Comparison of likelihood values for survey and fishery age, selectivity, survey biomass, recruitment, and total likelihood for Models 18.1 and 18.2.")`
+
+
 \pagebreak
 `r table_nums('tab_7')`
 ```{r tab_7}
-haul_oto=read.csv(here("/doc/Rmd/Hauls_otoliths.csv"),header=TRUE)
+haul_oto=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/Hauls_otoliths.csv",header=TRUE)
 colnames(haul_oto)=c("Year","Total hauls","Hauls with length","Number of lengths","Hauls with otoliths","Hauls with ages","Number of otoliths","Number of ages")
 kable(haul_oto,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")
 ```
@@ -816,7 +893,7 @@ kable(haul_oto,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="sca
 \pagebreak
 `r table_nums('tab_8')`
 ```{r tab_8, message=FALSE,echo=FALSE}
-rescatch=read.csv(here("/doc/Rmd/ResearchCatch.csv"),header=TRUE)
+rescatch=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/ResearchCatch.csv",header=TRUE)
 colnames(rescatch)=c("Year","Research catch (t)")
 kable(rescatch,"latex",booktabs=T,linesep="")
 ```
@@ -824,8 +901,8 @@ kable(rescatch,"latex",booktabs=T,linesep="")
 \pagebreak
 `r table_nums('tab_9')`
 ```{r tab_9}
-wt_f=YFS$`#wt_srv_f`[11:65,]
-wt_m=YFS$`#wt_srv_m`[11:65,]
+wt_f=YFS2$wt_srv_f[11:65,]
+wt_m=YFS2$wt_srv_m[11:65,]
 colnames(wt_f)=seq(1,20,1)
 rownames(wt_f)=seq(1964,thisyr,1)
 colnames(wt_m)=seq(1,20,1)
@@ -839,7 +916,7 @@ print(kable(wt_m,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="s
 \pagebreak
 `r table_nums('tab_10')`
 ```{r tab_10,message=FALSE,echo=FALSE}
-mat=read.csv(here("/doc/Rmd/maturity_T10.csv"),header=TRUE)
+mat=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/maturity_T10.csv",header=TRUE)
 colnames(mat)=c("Age","1992, 1993 samples","2012 samples","Combined")
 kable(mat,"latex",booktabs=T,linesep="")
 
@@ -862,8 +939,23 @@ kable(mat,"latex",booktabs=T,linesep="")
 \pagebreak
 # Figures
 
+
+```{r NBS,echo=FALSE,message=FALSE}
+```
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs10bw.png}
+    \includegraphics[width=0.495\textwidth]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs17bw.png}
+    \includegraphics[width=0.495\textwidth]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs18bw.png}
+    \includegraphics[width=0.495\textwidth]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs19bw.png}
+\end{figure}
+
+`r figure_nums(name = "NBS", caption ="Distribution of yellowfin sole in the eastern and northern Bering sea based on surveys conducted in 2010 (upper left), 2017 (upper right), 2018 (lower left), and 2019 (lower right).")`
+
+    
+    
 ```{r fig_1, message=FALSE, echo=FALSE,fig.width = 5.1, fig.height = 4}  
-catchtab=data.frame(cbind(YFS$`#Yr`,YFS$`#Obs_catch`))
+catchtab=data.frame(cbind(YFS2$Yr,YFS2$Obs_catch))
 colnames(catchtab)=c("Year","Catch")
 ggplot(data=catchtab,aes(x=Year,y=Catch))+geom_line(aes(x=Year,y=Catch))+
 theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
@@ -873,12 +965,12 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
 
 ```{r fig_1b, message=FALSE, echo=FALSE,fig.width = 6.25, fig.height = 4}
 #Figure 1 lower panel
-#blend_catchYFS=read.csv(here("/doc/Rmd/YFS_Blend_CAS.csv"),header=TRUE)
+#blend_catchYFS=read.csv("/Users/ingridspies/YFS_Blend_CAS.csv",header=TRUE)
 #yrs=c(2003:2018)
 #cat_month=matrix(0,length(yrs),12)
 #cat_month2=matrix(0,length(yrs),12)
 #for (i in 1:length(yrs)){
-#cat_month[i,]=table(blend_catchYFS$Month[which(blend_catchYFS$Year==yrs[i])])
+#cat_month[i,]=table(blend_catchYFS2$Month[which(blend_catchYFS2$Year==yrs[i])])
 #}
 #colnames(cat_month)=c(1:12)
 #rownames(cat_month)=yrs
@@ -892,7 +984,7 @@ theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(siz
 #catch_month=data.frame(Cat,Year,Month)
 #write.csv(catch_month,here("/doc/Rmd/catch_month.csv"))
 
-catch_month=read.csv(here("/doc/Rmd/catch_month.csv"))
+catch_month=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/catch_month.csv")
 ggplot(data=catch_month, aes(x=Month,y=Cat,group=factor(Year)))+geom_line(aes(colour=Year),size=1.2)+scale_x_continuous(breaks = seq(1,12, by = 1))+theme(legend.position="right")+labs(y = "Relative cumulative catch")+scale_colour_gradient(low="lightblue",high="darkblue")+theme_few(base_size=14)
 
 ```
@@ -934,11 +1026,11 @@ geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=1)+bla
 \
  
 ```{r fig_3b, message=FALSE, echo=FALSE,fig.align='center'} 
-#blend_catch2018=blend_catchYFS[which(blend_catchYFS$Year==2018),]
+#blend_catch2018=blend_catchYFS[which(blend_catchYFS2$Year==2018),]
 #cat_mo2018=data.frame(cbind(c("January","February","March","April","May","June","July","August","September","October","November","December"),table(blend_catch2018$Month)))
 #cat_mo2018b=cbind(as.character(cat_mo2018[,1]),formatC(as.numeric(as.character(cat_mo2018[,2])),format="d",big.mark=","))
 #write.csv(cat_mo2018b,here("/doc/Rmd/cat_mo2018b.csv"))
-cat_mo2018b=read.csv(here("/doc/Rmd/cat_mo2018b.csv"))
+cat_mo2018b=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/cat_mo2018b.csv")
 colnames(cat_mo2018b)=c("N","Month","Catch")
 cat_mo2018b$Month=factor(cat_mo2018b$Month,levels=cat_mo2018b$Month)
 cat_mo2018b$Catch=as.numeric(as.character(cat_mo2018b$Catch))
@@ -956,9 +1048,9 @@ geom_bar(width = 2, stat = "identity")+coord_polar("y", start=0,direction=-1)+bl
 \pagebreak
 
 ```{r fig_6, message=FALSE, echo=FALSE}  
-LCI=YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`
-HCI=YFS$`#ob_bts`+1.96*YFS$`#sd_ob_bts`
-srv_bio=data.frame(cbind(YFS$`#yrs_srv`,YFS$`#ob_bts`,YFS$`#sd_ob_bts`,LCI,HCI))
+LCI=YFS2$ob_bts-1.96*YFS2$sd_ob_bts
+HCI=YFS2$ob_bts+1.96*YFS2$sd_ob_bts
+srv_bio=data.frame(cbind(YFS2$yrs_srv,YFS2$ob_bts,YFS2$sd_ob_bts,LCI,HCI))
 
 colnames(srv_bio)=c("Year","Biomass","sd","LCI","HCI")
 ggplot(data=srv_bio,aes(x=Year,y=Biomass))+geom_point(aes(x=Year,y=Biomass))+geom_errorbar(aes(ymin=LCI, ymax=HCI), width=.1)+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
@@ -971,7 +1063,7 @@ ggplot(data=srv_bio,aes(x=Year,y=Biomass))+geom_point(aes(x=Year,y=Biomass))+geo
 \pagebreak
 
 ```{r fig_8, message=FALSE, echo=FALSE}  
-wts2=data.frame(cbind(seq(1,20,1)),colMeans(YFS$`#wt_srv_f`),colMeans(YFS$`#wt_srv_m`))
+wts2=data.frame(cbind(seq(1,20,1)),colMeans(YFS2$wt_srv_f),colMeans(YFS2$wt_srv_m))
 colnames(wts2)=c("Age","Females","Males")
 ggplot(data=wts2)+geom_line(aes(x=Age,y=Females,colour="Females"))+geom_line(aes(x=Age,y=Males,colour="Males"))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Weight (g)")+
@@ -987,7 +1079,7 @@ ggplot(data=wts2)+geom_line(aes(x=Age,y=Females,colour="Females"))+geom_line(aes
 ```
 
 \begin{center}
-\includegraphics[width=5in,angle=270,origin=c]{/Users/ingridspies/admbtest/YFS/YFS/assessments/yfs/doc/Rmd/Black_Fig3.pdf}
+\includegraphics[width=5in,angle=270,origin=c]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/Black_Fig3.pdf}
 \end{center}
 `r figure_nums('fig_9')`
 
@@ -995,7 +1087,7 @@ ggplot(data=wts2)+geom_line(aes(x=Age,y=Females,colour="Females"))+geom_line(aes
 \pagebreak
 
 ```{r fig_10, message=FALSE, echo=FALSE}  
-env=data.frame(cbind(YFS$`#yrs_srv`,YFS$Bottom_temp))
+env=data.frame(cbind(YFS2$yrs_srv,YFS2$Bottom_temp[1,]))
 colnames(env)=c("Year","Temp")
 ggplot(data=env)+geom_line(aes(x=Year,y=Temp))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+ylab("Temperature Anomaly")+theme(legend.position="right")+scale_color_discrete(name="")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+theme(axis.text.x=element_text(angle=90,hjust=1))+geom_hline(yintercept=0,linetype=1)
 
@@ -1006,31 +1098,34 @@ ggplot(data=env)+geom_line(aes(x=Year,y=Temp))+theme_bw()+theme(legend.title=ele
 
 ```{r fig_16, message=FALSE, echo=FALSE}  
 #fit to survey biomass
-LCI=YFS$`#ob_bts`-1.96*YFS$`#sd_ob_bts`
-HCI=YFS$`#ob_bts`+1.96*YFS$`#sd_ob_bts`
-srv_bio2=data.frame(cbind(YFS$`#yrs_srv`,YFS$`#ob_bts`,YFS$`#sd_ob_bts`,LCI,HCI,YFS$pred_srv[29:65]))
+LCI=YFS2$ob_bts-1.96*YFS2$sd_ob_bts
+HCI=YFS2$ob_bts+1.96*YFS2$sd_ob_bts
+srv_bio2=data.frame(cbind(YFS2$yrs_srv,YFS2$ob_bts,YFS2$sd_ob_bts,LCI,HCI,YFS2$pred_srv[29:65]))
 colnames(srv_bio2)=c("Year","Biomass","sd","LCI","HCI","Predicted")
 ggplot(data=srv_bio2,aes(x=Year,y=Biomass))+geom_point(aes(x=Year,y=Biomass,col="Survey Estimate"))+geom_errorbar(aes(ymin=LCI, ymax=HCI), width=.1)+geom_line(aes(x=Year,y=Predicted,col="Model Estimate"))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+theme(axis.text.x=element_text(angle=90,hjust=1))+ylim(0,4500)+
  theme(legend.position="right")+scale_color_discrete(name="")
 
 #total biomass
-TotBiom=data.frame(YFS$`#TotBiom`)
+TotBiom=data.frame(YFS2$TotBiom)
 colnames(TotBiom)=c("Year","Biomass","sd","LCI","HCI")
 ggplot(data=TotBiom,aes(x=Year,y=Biomass))+geom_errorbar(aes(ymin=LCI, ymax=HCI), width=.1)+geom_point(aes(x=Year,y=Biomass))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1954,2018, by = 4))+theme(axis.text.x=element_text(angle=90,hjust=1))+ylim(0,4500)
 
 #Female spawning biomass (SSB seems like it)
-SSB=data.frame(YFS$`#SSB`)
+SSB=data.frame(YFS2$SSB)
 colnames(SSB)=c("Year","FSB","sd","LCI","HCI")
 ggplot(data=SSB,aes(x=Year,y=FSB))+geom_errorbar(aes(ymin=LCI, ymax=HCI), width=.1)+geom_point(aes(x=Year,y=FSB))+theme_bw()+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1954,2018, by = 4))+theme(axis.text.x=element_text(angle=90,hjust=1))+ylim(0,1500)
 
 #survey selectivity
-srvsel=data.frame(cbind(seq(1,20,1),YFS$`#sel_srv_f`,YFS$`#sel_srv_m`))
+srvsel=data.frame(cbind(seq(1,20,1),YFS2$sel_srv_f,YFS2$sel_srv_m))
 colnames(srvsel)=c("Age","Female","Male")
 ggplot(data=srvsel)+geom_line(aes(x=Age,y=Female,col="Female"))+geom_line(aes(x=Age,y=Male,col="Male"))+theme_bw()+
  theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Proportion selected")+scale_x_continuous(breaks = seq(1,20, by = 2))+scale_color_discrete(name="")
 ```
 `r figure_nums('fig_16')`
+
+
+Nichol, D.G., Kotwicki, S., Wilderbuer, T.K., Lauth, R.R. and Ianelli, J.N., 2019. Availability of yellowfin sole Limanda aspera to the eastern Bering Sea trawl survey and its effect on estimates of survey biomass. Fisheries Research, 211, pp.319-330.
