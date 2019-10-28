@@ -2927,7 +2927,12 @@ FUNCTION Write_R
   R_report << "Fmort" << endl << Fmort << endl;           //IS 10/2019 
   R_report << "sel_fsh_f" << endl << sel_fsh_f << endl; //IS 10/2019
   R_report << "sel_fsh_m" << endl << sel_fsh_m << endl; //IS 10/2019
-  R_report << "maturity" <<endl << maturity << endl; 
+  R_report << "maturity" <<endl << maturity << endl;
+  R_report << "Z_m" <<endl << Z_m << endl;
+  R_report << "Z_f" <<endl << Z_f << endl;
+  R_report << "F_m" <<endl << F_m << endl;
+  R_report << "F_f" <<endl << F_f << endl;
+ 
 
   
   R_report<<"Future_F"<<endl; 
