@@ -15,7 +15,8 @@ system("make")  #or system("make mcmc")
 ctl<-read_dat("mod.ctl")
 #Read in model results
 runmod=FALSE
-for (i in 0:1) {
+setwd(owd)
+for (i in 0:2) {
   setwd(paste0("../yfs/runs/m",i))
   if (runmod) system("make")
   mn=paste0("mod",i)
@@ -23,11 +24,11 @@ for (i in 0:1) {
   setwd(owd)
 }
 # make model set into list
-M <- list( "Lastyr"=mod0,'Thisyr' = mod1)
+M <- list( "Lastyr"=mod0,'Thisyr' = mod1,'Male_M_est'=mod2)
 plot_bts(M ,alpha=.6)
 plot_q(M)
 #plot_sel(M[[1]],title="Last year's selectivity ")
-plot_sel(M[[2]],title="2019 base case model")
+plot_sel(M[[3]],title="2019 base case model")
 
 plot_age_comps(M[2])
 plot_age_comps(M[2],type="survey",title="Survey age compositions")   
@@ -88,7 +89,7 @@ modset2 <- list( Bholt=mod6, Bholt_Prior_only=mod7)
 
 modset2 <- list( Base = mod0, Diff_Prior= mod5, Bholt=mod6, Bholt_Diff_prior=mod7)
 
-plot_srr(M,alpha=.2,xlim=c(0,1100),leglabs=c("1","5")   ,ylim=c(0,7))
+plot_srr(M[1],alpha=.2,xlim=c(0,1100),leglabs=c("1","5")   ,ylim=c(0,7))
 
 plot_srr(M,alpha=.2,xlim=c(0,1100),ylim=c(0,7.2))
 
