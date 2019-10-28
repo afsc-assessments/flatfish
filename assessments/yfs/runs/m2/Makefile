@@ -19,6 +19,9 @@ $(DIST)$(EXEC).tpl:
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
 
+retro: $(EXEC)
+	 ./runretro.sh
+
 mcmc: $(EXEC)
 	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
 png: 

@@ -2825,6 +2825,7 @@ FUNCTION Get_Pred_wt
     }
 
 FUNCTION Write_R_wts
+ 
   R_report<<"Yr"<<endl; for (i=styr;i<=endyr;i++) R_report<<i<<" "; R_report<<endl;
   R_report<<"Yr_wt"<<endl; for (i=styr_wt;i<=endyr_wt;i++) R_report<<i<<" "; R_report<<endl;
 
@@ -2872,6 +2873,11 @@ FUNCTION Write_R_wts
 
 FUNCTION Write_R
   Write_R_wts();
+
+	REPORT(Z_f);
+	REPORT(Z_m);
+	REPORT(F_f);
+	REPORT(F_m);
   // R_report<<"#TotF"<<endl << Ftot<<endl;
   /* R_report<<"#TotBiom_NoFish"<<endl; for (i=styr;i<=endyr;i++) 
   {
