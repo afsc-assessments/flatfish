@@ -81,4 +81,4 @@
 #yr2_futcat      
 	150
 #n_retro
-	0
+7
