@@ -41,3 +41,12 @@ if (bysex) {
             geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
 }
 }
+
+
+mdf <- data.frame(Year=YFS2$Yr,Sex="males",YFS2$sel_fsh_m)
+mdf <- rbind(mdf,data.frame(Year=YFS2$Yr,Sex="females",YFS2$sel_fsh_f))
+names(mdf)[3:22] <- 1:20
+sdf <- (gather(mdf,Age,selectivity,3:22) ) %>% filter(Year>=min(YFS2$Yr),Year<=max(YFS2$Yr)) %>% mutate(Age=as.numeric(Age)) #+ arrange(age,Year)
+
+ggplot(sdf,aes(x=Age,y=fct_rev(as.factor(Year)),height = selectivity,fill=Sex,color=Sex,alpha=0.3)) +
+ geom_density_ridges(stat = "identity",scale=1,alpha = 0.3) + ylab("Year")+ theme(axis.text.y = element_text(angle = 0, hjust = 1, size=5))
