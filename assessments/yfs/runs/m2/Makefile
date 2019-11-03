@@ -23,7 +23,8 @@ retro: $(EXEC)
 	 ./runretro.sh
 
 mcmc: $(EXEC)
-	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
+	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 200
+	 ./$(EXEC) -mceval
 png: 
 	R CMD BATCH plot.R
 
