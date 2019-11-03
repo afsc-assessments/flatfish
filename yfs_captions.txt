@@ -22,29 +22,41 @@ YFS Figures
 
 6. `r table_nums("wtagetab",display="cite")` 
 
-7. `r table_nums("Srvbio_CI",display="cite")`
+7. `r table_nums("Srvbio_CI",display="cite")` 
 
 8. `r table_nums("biomCI",display="cite")`
 
 9.  `r table_nums("NBS_bio",display="cite")`
 
 10. `r table_nums("natagesrv",display="cite")`
+ 
+11. `r table_nums("occurrence",display="cite")`
 
-11. `r table_nums("occurrence",display="cite")` 
-
-12`. `r table_nums("rescat",display="cite")`
+12`. `r table_nums("rescat",display="cite")`  
 
 13. `r table_nums("liketab",display="cite")`  
 
 14. `r table_nums("pars",display="cite")`
 
-15. `r table_nums("Mcomparison",display="cite")` 
+15. `r table_nums("Mcomparison",display="cite")`  
 
-16. `r table_nums("FSBCI",display="cite")`
+16. `r table_nums("fmort",display="cite")`
+
+16. `r table_nums("FSBCI",display="cite")`  
+
+      `r table_nums("rec",display="cite")`
+
+17. `r table_nums("ABCOFL",display="cite")` 
 
 16. `r table_nums("projection",display="cite")`
+  
+17. `r table_nums("bycatch1",display="cite")`
+17. `r table_nums("bycatch2",display="cite")`
+17. `r table_nums("bycatch3",display="cite")`
 
 17. `r table_nums("eco",display="cite")`
+
+
 
  
 
@@ -56,49 +68,69 @@ YFS Figures
 
 2. `r figure_nums("wtage",display="cite")`
 
-3. `r figure_nums("black",display="cite")`
+3. `r figure_nums("black",display="cite")` 
 
-`r figure_nums("catchfig",display="cite")`
+4. `r figure_nums("tempanom",display="cite")`
 
-`r figure_nums("plotq",display="cite")`   
+5. `r figure_nums("catchfig",display="cite")`
 
-`r figure_nums("obs_sizecomp",display="cite")`#not done should be 4.2 
-`r figure_nums("fishmo",display="cite")`    #not done shold be 4.4
+5.5  `r figure_nums("cpuefig",display="cite")`
+ 
+6. `r figure_nums("obs_sizecomp",display="cite")`#not done should be 4.2 
 
-`r figure_nums("pie_bymonth",display="cite")` 
+7. `r figure_nums("pie_bymonth",display="cite")`
+ 
+8. `r figure_nums("fishmo",display="cite")`    #not done shold be 4.4
 
-`r figure_nums("cpueline",display="cite")`
-`r figure_nums("cpuediff",display="cite")` 
+9.  `r figure_nums("cpueline",display="cite")` 
 
+10.  `r figure_nums("srvCI",display="cite")` 
 
-  
+11. `r figure_nums("cpuediff",display="cite")`  
 
+12. `r figure_nums("ricker1",display="cite")`
 
-`r figure_nums("srvCI",display="cite")`
+13. `r figure_nums("ricker2",display="cite")` 
 
-`r figure_nums("BioFSBCI",display="cite")`
+14. `r figure_nums("srvsel",display="cite")`  
 
-`r figure_nums("tempanom",display="cite")`
+15. `r figure_nums("fshsel",display="cite")`  
 
-`r figure_nums("srvbio_fit",display="cite")`   
+16. `r figure_nums("plotq",display="cite")`
 
-`r figure_nums("srvsel",display="cite")` 
-`r figure_nums("srv_agecomp1",display="cite")`
-`r figure_nums("srv_agecomp2",display="cite")`
-`r figure_nums("fsh_agecomp1",display="cite")`
-`r figure_nums("fsh_agecomp2",display="cite")` 
-
+17. `r figure_nums("sexratio",display="cite")` 
 
 
-`r figure_nums("fshsel",display="cite")`
 
-`r figure_nums("retro1",display="cite")` 
+19. figure_nums("srv_agecomp1",display="cite")`
 
-`r figure_nums("retro2",display="cite")`
+20. figure_nums("srv_agecomp2",display="cite")`  
 
-`r figure_nums("phase",display="cite")`
+21. figure_nums("fsh_agecomp1",display="cite")`  
 
-`r figure_nums("ricker",display="cite")` 
+22. figure_nums("fsh_agecomp2",display="cite")`  
+
+18. `r figure_nums("srvbio_fit",display="cite")`      **
+
+18. `r figure_nums("BioFSBCI",display="cite")`
+        
+20. `r figure_nums("fishingavgF",display="cite")`  **
+      
+20. `r figure_nums("recfig",display="cite")` 
+
+19. `r figure_nums("retro1",display="cite")` 
+
+20. `r figure_nums("retro2",display="cite")` 
+
+
+21. `r figure_nums("phaseplane",display="cite")` 
+
+
+
+
+
+
+ 
                                            
 
 Model 14_1 has been the preferred model for the past 5 assessments, and operates by fixing $M$ at 0.12 for both sexes and estimating $q$ using the relationship between survey catchability and the annual average water temperature at the sea floor (from survey stations at less than 100 m).  The other models used in the evaluation represented various combinations of estimating $M$ or $q$ as free parameters with different amounts of uncertainty in the parameter estimates (Wilderbuer et al. 2010).  The results are detailed in those assessments and are not repeated here except for the following observations.
