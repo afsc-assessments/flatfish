@@ -1,4 +1,5 @@
-EXEC = fm
+# EXEC = fm
+EXEC = katch
 DIST = ../../../../src/
 ARGS = -nox -iprint 50 
 ARGS = -nox -iprint 50 -hbf 1
