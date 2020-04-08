@@ -32,12 +32,11 @@ rsconnect/
 Rplots.pdf
 
 # ADMB build files
-src/lib/*.obj
+*.obj
 src/build/*
 src/fm.cpp
-src/fm.exe
-src/fm.htp
-src/fm.obj
+src/katch.cpp
+*.exe
 
 # ADMB standard output files
 *.b0*
