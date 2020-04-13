@@ -2475,6 +2475,7 @@ FUNCTION double Eff_N(const dvar_vector& pobs, const dvar_vector& phat)
   return 1/vtmp;
 
 
+// Needs to be generalized for multiple fisheries...
 FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, double  TACin)
   dvariable dd = 10.;
   dvariable cc = TACin;
