@@ -1,8 +1,8 @@
 EXEC = fm
 ifeq ($(OPT),TRUE)
-	DIST = ../../../src/build/release/
+	DIST = ../../../src/
 else
-	DIST = ../../../src/build/debug/
+	DIST = ../../../src/
 endif
 ARGS = -nox -iprint 50 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
