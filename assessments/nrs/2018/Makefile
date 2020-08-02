@@ -1,8 +1,8 @@
 EXEC = fm
 ifeq ($(OPT),TRUE)
-	DIST = ../../src/build/release/
+	DIST = ../../../src/
 else
-	DIST = ../../src/build/debug/
+	DIST = ../../../src/
 endif
 ARGS = -nox -iprint 50 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
@@ -13,10 +13,10 @@ all: run
 
 $(EXEC): $(DIST)$(EXEC).tpl
 	ln -sf $(DIST)$(EXEC) $@
-	ln -sf ../../src/$(EXEC).tpl $@.tpl
+	ln -sf ../../../src/$(EXEC).tpl $@.tpl
 
 $(DIST)$(EXEC).tpl:
-	$(MAKE) --directory=../../src
+	$(MAKE) --directory=../../../src
 
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
