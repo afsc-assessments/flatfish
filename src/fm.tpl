@@ -386,7 +386,10 @@ DATA_SECTION
   // !! log_input(n_wts);
   init_vector growth_cov(styr,endyr);
   !! log_input(growth_cov);
-
+  init_int Check;
+  !! log_input(Check);
+  !! cout << Check << endl;
+  !! if (Check != 123456) { cout << "In valid data file " << Check << endl; exit(1); }
 
 //Projection indices
   int styr_fut                //Start year for projections
