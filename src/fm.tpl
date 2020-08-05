@@ -185,7 +185,14 @@ DATA_SECTION
   init_int endyr_wt            // year to end   variance mean wt at age for Fmsy etc
   init_number yr1_futcat       // catch specified in endyr+1 (for 2-year projection for Tier 1)
   init_number yr2_futcat       // catch specified in endyr+2 (for 2-year projection for Tier 1) used for SSB_2 calc
-	init_number n_retro;
+  init_number n_retro;
+  //new additions.................
+  init_number surv_dwnwt;
+  init_number cv_inc;
+  init_number n_comp;
+  init_number eof_check;;
+	!! if (eof_check!=123456) { cout <<" Control file read error, survey sensitivity evaluated?"<<endl; exit(1); }
+  //....................................
 	int phase_male_sel_offset;      //Phase to begin logistic selectivity estimation
   !! phase_male_sel_offset = lambda(4); 
   !! log_input(lambda); 
@@ -288,6 +295,7 @@ DATA_SECTION
   // imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
   // imatrix yrs_srv_oobag(1,nsrv,1,nyrs_srv_oobag)   //Years of the survey index values
   init_vector mo_srv(1,nsrv)                //Month the survey occurs
+  !!cout<<"mo_srv="<<mo_srv<<endl;
   init_matrix obs_srv(1,nsrv,1,nyrs_srv)    //Survey values (biomass or CPUE)
   init_matrix obs_se_srv(1,nsrv,1,nyrs_srv) //Survey standard errors
   matrix     obs_lse_srv(1,nsrv,1,nyrs_srv) //Survey standard errors (for lognormal)
@@ -389,7 +397,7 @@ DATA_SECTION
   init_int Check;
   !! log_input(Check);
   !! cout << Check << endl;
-  !! if (Check != 123456) { cout << "In valid data file " << Check << endl; exit(1); }
+  !! if (Check != 123456) { cout << "Invalid data file " << Check << endl; exit(1); }
 
 //Projection indices
   int styr_fut                //Start year for projections
@@ -406,37 +414,6 @@ DATA_SECTION
  LOCAL_CALCS                     //Offset calculations for later age comp fitting
   offset_fsh.initialize();
   offset_srv.initialize();
-  for (int k=1;k<=nfsh;k++)
-  {
-    for (i=1;i<=nyrs_fsh_age_c(k);i++)
-    {
-      oac_fsh_c(k,i) /= sum(oac_fsh_c(k,i));
-      offset_fsh(k)  -= nsmpl_fsh_c(k,i)*(oac_fsh_c(k,i) + 0.001) * log(oac_fsh_c(k,i) + 0.001); 
-    }
-    for (i=1;i<=nyrs_fsh_age_s(k);i++)
-    {
-      oac_fsh_s(k,i) /= sum(oac_fsh_s(k,i));
-      offset_fsh(k)  -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(oac_fsh_s(k,i) + 0.001); 
-    }
-  }
-
-  for (int k=1;k<=nsrv;k++)
-  {
-    for (i=1;i<=nyrs_srv_age_c(k);i++)
-    {
-      oac_srv_c(k,i) /= sum(oac_srv_c(k,i));
-      offset_srv(k)-= nsmpl_srv_c(k,i)*(oac_srv_c(k,i) + 0.001) * log(oac_srv_c(k,i) + 0.001);  
-    }
-    for (int i=1;i<=nyrs_srv_age_s(k);i++)
-    {
-      oac_srv_s(k,i) /= sum(oac_srv_s(k,i));
-      offset_srv(k)-= nsmpl_srv_s(k,i)*(oac_srv_s(k,i) + 0.001) * log(oac_srv_s(k,i) + 0.001); 
-    }
-  }
-  log_input(offset_fsh);
-  log_input(offset_srv);
-
-
 // Compute an initial Rzero value based on exploitation 
    double btmp=0.;
    double ctmp=0.;
@@ -457,35 +434,123 @@ DATA_SECTION
 	 endyr_sr = endyr - (endyr_in-endyr_sr );
    styr_fut=endyr+1;
    endyr_fut=endyr+nyrs_fut;
+   //Modified retro.....................................................................
+   int nyrs_srv_tmp;
+   
    for (int isrv=1;isrv<=nsrv;isrv++)
    {
-    // need to adjust survey observation dimensions
-     for (int iyr=1;iyr<=nyrs_srv(isrv);iyr++)
-		 {
-       if (endyr <= yrs_srv(isrv,iyr))
-         nyrs_srv(isrv) = min(nyrs_srv(isrv),iyr);
-			// cout<<iyr<<" "<<nyrs_srv(isrv)<<" "<<yrs_srv(isrv,iyr)<<" "<<endyr<<endl;
-		 }
-		 // exit(1);
-
+          //survey biomass
+          for(int iyr=1; iyr<=nyrs_srv(isrv);iyr++)
+          {
+           if(yrs_srv(isrv,iyr)<=endyr) nyrs_srv_tmp=iyr;
+           if(surv_dwnwt==1 & yrs_srv(isrv,iyr)>= endyr) obs_lse_srv(isrv,iyr)=cv_inc;
+          }
+          nyrs_srv(isrv)=nyrs_srv_tmp;
+     //reset temporary variable
+     nyrs_srv_tmp=0;
      for (int iyr=1;iyr<=nyrs_srv_age_c(isrv);iyr++)
-       if (endyr <= yrs_srv_age_c(isrv,iyr))
-         nyrs_srv_age_c(isrv) = min(nyrs_srv_age_c(isrv),iyr);
+     {
+       if (yrs_srv_age_c(isrv,iyr)<= endyr) nyrs_srv_tmp=iyr;
+       if(surv_dwnwt==1 & yrs_srv_age_c(isrv,iyr)>= endyr) nsmpl_srv_c(isrv,iyr)=n_comp;
+     }
+     nyrs_srv_age_c(isrv)=nyrs_srv_tmp;
+     //reset temporary variable     
+     nyrs_srv_tmp=0;
      for (int iyr=1;iyr<=nyrs_srv_age_s(isrv);iyr++)
-       if (endyr <= yrs_srv_age_s(isrv,iyr))
-         nyrs_srv_age_s(isrv) = min(nyrs_srv_age_s(isrv),iyr);
-     //cout << nyrs_srv(isrv)<<endl;exit(1);
+     {
+       if (yrs_srv_age_s(isrv,iyr)<= endyr) nyrs_srv_tmp=iyr;
+       if(surv_dwnwt==1 & yrs_srv_age_s(isrv,iyr)>= endyr) nsmpl_srv_s(isrv,iyr)=n_comp;
+     }
+     nyrs_srv_age_s(isrv)=nyrs_srv_tmp;
    }
+   
    for (int ifsh=1;ifsh<=nfsh;ifsh++)
    {
 
      for (int iyr=1;iyr<=nyrs_fsh_age_s(ifsh);iyr++)
        if (endyr <= yrs_fsh_age_s(ifsh,iyr))
          nyrs_fsh_age_s(ifsh) = min(nyrs_fsh_age_s(ifsh),iyr);
+	 
      for (int iyr=1;iyr<=nyrs_fsh_age_c(ifsh);iyr++)
        if (endyr <= yrs_fsh_age_c(ifsh,iyr))
          nyrs_fsh_age_c(ifsh) = min(nyrs_fsh_age_c(ifsh),iyr);
    }
+  
+  //retained from original 
+  for (int k=1;k<=nfsh;k++)
+  {
+    for (i=1;i<=nyrs_fsh_age_c(k);i++)
+    {
+      oac_fsh_c(k,i) /= sum(oac_fsh_c(k,i));
+      offset_fsh(k)  -= nsmpl_fsh_c(k,i)*(oac_fsh_c(k,i) + 0.001) * log(oac_fsh_c(k,i) + 0.001); 
+    }
+    for (i=1;i<=nyrs_fsh_age_s(k);i++)
+    {
+    
+      oac_fsh_s(k,i) /= sum(oac_fsh_s(k,i));
+      offset_fsh(k)  -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(oac_fsh_s(k,i) + 0.001); 
+      // cout<<"i="<<i<<"nyrs_fsh_age_s="<<nyrs_fsh_age_s(k)<<endl;
+      // cout<<"nsmpl="<<nsmpl_fsh_s(k,i)<<endl;
+    } 
+  }
+   
+  for (int k=1;k<=nsrv;k++)
+  {
+    for (i=1;i<=nyrs_srv_age_c(k);i++)
+    {
+      oac_srv_c(k,i) /= sum(oac_srv_c(k,i));
+      offset_srv(k)-= nsmpl_srv_c(k,i)*(oac_srv_c(k,i) + 0.001) * log(oac_srv_c(k,i) + 0.001); 
+
+    }
+    for (int i=1;i<=nyrs_srv_age_s(k);i++)
+    {
+      oac_srv_s(k,i) /= sum(oac_srv_s(k,i));
+      offset_srv(k)-= nsmpl_srv_s(k,i)*(oac_srv_s(k,i) + 0.001) * log(oac_srv_s(k,i) + 0.001); 
+      
+    }
+  }
+    
+  log_input(offset_fsh);
+  log_input(offset_srv); 
+  
+     ofstream out_retro("Retro_check.rep");
+     out_retro<<"endyr"<<endl;
+     out_retro<<endyr<<endl;
+     out_retro<<"endyr_wt"<<endl;
+     out_retro<<endyr_wt<<endl;
+     out_retro<<"endyr_sr"<<endl;
+     out_retro<<endyr_sr<<endl;
+     out_retro<<"nsrv"<<endl;
+     out_retro<<nsrv<<endl;
+     out_retro<<"nyrs_srv"<<endl;
+     out_retro<<nyrs_srv<<endl;
+     out_retro<<"yrs_srv"<<endl;
+     for(i=1;i<=nyrs_srv(nsrv);i++)
+     	out_retro<<yrs_srv(nsrv,i)<<endl;
+     out_retro<<"obs_srv"<<endl;
+     for(i=1;i<=nyrs_srv(nsrv);i++)
+     	out_retro<<obs_srv(nsrv,i)<<endl;
+     out_retro<<"obs_lse_srv"<<endl;
+     for(i=1;i<=nyrs_srv(nsrv);i++)
+     	out_retro<<obs_lse_srv(nsrv,i)<<endl;
+     out_retro<<"nyrs_srv_age_c"<<endl;
+     out_retro<<nyrs_srv_age_c<<endl;
+     out_retro<<"nyrs_srv_age_s"<<endl;
+     out_retro<<nyrs_srv_age_s<<endl;
+     out_retro<<"yrs_srv_age_s"<<endl;
+     for(i=1;i<=nyrs_srv_age_s(nsrv);i++)
+     	out_retro<<yrs_srv_age_s(nsrv,i)<<endl;
+     out_retro<<"nsmpl_srv_c"<<endl;
+     out_retro<<nsmpl_srv_c<<endl;
+     out_retro<<"nsmpl_srv_s"<<endl;
+     for(i=1;i<=nyrs_srv_age_s(nsrv);i++)     
+     	out_retro<<nsmpl_srv_s(nsrv,i)<<endl;
+     out_retro<<"nyrs_fsh_age_c"<<endl;
+     out_retro<<nyrs_fsh_age_c<<endl;
+     out_retro<<"yrs_fsh_age_s"<<endl;
+     for(i=1;i<=nyrs_fsh_age_s(nsrv);i++)
+     	out_retro<<yrs_fsh_age_s(nsrv,i)<<endl;
+          
  END_CALCS
   !!ad_comm::change_datafile_name("future_catch.dat");  
   init_matrix future_ABC(1,nfsh,styr_fut,endyr_fut)
@@ -941,7 +1006,7 @@ PROCEDURE_SECTION
     get_numbers_at_age();
     //if(active(R_logalpha))
     compute_sr_fit();
-  
+
 
     if (sd_phase() || mceval_phase())
     {
@@ -1257,7 +1322,7 @@ FUNCTION evaluate_the_objective_function
   q_prior.initialize();
   if(active(yr_incr)||active(age_incr)||active(growth_alpha))
   {
-    // cout <<wt_pred_f(1988)(3,7)<<endl;
+   // cout <<wt_pred_f(1988)(3,7)<<endl;
     for (i=styr_wt;i<=endyr_wt;i++)
     {
       for (j=3;j<nages;j++)
@@ -1298,17 +1363,19 @@ FUNCTION evaluate_the_objective_function
       rec_like(3) = (0.5*norm2(log(SAM_recruits)-log(SRC_recruits+1.0e-3)))/(sigmaR*sigmaR);
   
     obj_fun += lambda(1)* sum(rec_like);
-  
+
     if (active(sigmaR))
     {
        sigmaR_prior = .5* square(log(sigmaR)-log(sigmaR_exp))/(sigmaR_sigma*sigmaR_sigma);
        obj_fun  += sigmaR_prior;
+       // cout<<"sigmaR_prior="<<sigmaR_prior<<endl;
      }
     // Note not general to multiple surveys...also ln_q_srv should be a "free" parameter because q_surve is an sdreport variable?
     if (active(ln_q_srv)||active(q_alpha))
     {
        q_prior(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
        obj_fun  += q_prior(1);
+       // cout<<"q_prior="<<q_prior<<endl;
      }
     if (active(sel_slope_fsh_devs_f))
     {
@@ -1319,12 +1386,15 @@ FUNCTION evaluate_the_objective_function
       sel_like(2) += .5*norm2(sel50_fsh_devs_f)/(a50_sigma*a50_sigma);
       sel_like(2) += .5*norm2(sel50_fsh_devs_m)/(a50_sigma*a50_sigma);
       obj_fun += sum(sel_like);
+      // cout<<"sel_like(1)="<<sel_like(1)<<endl;
+      // cout<<"sel_like(2)="<<sel_like(2)<<endl;
     }
   
     if (active(natmort_f))
     {
        m_prior = .5* square(log(natmort_f)-log(m_exp))/(m_sigma*m_sigma);
        obj_fun += m_prior;
+       // cout<<"m_prior="<<m_prior<<endl;
     }
   
     if (current_phase()>phase_wt)
@@ -1421,9 +1491,12 @@ FUNCTION Age_Like
   {
       for (i=1;i<=nyrs_fsh_age_c(k);i++)
          age_like_fsh(k) -= nsmpl_fsh_c(k,i)*(oac_fsh_c(k,i) + 0.001) * log(eac_fsh_c(k,i) + 0.001);
-
+	// cout<<"nyrs_fsh_age_s="<<nyrs_fsh_age_s(k)<<endl;
       for (i=1;i<=nyrs_fsh_age_s(k);i++)
+      {
          age_like_fsh(k) -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(eac_fsh_s(k,i) + 0.001);
+        //cout<<"age_like_fsh="<<age_like_fsh(k)<<endl;
+	}
   }
   age_like_fsh-=offset_fsh;
   obj_fun += sum(age_like_fsh);
@@ -1434,11 +1507,14 @@ FUNCTION Age_Like
     for (i=1;i<=nyrs_srv_age_c(k);i++)
       age_like_srv(k) -= nsmpl_srv_c(k,i)*(oac_srv_c(k,i) + 0.001) * log(eac_srv_c(k,i) + 0.001);
     for (i=1;i<=nyrs_srv_age_s(k);i++)
+    {
       age_like_srv(k) -= nsmpl_srv_s(k,i)*(oac_srv_s(k,i) + 0.001) * log(eac_srv_s(k,i) + 0.001);
+      // cout<<"age_like_srv="<<age_like_srv(k)<<endl;
+    }
   }
   age_like_srv-=offset_srv;
   obj_fun += sum(age_like_srv);
-
+  
 FUNCTION dvariable spr_ratio(dvariable trial_F,dvar_vector& sel)
   dvariable SBtmp;
   dvar_vector Ntmp(1,nages);
@@ -2931,9 +3007,7 @@ FUNCTION Write_R
   R_report << "Fmort" << endl << Fmort << endl;           //IS 10/2019 
   R_report << "sel_fsh_f" << endl << sel_fsh_f << endl; //IS 10/2019
   R_report << "sel_fsh_m" << endl << sel_fsh_m << endl; //IS 10/2019
-  R_report << "maturity" <<endl << maturity << endl; 
-  R_report << "q_exp" <<endl << q_exp << endl; 
-  R_report << "q_sigma" <<endl << q_sigma << endl; 
+  R_report << "maturity" <<endl << maturity << endl;
    
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
