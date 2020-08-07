@@ -799,6 +799,7 @@ PARAMETER_SECTION
   sdreport_matrix future_catch(1,npfs,styr_fut,endyr_fut)
   sdreport_vector future_Fs(styr_fut,endyr_fut)
   sdreport_matrix future_SSB(1,num_proj_Fs,styr_fut,endyr_fut)
+  // sdreport_vector future_srv(styr_fut,endyr_fut)
   sdreport_matrix future_TotBiom(1,num_proj_Fs,styr_fut,endyr_fut)
 
 PRELIMINARY_CALCS_SECTION
@@ -1305,7 +1306,7 @@ FUNCTION catch_at_age
 FUNCTION evaluate_the_objective_function
   if (active(F40))
   {
-    // compute_spr_rates();
+    compute_spr_rates();
     dvar_vector incr_dev_tmp(2,nages);
     // two degree increase in temperature
     incr_dev_tmp(5,nages-5)     = growth_alpha * 2.0 + age_incr;
@@ -2642,12 +2643,13 @@ FUNCTION Write_sd
  }
  ABCreport.close();
 
- ofstream sdreport("extra_sd.rep");
- sdreport << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust "<<endl;
+ ofstream sdreport("ABC_OFL.rep");
+ sdreport << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust CV_Biom CV_SSB ABC_T3 OFL_T3"<<endl;
  for (i = styr_fut;i<=endyr_fut;i++)
  {
-   dvariable cv_b = ABC_biom.sd(i)/ABC_biom(i);
-   dvariable gm_b = exp(log(ABC_biom(i))-(cv_b*cv_b)/2.);
+   dvariable cv_ssb = future_SSB.sd(m,i)/future_SSB(m,i);
+   dvariable cv_b   = ABC_biom.sd(i)/ABC_biom(i);
+   dvariable gm_b   = exp(log(ABC_biom(i))-(cv_b*cv_b)/2.);
 
    if(future_SSB(m,i) < Bmsy)
      adj_1 = value((future_SSB(m,i)/Bmsy - 0.05)/(1.-0.05));
@@ -2660,7 +2662,14 @@ FUNCTION Write_sd
            gm_b  * am_f * adj_1  <<" "<<
            Bmsy                  <<" "<< 
            future_SSB(m,i)       <<" "<< 
-           adj_1                 <<" "<< endl;
+           adj_1                 <<" "<< 
+           cv_b                  <<" "<< 
+           cv_ssb                <<" "<< 
+           future_catch(1,i)     <<" "<<
+           future_catch(2,i)     <<" "<<
+      // dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
+      // b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
+					 endl;
  }
 
  /*
