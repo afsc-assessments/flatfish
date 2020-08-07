@@ -52,3 +52,11 @@ Fixed_Q
 150
 150
 0
+#surv_dwnwt
+0
+#cv_inc
+10
+#n_comp
+1
+#eof_check
+123456

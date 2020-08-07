@@ -1,7 +1,3 @@
-#model_name 
-#Base
-#datafile 
-#../data/yfs_2019.dat
 #Growth_Option
 	1
 #ABC_age_lb
@@ -17,7 +13,7 @@
 #phase_mn_f
 	2
 #phase_F40           
-	-6
+	6
 #phase_fmort        
 	3
 #phase_proj        
@@ -84,7 +80,7 @@
 	150
 #yr2_futcat      
 	150
-	# n_retro;
+#n_retro
 	0
 #surv_dwnwt
 0

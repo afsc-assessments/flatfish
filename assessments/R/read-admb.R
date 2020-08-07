@@ -191,6 +191,7 @@ read_ctl <- function(fn)
             A[[vnam[i]]]=dum
         }
     }
+		names(A) <- substr(vnam,2,99)
     options(warn=0)
     return(A)
 }
