@@ -2643,8 +2643,8 @@ FUNCTION Write_sd
  }
  ABCreport.close();
 
- ofstream sdreport("ABC_OFL.rep");
- sdreport << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust CV_Biom CV_SSB ABC_T3 OFL_T3"<<endl;
+ ofstream ABC_OFL("ABC_OFL.rep");
+ ABC_OFL << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust CV_Biom CV_SSB ABC_T3 OFL_T3"<<endl;
  for (i = styr_fut;i<=endyr_fut;i++)
  {
    dvariable cv_ssb = future_SSB.sd(m,i)/future_SSB(m,i);
@@ -2653,7 +2653,7 @@ FUNCTION Write_sd
 
    if(future_SSB(m,i) < Bmsy)
      adj_1 = value((future_SSB(m,i)/Bmsy - 0.05)/(1.-0.05));
-   sdreport << i                 <<" "<<
+   ABC_OFL << i                 <<" "<<
 	         hm_f                  <<" "<<
 	         am_f                  <<" "<<
 	         gm_b                  <<" "<<
@@ -2673,7 +2673,7 @@ FUNCTION Write_sd
  }
 
  /*
-   sdreport <<"HM_F "
+   ABC_OFL <<"HM_F "
             << hm_f << " "<<hm_f<<endl 
             <<"AM_F "
             << am_f << " "<<am_f<<endl 
@@ -2699,7 +2699,7 @@ FUNCTION Write_sd
             << "wt "<<wt_pop_fut_f          <<endl ;
  */
 
-  sdreport.close();
+  ABC_OFL.close();
 
   // From AMAK 
  /* FUNCTION Oper_Model
