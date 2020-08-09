@@ -9,14 +9,21 @@
 ##6. Psuedocode outlining analysis and analysis
 ###########1. Required packages ##########
 if(!require("devtools")) install.packages("devtools"); library(devtools)
-# Get tools to read-write control file
-source("~/_mymods/afsc-assessments/flatfish/assessments/R/read-admb.R")
-
 if(!require("dplyr")) install.packages("dplyr"); library(dplyr)
+library(ggplot2)
+library(ggthemes)
+# Set your local directory--------
+	mydir <- "~/_mymods/afsc-assessments/flatfish/assessments"
+# Get tools to read-write control file
+source(paste0(mydir,"/R/read-admb.R"))
+
 
 ############2. DIRECTORIES ###############
 # Directory with full assessment model results
-	master="~/_mymods/afsc-assessments/flatfish/assessments/yfs/runs/surveyloss"
+# NOTE: this master directory must exist already and contain a subdirectory with base model configurations 
+#       called "orig"
+	master=paste0(mydir,"/yfs/runs/surveyloss")
+	if(!dir.exists(file.path(mydir,master))) print(paste("NOTE: this master directory (",master,") must exist already and contain a subdirectory with base model configurations "))
 	setwd(master)
 
 # Directories and sub-directories needed for retrospectives
@@ -32,14 +39,7 @@ if(!require("dplyr")) install.packages("dplyr"); library(dplyr)
 # Used to create subfolders to store results from individual retrospective peels
 	retros_sub=c("retro","survRed_retro")	#DO NOT CHANGE THIS
 
-# Directories for proj_mod
-# Subdirectory for projection model input files
-# will be used to create this sub dir
-	#JI proj_data_dir<-"data/"
-	
 ############3. SOURCE R SCRIPTS ####################
-# found in master dir's parent directory
-#JI source("../get_proj_res.r")	 		#Get projection results from proj_mod
 
 ############4.VARIABLES ####################
 `%notin%` <- Negate(`%in%`)
@@ -53,68 +53,21 @@ comp_n=.001	#input sample size  for length and age composition data used to down
 
 #Values written to proj_var.dat
 #
-nsex=2						# number of sexes used in assessment model	
-nfishery=1					# number of fisheries(fleets)
-fleets=1					# fleet index number (only applicable for SS models)
-rec_age=1					# assumed age at recruitment
-max_age=20					# maximum age in model
-NAGE=length(rec_age:max_age)			# number of ages
-FY=1954						# first year used to subset SSB 
-rec_FY=1954					# first year used to subset recruitment 
-rec_LY_decrement=2				# value subtracted from assessment final year to subset recruitment vector
-spawn_month=5					# spawning month
-Fratios=noquote("1")				# Proportion F per fishery
-
-#passed to write_proj_spcat
-ct_yrs=1			#Number of future catch years given to projection model
-
-# passed to setup function
-nsims=100			# number of projection model simulations 
-nproj=20			# number of projection years ALSO USED BY get_proj_res
-
 #passed to get_proj_res
 spp="yfs"
 
 #5. Create proj_var.dat: contains variables needed to write projection model data files. 
 #This is done in the REPORT_SECTION of the *.tpl
-fp=file.path(master,"proj_var.dat")
-	write(noquote("#Number of catch years to include in the projection model dat file"),fp)
-	write(ct_yrs,fp,append=TRUE)
-
-	write(noquote("#Number of projection years"),fp,append=TRUE)
-	write(nproj,fp,append=TRUE)
-
-	write(noquote("#Number of simulations"),fp,append=TRUE)
-	write(nsims,fp,append=TRUE)
-
-	write(noquote("#Number of fisheries"),fp,append=TRUE)
-	write(nfishery,fp,append=TRUE)
-
-	write(noquote("#Number of sexes"),fp,append=TRUE)
-	write(nsex,fp,append=TRUE)
-
-	write(noquote("#Spawning month"),fp,append=TRUE)
-	write(spawn_month,fp,append=TRUE)
-
-	write(noquote("#Fratio"),fp,append=TRUE)
-	write(Fratios,fp,append=TRUE)
-
 ###############6. Psuedocode ################################################################################################################################
 #6.1. Run Retrospectives (tpl has been modified to do this)
 #6.2. Run projection
 #6.3. Get projection results
 ############################################################################################################################################################
 #files to copy to retrospective subfolders
-	filestocopy=c("orig/*") ###CHANGE TO MATCH YOUR EXE AND DAT NAMES
-	#JI filestocopy=c("kam.exe","kam.dat","proj_var.dat") ###CHANGE TO MATCH YOUR EXE AND DAT NAMES
-#files to copy to the proj model data folder
-	#JI projFilestocopy=c("bsai_kam.dat","bsai_kam_spcat.dat","setup.dat") ###CHANGE TO MATCH YOUR PROJ MOD FILE NAMES
 j=1
 #retro_sub = "retro" or "survRed_retro"
 	#6.1. Run for full time series
 	#Create main retrospective subfolder
-	if(!dir.exists(file.path(main_dir,paste0(retros_sub[j],"0")))){
-	dir.create(file.path(main_dir,paste0(retros_sub[j],"0")), showWarnings = TRUE)}
 df_res <- NULL
 for(j in 1:length(retros_sub)) {
 	cpto <- 	paste0(main_dir,"/",retros_sub[j],"0" )
@@ -150,14 +103,38 @@ setwd(master)
 
 
 6. Summarize results
-fn="proj_res_summ.out"
 write.csv(df_res,"yfs_results.csv")
 names(df_res)
-library(ggplot2)
-library(ggthemes)
-names()
+# Some dumb figure----------
 df_res %>% filter(Year==2020) %>% mutate(Endyr=2019-peel,buffer=1-ABC_HM/OFL_AM) %>% 
 ggplot(aes(x=Endyr,y=SSB,color=retros)) + geom_line(size=2) + theme_few()
+
+# Pool up retro results------------------
+df_retro <- data.frame(matrix(ncol=9,nrow=0, dimnames=list(NULL, c("Year","Peel","SSB","SSB_sd","Totbio","Totbio_sd","Rec","Rec_sd","run"))))
+j=1; i=2
+for(j in 1:length(retros_sub)) {
+	for(i in 1:length(endyrvec)){
+	  retro_dir <- 	paste0(main_dir,"/",retros_sub[j],i )
+	  rep <- read_rep(paste0(retro_dir,"/fm.rep"))
+	  df_tmp <- data.frame(
+	  	Year      = rep$SSB[,1],
+	  	Peel      = i,
+	  	SSB       = rep$SSB[,2],
+	  	SSB_sd    = rep$SSB[,3],
+	  	Totbio    = rep$TotBiom[,2],
+	  	Totbio_sd = rep$TotBiom[,3],
+	  	Rec       = rep$R[,2],
+	  	Rec_sd    = rep$R[,3],
+	    	run       = paste0(spp,"_",retros_sub[j] )
+	  )
+	  # Append run results
+	  # "Year Peel SSB ssb_stdev Tot_bio  totbio_stdev Rec rec_stdev run"
+	  df_retro <- rbind(df_retro,df_tmp)
+  }
+}
+write.csv(df_retro,"yfs_retros.csv")
+
+###--jim stopped here...-------------------------------------
 
 res=read.table(file.path(main_dir,fn),header=TRUE)
 
