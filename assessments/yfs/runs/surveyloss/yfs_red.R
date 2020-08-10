@@ -44,7 +44,7 @@ source(paste0(mydir,"/R/read-admb.R"))
 ############4.VARIABLES ####################
 `%notin%` <- Negate(`%in%`)
 assess_LY=2019					#assessment terminal year
-endyrvec <-1:8 		                #retrospective peels (Subtracted from endyr in tpl)
+endyrvec <-1:10 		                #retrospective peels (Subtracted from endyr in tpl)
 
 # Values used to downweight survey data when invoked written to retro.dat
 #Specify values here
@@ -82,7 +82,7 @@ for(j in 1:length(retros_sub)) {
 	dftmp$retros <- retros_sub[j] 
 	df_res       <- rbind(df_res,dftmp)
 	setwd(master)
-	for(i in 1:length(endyrvec)){
+	for(i in 9:length(endyrvec)){
 	  cpto <- 	paste0(main_dir,"/",retros_sub[j],i )
 	  fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
 	  system(fc)

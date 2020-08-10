@@ -641,6 +641,9 @@ PARAMETER_SECTION
   init_bounded_vector F40(1,nfsh,0.01,10.,phase_F40)
   init_bounded_vector F35(1,nfsh,0.01,10.,phase_F40)
   init_bounded_vector F30(1,nfsh,0.01,10.,phase_F40)
+  // vector F40(1,nfsh)
+  // vector F35(1,nfsh)
+	// vector F30(1,nfsh)
 
   // Spawner-recruit parameters and associated definitions
   init_number R_logalpha(phase_sr)      // log of Ricker alpha
@@ -1308,6 +1311,7 @@ FUNCTION evaluate_the_objective_function
   {
     compute_spr_rates();
     dvar_vector incr_dev_tmp(2,nages);
+
     // two degree increase in temperature
     incr_dev_tmp(5,nages-5)     = growth_alpha * 2.0 + age_incr;
     incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;

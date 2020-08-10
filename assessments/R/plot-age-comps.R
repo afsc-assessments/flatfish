@@ -114,6 +114,7 @@ plot_ageCompRes <- function(M, which_plot = "all")
     mdf <- .get_ageComps_df(M)
     
     p <- ggplot(data=mdf[[1]])
+    p <- ggplot(data=mdf)
     p <- p + geom_point(aes(factor(year),variable,col=factor(sign(resd)),size=abs(resd)),alpha=0.6)
     p <- p + scale_size_area(max_size=10)
     p <- p + labs(x="Year",y="Length",col="Sign",size="Residual")
