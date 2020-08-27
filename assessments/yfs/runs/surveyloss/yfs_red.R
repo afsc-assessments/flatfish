@@ -64,25 +64,28 @@ spp="yfs"
 #6.3. Get projection results
 ############################################################################################################################################################
 #files to copy to retrospective subfolders
-j=1
+j=2
+i=10
 #retro_sub = "retro" or "survRed_retro"
 	#6.1. Run for full time series
 	#Create main retrospective subfolder
+do_run <- FALSE
 df_res <- NULL
 for(j in 1:length(retros_sub)) {
+	setwd(master)
 	cpto <- 	paste0(main_dir,"/",retros_sub[j],"0" )
 	fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
 	system(fc)
 	#Command line to run assessment model *.exe
 	setwd(file.path(main_dir,paste0(retros_sub[j],"0")))
-	system("make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
+	if (do_run) system("rm fm.std; make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
 	#6.2 Get tier one projections
 	dftmp        <- data.frame(read.table("ABC_OFL.rep",header=TRUE))
 	dftmp$peel   <- 0
 	dftmp$retros <- retros_sub[j] 
 	df_res       <- rbind(df_res,dftmp)
-	setwd(master)
-	for(i in 9:length(endyrvec)){
+	for(i in 1:length(endyrvec)){
+	  setwd(master)
 	  cpto <- 	paste0(main_dir,"/",retros_sub[j],i )
 	  fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
 	  system(fc)
@@ -91,18 +94,17 @@ for(j in 1:length(retros_sub)) {
 	  ctl$n_retro     <- i
 	  ctl$surv_dwnwt  <- j-1
 	  write_dat(ctl,"mod.ctl")
-	  system("make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
+	  if (do_run) system("rm fm.std; make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
 	  dftmp        <- data.frame(read.table("ABC_OFL.rep",header=TRUE))
 	  dftmp$peel   <- -i
 	  dftmp$retros <- retros_sub[j] 
 	  df_res       <- rbind(df_res,dftmp)
-	  setwd(master)
 	}	
 }
 setwd(master)
 
 
-6. Summarize results
+#6. Summarize results
 write.csv(df_res,"yfs_results.csv")
 names(df_res)
 # Some dumb figure----------
@@ -111,10 +113,11 @@ ggplot(aes(x=Endyr,y=SSB,color=retros)) + geom_line(size=2) + theme_few()
 
 # Pool up retro results------------------
 df_retro <- data.frame(matrix(ncol=9,nrow=0, dimnames=list(NULL, c("Year","Peel","SSB","SSB_sd","Totbio","Totbio_sd","Rec","Rec_sd","run"))))
-j=1; i=2
+j=1; i=4
 for(j in 1:length(retros_sub)) {
-	for(i in 1:length(endyrvec)){
+	for(i in 0:length(endyrvec)){
 	  retro_dir <- 	paste0(main_dir,"/",retros_sub[j],i )
+	  print(c(retros_sub[j],i ))
 	  rep <- read_rep(paste0(retro_dir,"/fm.rep"))
 	  df_tmp <- data.frame(
 	  	Year      = rep$SSB[,1],
@@ -132,6 +135,7 @@ for(j in 1:length(retros_sub)) {
 	  df_retro <- rbind(df_retro,df_tmp)
   }
 }
+setwd(master)
 write.csv(df_retro,"yfs_retros.csv")
 
 ###--jim stopped here...-------------------------------------

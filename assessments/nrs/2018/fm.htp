@@ -52,6 +52,11 @@ class model_data : public ad_comm{
   data_number yr1_futcat;
   data_number yr2_futcat;
   data_number n_retro;
+  data_number surv_dwnwt;
+  data_number cv_inc;
+  data_number n_comp;
+  data_number eof_check;
+  int phase_male_sel_offset;
   data_int nyrs_fut;
   data_vector fut_temp;
   data_int styr;
@@ -130,6 +135,7 @@ class model_data : public ad_comm{
   dvector srv_mo_frac;
   data_matrix n_wts;
   data_vector growth_cov;
+  data_int Check;
   int styr_fut;
   int endyr_fut;
   int num_proj_Fs;
@@ -137,6 +143,7 @@ class model_data : public ad_comm{
   dvector offset_srv;
   dvector offset_fsh;
   double R_guess;
+  data_matrix future_ABC;
   ~model_data();
   model_data(int argc,char * argv[]);
   friend class model_parameters;
@@ -149,7 +156,6 @@ public:
   ~model_parameters();
   void preliminary_calculations(void);
   void set_runtime(void);
-  virtual void * mycast(void) {return (void*)this;}
   static int mc_phase(void)
   {
     return initial_params::mc_phase;
@@ -176,6 +182,12 @@ public:
     return *objective_function_value::pobjfun;
   }
 private:
+  dvariable adromb(dvariable(model_parameters::*f)(const dvariable&), double a, double b, int ns)
+  {
+    using namespace std::placeholders;
+    _func func = std::bind(f, this, _1);
+    return function_minimizer::adromb(func, a, b, ns);
+  }
   ivector integer_control_flags;
   dvector double_control_flags;
   param_init_vector ln_q_srv;
@@ -217,6 +229,7 @@ private:
   param_number slope_tmp;
   param_number sel50_tmp;
   param_init_vector sel_slope_fsh_m;
+  param_init_bounded_number male_sel_offset;
   param_init_bounded_matrix sel_slope_fsh_devs_m;
   param_init_vector sel50_fsh_m;
   param_init_bounded_matrix sel50_fsh_devs_m;
@@ -343,6 +356,7 @@ private:
   param_stddev_number endbiom;
   param_stddev_number depletion;
   param_stddev_matrix future_catch;
+  param_stddev_vector future_Fs;
   param_stddev_matrix future_SSB;
   param_stddev_matrix future_TotBiom;
 public:
