@@ -1010,8 +1010,6 @@ PROCEDURE_SECTION
     get_numbers_at_age();
     //if(active(R_logalpha))
     compute_sr_fit();
-
-
     if (sd_phase() || mceval_phase())
     {
       get_msy();
@@ -1598,6 +1596,9 @@ FUNCTION compute_sr_fit
   // sigmaR = 0.6;
   R_alpha=mfexp(R_logalpha);
   R_beta=mfexp(R_logbeta);
+  //R_alpha= 0.0160063;
+  // = 0.00302922;
+	
   for (int i=styr_sr; i <= endyr_sr; i++)
   {
     SAM_recruits(i)= 2.*natage_f(i,1);
@@ -1892,6 +1893,8 @@ FUNCTION write_srec
   phizero=get_spr(0.0);
   // cout<<phizero<<endl;
   dvariable Rzero = -(log(1/(R_alpha*phizero)))/(phizero*R_beta);   // Ricker formulation of equilibrium recruitment at each F
+       // rechat(i)  = R_alpha*SRR_SSB(i)*(mfexp(-R_beta*SRR_SSB(i)));
+	cout<<phizero<<" R0 "<<Rzero<<endl;
   dvariable Bzero = Rzero*phizero;
   dvariable Btmp  =  .8*Bzero;
   srecpar << "# Bzero,  PhiZero,  Alpha, sigmaR"<<endl;
@@ -1998,7 +2001,7 @@ REPORT_SECTION
 	nLogPosterior(ilike) = fpen       ; ilike++;
 
   for (int i=0;i<=3;i++)
-    {
+  {
       dvar_vector incr_dev_tmp(2,nages);
       incr_dev_tmp(5,nages-5)     = growth_alpha * double(i) ;
       incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
@@ -2006,15 +2009,15 @@ REPORT_SECTION
       wt_pop_tmp_f(1)        = wt_vbg_f(1);
       wt_pop_tmp_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
       report <<i<<" "<<double(i)*growth_alpha<<" "<<wt_pop_tmp_f<<endl;
-    }
-    report << "wt_pop_f"<<endl;
-    report << wt_pop_f<<endl;
-    report << "wt_pop_m"<<endl;
-    report << wt_pop_m<<endl;
+  }
+  report << "wt_pop_f"<<endl;
+  report << wt_pop_f  <<endl;
+  report << "wt_pop_m"<<endl;
+  report << wt_pop_m  <<endl;
   // This section to write s-rec parameters to input file for projection model
   // need Rzero, phizero calculated then use alpha and beta
-  if (active(R_logbeta))
-    write_srec();
+  // if (active(R_logbeta))
+  write_srec();
   cout<<"Done with phase "<<current_phase()<<" --in report file"<<endl;
   cout<<wt_pop_mn_f(4,10)<<endl;
   cout<<wt_fsh_mn_f(4,10)<<endl;
@@ -2467,7 +2470,6 @@ REPORT_SECTION
  
 BETWEEN_PHASES_SECTION
   // Set the msy selectivity to something reasonable???
-
   log_msy_sel_f = log_sel_fsh_f(1,endyr-2);
   log_msy_sel_m = log_sel_fsh_m(1,endyr-2);
 

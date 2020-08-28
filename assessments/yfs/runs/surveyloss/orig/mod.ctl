@@ -13,11 +13,11 @@
 #phase_mn_f
 	2
 #phase_F40           
-	6
+	4
 #phase_fmort        
 	3
 #phase_proj        
-	7
+	8
 #phase_logist_sel    
 	5
 #phase_logist_sel_devs    
@@ -49,9 +49,9 @@
 #pf_sigma    
 	0.05
 #a50_sigma   
-	0.2
+	0.1
 #slp_sigma   
-	0.4
+	0.2
 #q_exp   
 	1
 #q_sigma
@@ -67,7 +67,7 @@
 #nselages            
 	17
 #lambda
-1 1 300 -1 1 1 1 1 1 1 	
+1 1 200 -1 1 1 1 1 1 1 	
 #styr_sr         
 	1978
 #endyr_sr       
