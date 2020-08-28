@@ -13,7 +13,7 @@ if(!require("dplyr")) install.packages("dplyr"); library(dplyr)
 library(ggplot2)
 library(ggthemes)
 # Set your local directory--------
-	mydir <- "~/_mymods/afsc-assessments/flatfish/assessments"
+	mydir <- "/Users/ingridspies/admbmodels/flatfish/assessments"  #change to mine.
 # Get tools to read-write control file
 source(paste0(mydir,"/R/read-admb.R"))
 
@@ -72,7 +72,7 @@ df_res <- NULL
 for(j in 1:length(retros_sub)) {
 	cpto <- 	paste0(main_dir,"/",retros_sub[j],"0" )
 	fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
-	system(fc)
+	system("fc")  #IS added "fc"
 	#Command line to run assessment model *.exe
 	setwd(file.path(main_dir,paste0(retros_sub[j],"0")))
 	system("make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
@@ -82,7 +82,7 @@ for(j in 1:length(retros_sub)) {
 	dftmp$retros <- retros_sub[j] 
 	df_res       <- rbind(df_res,dftmp)
 	setwd(master)
-	for(i in 9:length(endyrvec)){
+	for(i in 0:length(endyrvec)){
 	  cpto <- 	paste0(main_dir,"/",retros_sub[j],i )
 	  fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
 	  system(fc)
