@@ -11,15 +11,50 @@ source("../R/prelims.R")
 mytheme = .THEME
 #---------------------------------------------------------------
 # Read in MCMC header and results
-hdr <- read.table("hdr.dat",as.is=T,header=F)
+hdr <- read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/data/hdr.dat",as.is=T,header=F)
+mctmp2.df <-read_table2("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/evalout.rep",col_names=FALSE)
+mctmp1.df <-read_table2("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/evalout.rep",col_names=FALSE)
+names(mctmp1.df) <- hdr
+names(mctmp2.df) <- hdr
+mcdat=rbind(mctmp1.df,mctmp2.df)
+mcdat$Model=c(rep("Model 18.1",nrow(mctmp1.df)),rep("Model 18.1a",nrow(mctmp1.df)))
+
+p1=ggplot(data=mcdat, aes(x=Fmsyr,fill=Model)) + geom_density(aes(x=Fmsyr),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.3))+theme_bw()+ylab("Density")
+
+p2=ggplot(data=mcdat, aes(x=1000*Bmsy,fill=Model)) + geom_density(aes(x=Bmsy),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Bmsy (x1,000 t)") +theme_bw()+ylab("Density")+xlim(c(100,1300))
+
+p3=ggplot(data=mcdat, aes(x=ln_mean_R,fill=Model)) + geom_density(aes(x=ln_mean_R),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("log(mean(Recruitment))x10^9") +theme_bw()+ylab("Density")
+
+p4=ggplot(data=mcdat, aes(x=ABC_biom6,fill=Model)) + geom_density(aes(x=ABC_biom6),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Age 6 Biomass (x1,000 t)") +theme_bw()+ylab("Density")+xlim(c(1000,7000))
+
+p5=ggplot(data=mcdat, aes(x=SSB_2019,fill=Model)) + geom_density(aes(x=SSB_2019),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Female Spawning Biomass (x1,000 t)") +theme_bw()+ylab("Density")+geom_vline(xintercept=FSB_this/1000)+xlim(c(300,1400))
+
+p6=ggplot(data=mcdat, aes(x=1000*TotBiom_2019,fill=Model)) + geom_density(aes(x=1000*TotBiom_2019),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Total Biomass (x1,000 t)") +theme_bw()+ylab("Density")
+
+
+
+
+  mctmp1.df$Model <- "Model 18.1a"
+  
+  mctmp.df$ModNum <- 1
+  mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
+  mc.df <- rbind(mc.df,mctmp.df)
+  
+    ggplot(data=mctmp1.df, aes(x=Fmsyr,fill=Model)) + geom_density(aes(x=Fmsyr),alpha=.4)+scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.3))+theme_bw()+ylab("Density")
+  
+
+mc.df %>% select(Model,Fmsyr) %>% 
+  ggplot(aes(x=Fmsyr,fill=Model)) + geom_density(alpha=.4) + mytheme+ scale_y_continuous(breaks=NULL) + xlab("Fmsy") + xlim(c(0,.3))
+
 mc.df <-tibble()
+
 mods  <- c("Base","Model 18.1","FixQ", "Model 14.2")
 i=2
 for (i in c(2,4)){
   mctmp.df <-read_table2(paste0("arc/mod",i,"_evalout.rep"),col_names=FALSE) 
   names(mctmp.df) <- hdr
-  mctmp.df$Model <- mods[i]
-  mctmp.df$ModNum <- i
+  mctmp.df$Model <- M18.1a
+  mctmp.df$ModNum <- 1
   mctmp.df <- mctmp.df %>% mutate(Recruit_NLL=rec_like_1+rec_like_2+rec_like_3+rec_like_4, Selectivity_NLL=sel_like1+sel_like2+sel_like3)
   mc.df <- rbind(mc.df,mctmp.df)
 }
