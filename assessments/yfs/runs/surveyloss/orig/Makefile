@@ -1,5 +1,5 @@
 EXEC = fm
-DIST = ~/_mymods/afsc-assessments/flatfish/src/
+DIST = ../../../../../../src/
 ARGS = -nox -iprint 50 
 ARGS = -nox -iprint 50 -hbf 1
 
