@@ -1,13 +1,3 @@
-                                  
-
-\begin{figure}[!h]
-\begin{floatrow}
-\ffigbox{\includegraphics[scale = 0.8]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs10bw.png}}{\caption{PTST based on total duration}\label{case1}}
-\ffigbox{\includegraphics[scale = 0.8]{/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/data/NBS_survey/yfs17bw.png}}{\caption{A zoom}\label{zoom}}
-\end{floatrow}
-\end{figure}
-
-YFS Figures
  
 
 1. `r table_nums("catch",display="cite")`
@@ -64,66 +54,76 @@ YFS Figures
  Mean length and weight at age for Yellowfin Sole (unsmoothed), females presented first, followed by males.
 
 
-1. `r figure_nums("NBS",display="cite")` 
+1.. `r figure_nums("NBS",display="cite")` 
 
-2. `r figure_nums("wtage",display="cite")`
+2.. `r figure_nums("NBSEBSlens",display="cite")`  
 
-3. `r figure_nums("black",display="cite")` 
 
-4. `r figure_nums("tempanom",display="cite")`
+3.. `r figure_nums("spawnplot",display="cite")`
 
-5. `r figure_nums("catchfig",display="cite")`
+4.. `r figure_nums("wtage",display="cite")`
 
-5.5  `r figure_nums("cpuefig",display="cite")`
+5.. `r figure_nums("black",display="cite")` 
+
+6.. `r figure_nums("tempanom",display="cite")`
+
+7.. `r figure_nums("catchfig",display="cite")`
+
+
  
-6. `r figure_nums("obs_sizecomp",display="cite")`#not done should be 4.2 
+8.. `r figure_nums("obs_sizecomp",display="cite")`#not done should be 4.2 
 
-7. `r figure_nums("pie_bymonth",display="cite")`
+9.. `r figure_nums("pie_bymonth",display="cite")`
  
-8. `r figure_nums("fishmo",display="cite")`    #not done shold be 4.4
+10.. `r figure_nums("fishmo",display="cite")`    #not done shold be 4.4
 
-9.  `r figure_nums("cpueline",display="cite")` 
+11..  `r figure_nums("cpueline",display="cite")`   
 
-10.  `r figure_nums("srvCI",display="cite")` 
+12.. `r figure_nums("cpuefig",display="cite")` 392
 
-11. `r figure_nums("cpuediff",display="cite")`  
+13..  `r figure_nums("srvCI",display="cite")` 
 
-12. `r figure_nums("ricker1",display="cite")`
+14.. `r figure_nums("cpuediff",display="cite")`  
 
-13. `r figure_nums("ricker2",display="cite")` 
+15.. `r figure_nums("ricker1",display="cite")`
 
-14. `r figure_nums("srvsel",display="cite")`  
-
-15. `r figure_nums("fshsel",display="cite")`  
-
-16. `r figure_nums("plotq",display="cite")`
-
-17. `r figure_nums("sexratio",display="cite")` 
+16.. `r figure_nums("ricker2",display="cite")`   
 
 
 
-19. figure_nums("srv_agecomp1",display="cite")`
+17.. `r figure_nums("srvsel",display="cite")`  
 
-20. figure_nums("srv_agecomp2",display="cite")`  
+18.. `r figure_nums("fshsel",display="cite")`  
 
-21. figure_nums("fsh_agecomp1",display="cite")`  
+19.. `r figure_nums("plotq",display="cite")`
 
-22. figure_nums("fsh_agecomp2",display="cite")`  
+20.. `r figure_nums("sexratio",display="cite")` 
 
-18. `r figure_nums("srvbio_fit",display="cite")`      **
 
-18. `r figure_nums("BioFSBCI",display="cite")`
+
+21.. figure_nums("srv_agecomp1",display="cite")`
+
+22.. figure_nums("srv_agecomp2",display="cite")`  
+
+23.. figure_nums("fsh_agecomp1",display="cite")`  
+
+24.. figure_nums("fsh_agecomp2",display="cite")`  
+
+25.. `r figure_nums("srvbio_fit",display="cite")`  
+26.. `r figure_nums("mcmcplots",display="cite")` 
+
+27.. `r figure_nums("BioFSBCI",display="cite")`
         
-20. `r figure_nums("fishingavgF",display="cite")`  **
+28.. `r figure_nums("fishingavgF",display="cite")`  **
       
-20. `r figure_nums("recfig",display="cite")` 
+29.. `r figure_nums("recfig",display="cite")` 
 
-19. `r figure_nums("retro1",display="cite")` 
+30.. `r figure_nums("retro1",display="cite")` 
 
-20. `r figure_nums("retro2",display="cite")` 
+31.. `r figure_nums("retro2",display="cite")` 
 
 
-21. `r figure_nums("phaseplane",display="cite")` 
+32.. `r figure_nums("phaseplane",display="cite")` 
 
 
 
