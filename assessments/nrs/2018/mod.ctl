@@ -1,5 +1,5 @@
 #Growth_Option
-0
+1
 #ABC_age_lb
 6
 #phase_age_incr
@@ -12,12 +12,12 @@
 2
 #phase_mn_f
 2
-#phase_F40           
-8
+#phase_F40         
+-3
 #phase_fmort        
 3
 #phase_proj        
-6
+7
 #phase_logist_sel    
 4
 #phase_logist_sel_devs    
@@ -27,11 +27,11 @@
 #phase_q
 5
 #q_alpha_prior
--0.336
+-0.136
 #phase_q_alpha
 -4
 #q_beta_prior
-0.01
+0.05
 #phase_q_beta_in
 -4
 #phase_m_f
@@ -39,7 +39,7 @@
 #phase_m_m
 -7
 #phase_sr
--33
+6
 #phase_env_cov  
 -4
 #phase_sigmaR  
@@ -53,7 +53,7 @@
 #slp_sigma   
 0.2
 #q_exp   
-1.0
+1.5
 #q_sigma
 0.056
 #m_exp
@@ -67,7 +67,7 @@
 #nselages
 17
 #lambda
-1 1 200 1 1 1 1 1 1 1
+1 1 300 -1 1 1 1 1 1 1
 #styr_sr         
 1978
 #endyr_sr       
