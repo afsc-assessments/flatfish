@@ -33,10 +33,10 @@ This was previously in mod.ctl files. it's like "starter.ss"
 
 ## Notes on proceeding from the 2018 assessment
 
-    1.  Copy the contents of "orig" directory to a new folder    
+1.  Copy the contents of "orig" directory to a new folder    
+
+2.  modify that folder contents, e.g., update 2018 datafile to 2020      
 		
-		2.  modify that folder contents, e.g., update 2018 datafile to 2020      
-		
-		2.  Run model, make a script to do so, modify w/ more scripts, more directories...     
+2.  Run model, make a script to do so, modify w/ more scripts, more directories...     
 
 
