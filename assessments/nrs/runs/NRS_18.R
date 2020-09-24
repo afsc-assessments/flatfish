@@ -1,52 +1,113 @@
 #R
 rm(list=ls())
-source("../R/prelims.R")
 library(tidyverse)
 library(grid)
 library(ggridges)
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
-source("../R/compareRuns.r")
+#Read in functions=========
+source("../../R/prelims.R")
+source("../../R/compareRuns.r")
+source("../../R/read-admb.R")
+source(("../../R/plot-age-comps.R"))
+source(("../../R/plot_sex_ratio.R"))
+source(("../../R/get_like_table.R"))
+source(("../../R/plot_sel.R"))
+source(("../../R/plot_ssb.R"))
+source(("../../R/plot_fut_Fs.R"))
+source(("../../R/plot_rec.R"))
+source(("../../R/plot_bts.R"))
+source(("../../R/plot_q.R"))
+source(("../../R/plot_srr.R"))
 
 # Read in the output of the assessment
 # Read in model results
-#.THEME
-#setwd("c:/Users/Jim.ianelli.nmfs/_mymods/flatfish/assessments/nrs")
-#nrs17 <- readList("fm_R.rep")
-#M <- list("2017 update"=nrs17)
-
-#--To compile fm and copy to working directory
-setwd("../../src")
+#--To compile fm and copy to working directory FIX UP for your machine...
+setwd("../../../src")
 system("make.bat")
-#system("copy fm.exe ..\assessments\nrs")
-#system("copy fm.exe ..\assessments\yfs")
-setwd("../assessments/nrs")
+system("copy fm.exe ..\assessments\nrs\runs")
+setwd("../assessments/nrs/runs")
 #--------------------------------------
+#
+# Make a new directory
+  system(paste0("mkdir -p test ; cp orig/* test ") ) 
+  A <-  read_rep("test/fm.rep")
 
-for (i in 1:4) {
-  system(paste0("run.bat ",i) ) # run each of 8 models in a "system" call (same as commandline)
-}
-.OVERLAY=T
-i=1
-for (i in 1:10) {
-for (i in 1:4) {
-  rn=paste0("arc/mod",i,"_R.rep")
-  mn=paste0("mod",i)
-  A <-  readList(rn)
-  sr <- read.table(paste0("arc/mod",i,"_sex_ratio.rep"))
-  names(sr) <- c("Year","source","sex_ratio")
-  A$sex_ratio <- sr %>% arrange(source,Year)
-  assign(mn,A)
-  print(rn)
-}
-
-#M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4)
 M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
            "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
 M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
 M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
 M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, Msel"=mod4)
+
+##################################
+# NEEDS LOTS OF edits...
+##################################
+
+# The model specs
+mod_names <- c("2018 base", "2020","Alt20")
+.MODELDIR = c( "m0/", "m1/","m2/")
+
+# Read report files and create report object (a list):
+fn       <- paste0(.MODELDIR, "fm")
+modlst   <- lapply(fn, read_admb)
+names(modlst) <- mod_names
+thismod <- 2 # the selected model
+length(modlst)
+  p1 <- plot_rec(modlst,xlim=c(2004.5,2018.5))
+  ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
+  p1 <- plot_ssb(modlst[c(1,2,3,5)],xlim=c(2004.5,2018.5),alpha=.1)
+  plot_ssb(modlst,xlim=c(2004.5,2018.5),alpha=.1)
+  plot_bts(modlst,xlim=c(2008.5,2018.5),ylim=c(0,15000)) 
+  ggsave("figs/mod_eval0a.pdf",plot=p1,width=6,height=4,units="in")
+  p1 <- plot_bts(modlst[c(2,3,5)],xlim=c(2010,2018.5),ylim=c(0,15000)) 
+  ggsave("figs/mod_eval0c.pdf",plot=p1,width=8,height=4,units="in")
+  p1 <- plot_sel()
+  ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
+  p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
+  #plot_sel(sel=M$sel_eit,styr=1994,fill="darkblue") 
+  ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
+  p1 <- plot_mnage(modlst[thismod]) 
+  ggsave("figs/mod_mean_age.pdf",plot=p1,width=5.8,height=8,units="in")
+  p1 <- plot_bts(modlst[thismod]) 
+  ggsave("figs/mod_bts_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  p1 <- plot_ats(modlst[thismod]) 
+  ggsave("figs/mod_ats_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  p1 <- plot_avo(modlst[thismod]) 
+  ggsave("figs/mod_avo_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  p1 <- plot_cpue(modlst[[thismod]]) 
+  ggsave("figs/mod_cpue_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  p1 <- plot_recruitment(modlst[thismod],xlim=c(1963.5,2018.5),fill="yellow")
+  ggsave("figs/mod_rec.pdf",plot=p1,width=9,height=4,units="in")
+  p1 <- plot_srr(modlst[thismod],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
+  ggsave("figs/mod_srr.pdf",plot=p1,width=5.4,height=3.9,units="in")
+  p1 <- plot_srr(modlst[c(2,4)],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
+  ggsave("figs/bholt_ricker.pdf",plot=p1,width=7.4,height=3.9,units="in")
+  pdf("../doc/figs/mod_fsh_age.pdf",width=6,height=8)
+  plot_agefit(M,type="fishery", case_label="2018 Assessment",gear="fsh")
+  dev.off()
+  #---Data influence------------
+  CAB_names <- factor(c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"),levels=c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"))
+  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO")
+  #factor(sizes, levels = c("small", "medium", "large"))
+  .CABMODELDIR = c( "../2017/16.0/", "../runs/C/","../runs/CA/","../runs/CAB/","../runs/16.0/")
+
+  # Read report file and create gmacs report object (a list):
+  fn       <- paste0(.CABMODELDIR, "pm")
+  CABmodlst   <- lapply(fn, read_admb)
+  CAB_names <- 1:5
+  names(CABmodlst) <- CAB_names
+  p <-  plot_ssb(CABmodlst,xlim=c(2009.5,2018.5),alpha=.1,ylim=c(0,5200))
+  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "+ ATS", "+ BTS", "+ AVO")
+  p <-  p + scale_fill_discrete(labels=CAB_names) + scale_color_discrete(labels=CAB_names) + theme_classic()
+  p
+  #plot_ssb(modlst[],xlim=c(2004.5,2018.5),alpha=.1,ylim=c(0,5200))
+  ggsave("figs/mod_data.pdf",plot=p,width=6,height=4,units="in")
+  #for (i in 1:length(mod_names)) modlst[[i]] <- c(modlst[[i]],get_vars(modlst[[i]]))
+
+
+
+
 M <- M[refSet]
 M <- M[1]
 refSet=1
