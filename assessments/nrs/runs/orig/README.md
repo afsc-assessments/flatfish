@@ -1,7 +1,13 @@
 # Northern rocksole sole directory
 
-fm.dat in directory gives "model_name" as one word (no spaces) and datafile locale and name. 
-This was previously in mod.ctl files. it's like "starter.ss"
+## Notes on proceeding from the 2018 assessment
+
+1.  Copy the contents of "orig" directory to a new folder    
+
+2.  modify that folder contents, e.g., update 2018 datafile to 2020      
+		
+2.  Run model, make a script to do so, modify w/ more scripts, more directories...     
+
 
 ## Core files for running model
 
@@ -30,13 +36,4 @@ This was previously in mod.ctl files. it's like "starter.ss"
 | evalout.rep      |  MCMC report file                            |
 | fm_legacy.rep    |  Legacy report file (used to paste into excel...                             |
 | -----------------|----------------|
-
-## Notes on proceeding from the 2018 assessment
-
-1.  Copy the contents of "orig" directory to a new folder    
-
-2.  modify that folder contents, e.g., update 2018 datafile to 2020      
-		
-2.  Run model, make a script to do so, modify w/ more scripts, more directories...     
-
 
