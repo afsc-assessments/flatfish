@@ -19,7 +19,8 @@ This was previously in mod.ctl files. it's like "starter.ss"
 
 ## Notes on some output files 
 
-| -----------------|----------------|
+| File            | Description          |
+|-----------------|----------------|
 | writeinput.log   |  check on if data etc read in properly (Echoinput.ss?)                            |
 | fm.rep           |  Main output file to read into R                            |
 | ABC_OFL.rep      |  table for Tier 1 stuff                            |
