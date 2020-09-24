@@ -32,6 +32,7 @@ rsconnect/
 Rplots.pdf
 
 # ADMB build files
+fm
 *.obj
 src/build/*
 src/fm.cpp
