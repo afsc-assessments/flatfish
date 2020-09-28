@@ -1,139 +1,101 @@
 #R
 rm(list=ls())
-library(tidyverse)
-library(grid)
-library(ggridges)
-#-------------------------------------------------------------------------------
-# Visual compare runs
-#-------------------------------------------------------------------------------
 #Read in functions=========
-source("../../R/prelims.R")
-source("../../R/compareRuns.r")
-source("../../R/read-admb.R")
-source(("../../R/plot-age-comps.R"))
-source(("../../R/plot_sex_ratio.R"))
-source(("../../R/get_like_table.R"))
-source(("../../R/plot_sel.R"))
-source(("../../R/plot_ssb.R"))
-source(("../../R/plot_fut_Fs.R"))
-source(("../../R/plot_rec.R"))
-source(("../../R/plot_bts.R"))
-source(("../../R/plot_q.R"))
-source(("../../R/plot_srr.R"))
+source("prelims.R")
+.THEME   <- theme_few()
+.OVERLAY <- TRUE
 
-# Read in the output of the assessment
-# Read in model results
-#--To compile fm and copy to working directory FIX UP for your machine...
-setwd("../../../src")
-system("make.bat")
-system("copy fm.exe ..\assessments\nrs\runs")
-setwd("../assessments/nrs/runs")
-#--------------------------------------
-#
-# Make a new directory
-  system(paste0("mkdir -p test ; cp orig/* test ") ) 
-  A <-  read_rep("test/fm.rep")
+#To compile fm and copy to working directory FIX UP for your machine...
+#setwd("../../../src")
+#system("make.bat")
+#system("copy fm.exe ../assessments/nrs/runs")
+#setwd("../assessments/nrs/runs")
 
-M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
-           "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
-M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
-M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
-M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, Msel"=mod4)
+# Function to make a new directory and copy files for orig=========
+setup_dir <- function(dirname="xx"){
+  dir.create(dirname)
+  file.copy(list.files('orig/',full.names = TRUE),dirname)
+}
+# apply to (new) run directories
+.MODELDIR = c( "m1/", "m2/","m3/","m4/")
+lapply(.MODELDIR, setup_dir)
 
-##################################
-# NEEDS LOTS OF edits...
-##################################
+# Assuming that latest fm.exe is in path...run models----
+# m1 base case no change===============================
+setwd("m1"); shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
 
-# The model specs
-mod_names <- c("2018 base", "2020","Alt20")
-.MODELDIR = c( "m0/", "m1/","m2/")
+# m2 Estimate male m===============================
+ctl <- read_ctl("orig/mod.ctl")
+setwd("m2"); 
+ctl$phase_m_m <- 7; file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
+shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
 
+# m3 Estimate male m, q===============================
+ctl <- read_ctl("orig/mod.ctl")
+setwd("m3"); 
+ctl$phase_m_m <- 7; 
+ctl$q_sigma <- 0.2; 
+file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
+shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
+
+# m4 Estimate male m, q, male selex offset===============================
+ctl <- read_ctl("orig/mod.ctl")
+setwd("m4"); 
+# Estimate male m
+ctl$phase_m_m <- 7; 
+ctl$q_sigma <- 0.2; 
+ctl$lambda[4] <- 6; 
+file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
+shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
+
+# Read in results -----------------------------------------------------------------
+# The model names...
+  mod_names <-  c("Base", "Est Male M","Est Male M, q","Est Male M, q, Msel")
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
 modlst   <- lapply(fn, read_admb)
 names(modlst) <- mod_names
-thismod <- 2 # the selected model
-length(modlst)
-  p1 <- plot_rec(modlst,xlim=c(2004.5,2018.5))
-  ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
-  p1 <- plot_ssb(modlst[c(1,2,3,5)],xlim=c(2004.5,2018.5),alpha=.1)
-  plot_ssb(modlst,xlim=c(2004.5,2018.5),alpha=.1)
-  plot_bts(modlst,xlim=c(2008.5,2018.5),ylim=c(0,15000)) 
-  ggsave("figs/mod_eval0a.pdf",plot=p1,width=6,height=4,units="in")
-  p1 <- plot_bts(modlst[c(2,3,5)],xlim=c(2010,2018.5),ylim=c(0,15000)) 
-  ggsave("figs/mod_eval0c.pdf",plot=p1,width=8,height=4,units="in")
-  p1 <- plot_sel()
-  ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
-  p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
-  #plot_sel(sel=M$sel_eit,styr=1994,fill="darkblue") 
-  ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
-  p1 <- plot_mnage(modlst[thismod]) 
-  ggsave("figs/mod_mean_age.pdf",plot=p1,width=5.8,height=8,units="in")
-  p1 <- plot_bts(modlst[thismod]) 
-  ggsave("figs/mod_bts_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  p1 <- plot_ats(modlst[thismod]) 
-  ggsave("figs/mod_ats_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  p1 <- plot_avo(modlst[thismod]) 
-  ggsave("figs/mod_avo_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  p1 <- plot_cpue(modlst[[thismod]]) 
-  ggsave("figs/mod_cpue_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  p1 <- plot_recruitment(modlst[thismod],xlim=c(1963.5,2018.5),fill="yellow")
-  ggsave("figs/mod_rec.pdf",plot=p1,width=9,height=4,units="in")
-  p1 <- plot_srr(modlst[thismod],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
-  ggsave("figs/mod_srr.pdf",plot=p1,width=5.4,height=3.9,units="in")
-  p1 <- plot_srr(modlst[c(2,4)],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
-  ggsave("figs/bholt_ricker.pdf",plot=p1,width=7.4,height=3.9,units="in")
-  pdf("../doc/figs/mod_fsh_age.pdf",width=6,height=8)
-  plot_agefit(M,type="fishery", case_label="2018 Assessment",gear="fsh")
-  dev.off()
-  #---Data influence------------
-  CAB_names <- factor(c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"),levels=c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"))
-  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO")
-  #factor(sizes, levels = c("small", "medium", "large"))
-  .CABMODELDIR = c( "../2017/16.0/", "../runs/C/","../runs/CA/","../runs/CAB/","../runs/16.0/")
+M <- modlst[1]
+#Plot runset-------------------------
+# Reserved for a new function that plots everything for each model
+do_plots <- function(M,dopdf=TRUE){
+  if (dopdf) {  pdf(onefile=false) }
+  plot_bts(M)
+  plot_age_comps(M)
+  plot_age_comps(M,type="Survey",title="Survey age compositions")
+  plot_rec(M)
+  plot_ssb(M)
+  plot_sel(M[[1]])
+  plot_srv_sel(M)
+  if (dopdf) {  dev.off() }
+}
 
-  # Read report file and create gmacs report object (a list):
-  fn       <- paste0(.CABMODELDIR, "pm")
-  CABmodlst   <- lapply(fn, read_admb)
-  CAB_names <- 1:5
-  names(CABmodlst) <- CAB_names
-  p <-  plot_ssb(CABmodlst,xlim=c(2009.5,2018.5),alpha=.1,ylim=c(0,5200))
-  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "+ ATS", "+ BTS", "+ AVO")
-  p <-  p + scale_fill_discrete(labels=CAB_names) + scale_color_discrete(labels=CAB_names) + theme_classic()
-  p
-  #plot_ssb(modlst[],xlim=c(2004.5,2018.5),alpha=.1,ylim=c(0,5200))
-  ggsave("figs/mod_data.pdf",plot=p,width=6,height=4,units="in")
-  #for (i in 1:length(mod_names)) modlst[[i]] <- c(modlst[[i]],get_vars(modlst[[i]]))
+#Compare models
+  modset=1:4
+  #Print dataframe of likelihoods per model-----
+ .get_like_df(modlst)
 
+  p1 <- plot_rec(modlst[modset], xlim=c(2004.5,2018.5));p1
+  p1 <- plot_ssb(modlst[modset)],xlim=c(1970.5,2018.5),alpha=.1); p1
+  
+p1 <- plot_sel(modlst[[1]]);p1
+ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
 
-
-
-M <- M[refSet]
-M <- M[1]
-refSet=1
-
-
-plot_srv_sel(M[refSet])
-plot_srv_sel(M)
-plot_sel(mod4,alpha=.2)
+  M <- modlst
+plot_sel(modlst[1],alpha=.2)
 
 plot_srv_sel(M,bysex=FALSE)
 plot_srv_sel(M[refSet],bysex=FALSE)
 
-plot_age_comps(M[1])
-plot_age_comps(M[1],type="survey")
-plot_age_comps(M[4])
+plot_age_comps(modlst[1])
+plot_age_comps(modlst[1],type="survey")
 
-plot_sex_ratio(M,ylim=c(.2,.8))
-plot_sex_ratio(M,ylim=c(.2,.8),type="Population")
-plot_sex_ratio(M,ylim=c(.2,.8),type="Survey")
+plot_sex_ratio(modlst[1],ylim=c(.2,.8))
 
-plot_age_comps(M,title="Survey age compositions",type="Survey")
-.THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
+plot_age_comps(M[1],title="Survey age compositions",type="Survey")
 plot_bts(M[1] ,alpha=.6) #Plot model one
 plot_bts(M ,alpha=.6) #Plot model one
 #make a table of likelihoods
-.get_like_df(M)
 plot_ssb(M,alpha=.26,xlim=c(1990,2018))
 plot_ssb(M[c(1,3,5)],alpha=.26,xlim=c(1990,2018))
 plot_rec(M,alpha=.26,xlim=c(1990,2018),ylim=c(0,5000))
@@ -144,18 +106,7 @@ plot_srr(M,alpha=.2)
 plot_srr(M[c(1,4)],alpha=.26)
 plot_srr(M[c(1)],alpha=.26)
 
-.OVERlAY=TRUE
-,xlim=c(0,1100),ylim=c(0,7.2))
-like_tab <- data.table()
-like_tab <- data.frame()
-for (i in 1:4) {
-  like_tab <- rbind(like_tab,(M[[i]]$nLogPosterior ))
-}
-dim(like_tab)
-  names(like_tab) <- c("wt_like(1)", "wt_like(2)", "wt_like(3)", "wt_fut_like", "wt_msy_like", "init_like  ", "srv_like(1)", "catch_like ", "age_like_fsh(1)", "age_like_srv(1)",
-  "rec_like(1)", "rec_like(2)", "rec_like(3)", "rec_like(4)", "sel_like(1)", "sel_like(2)", "q_prior(1)  ", "sigmaR_prior", "m_prior     ", "fpen")
 
-like_tab
 
 #Recruits==========================================================
 mytheme = mytheme + theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5))
@@ -248,11 +199,11 @@ p1 <- dplyr::filter(sdf,yr>1979) %>% arrange(yr,age) %>%ggplot(aes(x=age,y=sel/2
 p1
 
 #-------------------------------------------------------------------------------
-compareTime(lstOuts,"SSB",SD=T,Sum=NULL,legendPos="right",startYear=1980)
-compareTime(lstOuts,"SSB",SD=F,Sum=NULL,startYear=1953)
-compareTime(lstOuts,"R",SD=T)
-compareTime(lstOuts,"TotBiom",SD=T)
-compareMatrix(lstOuts,"TotF",SD=TRUE,Sum=NULL,YrInd=mod1$Yr,Apply=mean,legendPos="right")
+compareTime(modlst,"SSB",SD=T,Sum=NULL,legendPos="right",startYear=1980,ylim(c(0,1000)))
+compareTime(modlst,"SSB",SD=F,Sum=NULL,startYear=1953)
+compareTime(modlst,"R",SD=T)
+compareTime(modlst,"TotBiom",SD=T)
+compareMatrix(modlst,"TotF",SD=TRUE,Sum=NULL,YrInd=mod1$Yr,Apply=mean,legendPos="right")
 #-------------------------------------------------------------------------------
 
 p1 <- dplyr::filter(sdf,yr>1979) %>% arrange(yr,age) %>%ggplot(aes(x=age,y=sel/2+yr,group=yr)) + geom_ribbon(aes(ymin=yr,ymax=sel/1.9+yr),fill="tan",col="grey60",alpha=.3)  + ylab("Selectivity by year") + xlab("Age") + guides(fill=FALSE,alpha=FALSE,col=FALSE) + mytheme

@@ -2881,27 +2881,52 @@ FUNCTION Write_R_wts
   R_report <<  wt_like(1)<<endl;
 
   // Make a dataframe (long) with year, Population, report << "Estimated_sex_ratio Year Total Mature Age_7+"<< endl;
-  // R_report<<"#sex_ratio"  <<endl;
+  R_report<<"#sex_ratio"  <<endl;
   for (i=styr;i<=endyr;i++)
+  {
+    R_report         << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
     report_sex_ratio << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
+  }
   for (i=styr;i<=endyr;i++)
+  {
+    R_report         << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
+    R_report         << i << " Mature "<< 
+     sum(elem_prod(maturity(i),natage_f(i)))/sum(elem_prod(maturity(i),natage_f(i)+natage_m(i)))<<endl;
+
+    report_sex_ratio << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
     report_sex_ratio << i << " Mature "<< 
      sum(elem_prod(maturity(i),natage_f(i)))/sum(elem_prod(maturity(i),natage_f(i)+natage_m(i)))<<endl;
+  }
   for (i=styr;i<=endyr;i++)
+  {
+    R_report         << i << " Age_7_plus "<< 
+     sum(natage_f(i)(7,nages))/sum(natage_f(i)(7,nages)+natage_m(i)(7,nages))<<endl;
     report_sex_ratio << i << " Age_7_plus "<< 
      sum(natage_f(i)(7,nages))/sum(natage_f(i)(7,nages)+natage_m(i)(7,nages))<<endl;
-  // init_3darray oac_fsh_s(1,nfsh,1,nyrs_fsh_age_s,1,2*nages)  //Fishery age compositions
-	for (k=1;k<=nfsh;k++)
-	{
-    for (i=1;i<=nyrs_fsh_age_s(k);i++)
+  }
+ for (k=1;k<=nfsh;k++)
+ {
+  for (i=1;i<=nyrs_fsh_age_s(k);i++)
+  {
+      R_report         << yrs_fsh_age_s(k,i) << " Fishery_obs "<< sum(oac_fsh_s(k,i)(1,nages)) /sum(oac_fsh_s(k,i)) << endl;
       report_sex_ratio << yrs_fsh_age_s(k,i) << " Fishery_obs "<< sum(oac_fsh_s(k,i)(1,nages)) /sum(oac_fsh_s(k,i)) << endl;
-    for (i=1;i<=nyrs_fsh_age_s(k);i++)
+  }
+  for (i=1;i<=nyrs_fsh_age_s(k);i++)
+  {
+      R_report         << yrs_fsh_age_s(k,i) << " Fishery_est "<< sum(eac_fsh_s(k,i)(1,nages)) /sum(eac_fsh_s(k,i)) << endl;
       report_sex_ratio << yrs_fsh_age_s(k,i) << " Fishery_est "<< sum(eac_fsh_s(k,i)(1,nages)) /sum(eac_fsh_s(k,i)) << endl;
-    for (i=1;i<=nyrs_srv_age_s(k);i++)
+  }
+  for (i=1;i<=nyrs_srv_age_s(k);i++)
+  {
+      R_report         << yrs_srv_age_s(k,i) << " Survey_est "<< sum(eac_srv_s(k,i)(1,nages)) /sum(eac_srv_s(k,i)) << endl;
       report_sex_ratio << yrs_srv_age_s(k,i) << " Survey_est "<< sum(eac_srv_s(k,i)(1,nages)) /sum(eac_srv_s(k,i)) << endl;
-    for (i=1;i<=nyrs_srv_age_s(k);i++)
+  }
+  for (i=1;i<=nyrs_srv_age_s(k);i++)
+  {
+      R_report         << yrs_srv_age_s(k,i) << " Survey_obs "<< sum(oac_srv_s(k,i)(1,nages)) /sum(oac_srv_s(k,i)) << endl;
       report_sex_ratio << yrs_srv_age_s(k,i) << " Survey_obs "<< sum(oac_srv_s(k,i)(1,nages)) /sum(oac_srv_s(k,i)) << endl;
-	}
+  }
+ }
 
 FUNCTION Write_R
   Write_R_wts();
