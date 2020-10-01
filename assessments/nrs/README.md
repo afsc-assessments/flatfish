@@ -1,5 +1,10 @@
 # Northern rocksole sole runs directory
 
+## 2018 error...
+
+Datafile was read in incorrectly (towards the end so didn't have too much impact on basecase).
+
+
 fm.dat in directory gives "model_name" as one word (no spaces) and datafile locale and name. This was previously in mod.ctl files.
 
 Structure set up to parse mods.dat (taken from [flatfish models](https://docs.google.com/spreadsheets/d/1Jw--X8M61LFjPUFNv5vFXozBwmQCpf7FwIDhQFs38lM/edit#gid=1701376339) for a description)
