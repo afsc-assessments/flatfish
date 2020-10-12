@@ -19,18 +19,12 @@ $(DIST)$(EXEC).tpl:
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
 
-future: $(EXEC)
-	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS)  -nohess
-	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
-	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
-	cat future_ABC.rep >future_catch.dat
-	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22
+retro: $(EXEC)
+	 ./runretro.sh
 
 mcmc: $(EXEC)
-	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
+	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 200
+	 ./$(EXEC) -mceval
 png: 
 	R CMD BATCH plot.R
 

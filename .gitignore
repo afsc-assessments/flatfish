@@ -3,6 +3,7 @@
 *.swp
 *.swo
 
+YFS_fisherylengths_2018_2019.csv
 # API files
 html/
 docs/api/html/

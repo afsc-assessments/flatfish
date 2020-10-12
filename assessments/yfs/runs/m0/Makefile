@@ -1,5 +1,6 @@
 EXEC = fm
 DIST = ../../../../src/
+ARGS = -nox -iprint 50 
 ARGS = -nox -iprint 50 -hbf 1
 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
@@ -17,6 +18,16 @@ $(DIST)$(EXEC).tpl:
 
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
+
+future: $(EXEC)
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS)  -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22
 
 mcmc: $(EXEC)
 	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
