@@ -1,6 +1,5 @@
 #R
 rm(list=ls())
-
 library(tidyverse)
 library(grid)
 library(ggridges)
@@ -22,8 +21,7 @@ source(("../../R/plot_bts.R"))
 source(("../../R/plot_q.R"))
 source(("../../R/plot_srr.R"))
 
-# Read in the output of the assessment
-# Read in model results
+
 #--To compile fm and copy to working directory FIX UP for your machine...
 setwd("../../../src")
 system("make.bat") #on Carey's PC need to open MINGW window in src and run from there.
@@ -33,8 +31,6 @@ file.copy(from = file.path("fm.exe"),to=file.path("../assessments/nrs/runs/fm.ex
 setwd("../assessments/nrs/runs")
 
 #--------------------------------------
-#
-# Make a new directory
   
   system(paste0("mkdir -p test ; cp orig/* test ") ) 
   A <-  read_rep("test/fm.rep")
@@ -48,6 +44,9 @@ M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, M
 ##################################
 # NEEDS LOTS OF edits...
 ##################################
+
+# Read in the output of the assessment
+# Read in model results
 
 # The model specs
 mod_names <- c("2018 base", "2020","Alt20")
