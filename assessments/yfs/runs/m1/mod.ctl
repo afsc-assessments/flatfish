@@ -1,7 +1,3 @@
-#model_name 
-#Base
-#datafile 
-#../data/yfs_2019.dat
 #Growth_Option
 	1
 #ABC_age_lb
@@ -84,7 +80,7 @@
 	150
 #yr2_futcat      
 	150
-	# n_retro;
+#n_retro
 	0
 #surv_dwnwt
 0

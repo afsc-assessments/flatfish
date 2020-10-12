@@ -37,7 +37,7 @@
 #phase_m_f
 	-6
 #phase_m_m
-	7
+	-7
 #phase_sr
 	6
 #phase_env_cov  
