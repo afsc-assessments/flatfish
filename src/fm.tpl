@@ -287,6 +287,8 @@ DATA_SECTION
 	ivector phase_q_beta(1,nsrv)
 	!! phase_q_beta = phase_q_beta_in;
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
+	int nyrs_bts_srv                          // NOTE only works for one survey...
+	!! nyrs_bts_srv = nyrs_srv(1);
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
   init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values
@@ -672,7 +674,7 @@ PARAMETER_SECTION
   number surv_m
 
   sdreport_vector SSB(styr,endyr)
-  sdreport_matrix    q_srv(1,nsrv,1982,endyr)
+  sdreport_vector    q_srv(1,nyrs_bts_srv) // NOTE one survey for sdreport plotting only...
   // vector pred_rec(styr,endyr)
   //Likelihood value names
   number sigma
@@ -1000,7 +1002,7 @@ PROCEDURE_SECTION
              srv_like<<" "<<
              age_like_fsh<<" "<<
              age_like_srv<<" "<<
-		        q_srv(1)(1982,endyr)<<" "<<
+		        q_srv        <<" "<<
 		        natmort_f<<" "<< 
 		        natmort_m<<" "<< 
 						Fmsyr <<" "<<ABC_biom<<" "<<Bmsy<<" "<<msy<<" "<< TotBiom 
@@ -1196,15 +1198,15 @@ FUNCTION get_numbers_at_age
 
       if (active(q_beta(k))) 
 			{
-        q_srv(k,srvyrtmp) = mfexp(q_alpha(k));
+        q_srv(i) = mfexp(q_alpha(k));
         for (int j=1;j<=n_env_cov(k);j++)
-					q_srv(k,srvyrtmp) *= mfexp( q_beta(k,j) * env_cov(k,j,i)) ;
+					q_srv(i) *= mfexp( q_beta(k,j) * env_cov(k,j,i)) ;
       }
       else
       {
-        q_srv(k) = mfexp(ln_q_srv(k));
+        q_srv(i) = mfexp(ln_q_srv(k));
       }
-      pred_srv(k,srvyrtmp)     = q_srv(k,srvyrtmp) * b1tmp;
+      pred_srv(k,srvyrtmp)     = q_srv(i) * b1tmp;
     }
     for (i=1;i<=nyrs_srv_age_c(k);i++)
     {
@@ -1327,7 +1329,7 @@ FUNCTION evaluate_the_objective_function
     // Note not general to multiple surveys...also ln_q_srv should be a "free" parameter because q_surve is an sdreport variable?
     if (active(ln_q_srv)||active(q_alpha))
     {
-       q_prior(1) = .5* norm2(log(q_srv(1)(1982,endyr))-log(q_exp))/(q_sigma*q_sigma);
+       q_prior(1) = .5* norm2(log(q_srv)-log(q_exp))/(q_sigma*q_sigma);
        obj_fun  += q_prior(1);
      }
     if (active(sel_slope_fsh_devs_f))
@@ -2225,7 +2227,7 @@ REPORT_SECTION
   // if (phase_env_cov>0) L_report << " survey_q= " << mean(exp(-q_alpha+q_beta*env_cov(1)))<<endl; else
    /*
    */
-  L_report << "survey_q = " << mean(q_srv(1))<<endl;
+  L_report << "survey_q = " << mean(q_srv)<<endl;
   L_report << "M (F M)  = " << natmort_f<<" "<<natmort_m << endl;
   L_report << endl << "Ricker_spawner-recruit_estimates" << endl;
   L_report << "stock_assessment_model_recruitment_estimates" << endl;
@@ -3035,11 +3037,11 @@ FUNCTION Write_R
   }
 
   int k=1;
-  R_report<<"q"<<endl; for (i=1982;i<=endyr;i++) 
+  R_report<<"q"<<endl; for (i=1;i<=nyrs_srv(k);i++) 
   {
-    double lb=value(q_srv(k,i)/exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
-    double ub=value(q_srv(k,i)*exp(2.*sqrt(log(1+square(q_srv.sd(k,i))/square(q_srv(k,i))))));
-    R_report<<i<<" "<<q_srv(k,i)<<" "<<q_srv.sd(k,i)<<" "<<lb<<" "<<ub<<endl;
+    double lb=value(q_srv(i)/exp(2.*sqrt(log(1+square(q_srv.sd(i))/square(q_srv(i))))));
+    double ub=value(q_srv(i)*exp(2.*sqrt(log(1+square(q_srv.sd(i))/square(q_srv(i))))));
+    R_report<<i<<" "<<q_srv(i)<<" "<<q_srv.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
 
   for (k=1;k<=nsrv;k++)
@@ -3048,7 +3050,7 @@ FUNCTION Write_R
     R_report << yrs_srv(k) << endl;
     R_report << "q_srv"<<endl;
     for (i=1;i<=nyrs_srv(k);i++)
-      R_report<< q_srv(k,yrs_srv(k,i)) <<" ";
+      R_report<< q_srv(i) <<" ";
 	  R_report<< endl;
 	}      
   R_report.close();
