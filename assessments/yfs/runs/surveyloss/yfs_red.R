@@ -64,18 +64,18 @@ spp="yfs"
 #6.3. Get projection results
 ############################################################################################################################################################
 #files to copy to retrospective subfolders
-j=2
+j=1
 i=10
 #retro_sub = "retro" or "survRed_retro"
 	#6.1. Run for full time series
 	#Create main retrospective subfolder
-do_run <- FALSE
+do_run <- TRUE  #very important to make the runs go!
 df_res <- NULL
 for(j in 1:length(retros_sub)) {
 	setwd(master)
 	cpto <- 	paste0(main_dir,"/",retros_sub[j],"0" )
 	fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
-	system("fc")  #IS added "fc"
+	system(fc)  #IS added "fc"
 	#Command line to run assessment model *.exe
 	setwd(file.path(main_dir,paste0(retros_sub[j],"0")))
 	if (do_run) system("rm fm.std; make") #### CHANGE TO WHATEVER YOUR EXE IS CALLED 
@@ -84,13 +84,9 @@ for(j in 1:length(retros_sub)) {
 	dftmp$peel   <- 0
 	dftmp$retros <- retros_sub[j] 
 	df_res       <- rbind(df_res,dftmp)
-<<<<<<< HEAD
 	setwd(master)
 	for(i in 0:length(endyrvec)){
-=======
-	for(i in 1:length(endyrvec)){
 	  setwd(master)
->>>>>>> 85e590bda024c8467c4a2fe9a16e3e9e3af480cc
 	  cpto <- 	paste0(main_dir,"/",retros_sub[j],i )
 	  fc <- paste0("mkdir -p ",cpto," ; cp orig/* ",cpto)
 	  system(fc)
@@ -107,7 +103,6 @@ for(j in 1:length(retros_sub)) {
 	}	
 }
 setwd(master)
-
 
 #6. Summarize results
 write.csv(df_res,"yfs_results.csv")

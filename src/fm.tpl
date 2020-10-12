@@ -222,7 +222,8 @@ DATA_SECTION
   init_number a_lw_f
   init_number b_lw_f
   init_number a_lw_m
-  init_number b_lw_m
+  init_number b_lw_m   
+  !!cout<<styr<<endyr<<"test"<<endl;
 
 //!!cout <<styr<<endyr<<nages<<endl;
 
@@ -289,7 +290,8 @@ DATA_SECTION
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
-  init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values
+  init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values  
+  !!cout<<"yrs_srv"<<yrs_srv<<endl;  
 	// !! nyrs_srv_inbag = 0.9 * nyrs_srv;
 	// !! nyrs_srv_oobag = nyrs_srv - nyrs_srv_inbag;
   // imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
@@ -306,18 +308,19 @@ DATA_SECTION
   init_ivector nyrs_srv_age_c(1,nsrv)         //Number of survey age compositions
   init_ivector nyrs_srv_age_s(1,nsrv)         //Number of survey age compositions
   init_matrix yrs_srv_age_c(1,nsrv,1,nyrs_srv_age_c)  //Years of survey age compositions
-  init_matrix yrs_srv_age_s(1,nsrv,1,nyrs_srv_age_s)  //Years of survey age compositions
+  init_matrix yrs_srv_age_s(1,nsrv,1,nyrs_srv_age_s)  //Years of survey age compositions   
+  !!cout<<"yrs_srv_age_s"<<yrs_srv_age_s<<endl;
   !!log_input( nyrs_srv_age_c);
   !!log_input(  yrs_srv_age_s);
   init_matrix nsmpl_srv_c(1,nsrv,1,nyrs_srv_age_c)  //Number of age structures read per age collection
   init_matrix nsmpl_srv_s(1,nsrv,1,nyrs_srv_age_s)  //Number of age structures read per age collection
   !!log_input(nsmpl_srv_s);
   init_3darray oac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)  //Survey age compositions
-  // !! cout <<oac_srv_c<<endl;
   init_3darray oac_srv_s(1,nsrv,1,nyrs_srv_age_s,1,2*nages)  //Survey age compositions
-
+  !! cout <<"oac_srv_s"<<oac_srv_s<<endl;  
   init_3darray wt_srv_f_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
-  init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
+  init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)  
+  !!cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
   matrix          wt_obs_f(styr_wt,endyr_wt,1,nages);
   matrix          wt_obs_m(styr_wt,endyr_wt,1,nages);
   !! for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }
@@ -337,7 +340,7 @@ DATA_SECTION
   !!log_input(maturity);
 
   init_number init_age_comp          //Flag whether initial age comp independent or not (0 = NOT)
-
+  !!cout<<"init_age_comp"<<init_age_comp<<endl;
 //  Index values
 
   int styr_rec
@@ -375,7 +378,8 @@ DATA_SECTION
  END_CALCS
 
 //Spawning month
-  init_number spawnmo          //Mean spawning month
+  init_number spawnmo          //Mean spawning month    
+  !!cout<<"spawnmo"<<spawnmo<<endl;
   number spmo_frac             //Spawning month occurance as a fraction of the year
   !!spmo_frac    =(spawnmo-1)/12.;
   !!log_input(spawnmo);
