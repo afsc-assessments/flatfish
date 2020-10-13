@@ -1,8 +1,10 @@
 EXEC = fm
-DIST = ~/admbmodels/flatfish/src/
-ARGS = -nox -iprint 200 
+DIST = ../../../../../../src/
+ARGS = -nox -iprint 50 
+
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 pn = fmpl_$(ts)
+
 R_OPTS=--no-save --no-restore --no-init-file --no-site-file -e 'library(knitr); knit("plot.Rmd")'
 plotscript = plot.md
 all: run
@@ -11,11 +13,23 @@ $(EXEC): $(DIST)$(EXEC).tpl
 	ln -sf $(DIST)$(EXEC) $@
 
 $(DIST)$(EXEC).tpl:
-	$(MAKE) --directory=../../../src
+	$(MAKE) --directory=../../../../src
 
 run: $(EXEC)
 	 ./$(EXEC) $(ARGS)
 
+future: $(EXEC)
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS)  -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22 -nohess
+	cat future_ABC.rep >future_catch.dat
+	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22
+
+mcmc: $(EXEC)
+	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
 png: 
 	R CMD BATCH plot.R
 
