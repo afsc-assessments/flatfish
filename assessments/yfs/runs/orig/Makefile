@@ -1,5 +1,5 @@
 EXEC = fm
-DIST = ~/_mymods/afsc-assessments/flatfish/src/
+DIST = ~/admbmodels/flatfish/src/
 ARGS = -nox -iprint 200 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 pn = fmpl_$(ts)
