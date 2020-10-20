@@ -2993,7 +2993,11 @@ FUNCTION Write_R
   R_report << "Fmort" << endl << Fmort << endl;           //IS 10/2019 
   R_report << "sel_fsh_f" << endl << sel_fsh_f << endl; //IS 10/2019
   R_report << "sel_fsh_m" << endl << sel_fsh_m << endl; //IS 10/2019
-  R_report << "maturity" <<endl << maturity << endl;
+  R_report << "maturity" <<endl << maturity << endl; 
+  R_report <<"wt_fsh_f_in"<<endl << wt_fsh_f_in<< endl;//IS 10/2020
+  R_report <<"wt_fsh_m_in"<<endl << wt_fsh_m_in<< endl;//IS 10/2020   
+  R_report <<"wt_vbg_f" <<endl <<wt_vbg_f<< endl;
+  R_report <<"wt_vbg_m" <<endl <<wt_vbg_m<< endl;
    
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
