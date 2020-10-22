@@ -1,25 +1,20 @@
-#R
+radian
 rm(list=ls())
 library(tidyverse)
+install.packages("captioner")
+install.packages("bibtex")
+install.packages("knitcitations")
 library(grid)
 library(ggridges)
 #-------------------------------------------------------------------------------
 # Visual compare runs
 #-------------------------------------------------------------------------------
 #Read in functions=========
-source("../../R/prelims.R")
-source("../../R/compareRuns.r")
-source("../../R/read-admb.R")
-source(("../../R/plot-age-comps.R"))
-source(("../../R/plot_sex_ratio.R"))
-source(("../../R/get_like_table.R"))
-source(("../../R/plot_sel.R")) #this plot function needs work
-source(("../../R/plot_ssb.R"))
-source(("../../R/plot_fut_Fs.R"))
-source(("../../R/plot_rec.R"))
-source(("../../R/plot_bts.R"))
-source(("../../R/plot_q.R"))
-source(("../../R/plot_srr.R"))
+mydir = getwd()
+Rdir = "../../R"
+setwd(Rdir)
+source("prelims.R")
+setwd(mydir)
 
 
 #--To compile fm and copy to working directory FIX UP for your machine...
@@ -32,8 +27,8 @@ setwd("../assessments/nrs/runs")
 
 #--------------------------------------
   
-  system(paste0("mkdir -p test ; cp orig/* test ") ) 
-  A <-  read_rep("test/fm.rep")
+system(paste0("mkdir -p test ; cp orig/* test ") ) 
+A <-  read_rep("test/fm.rep")
 
 M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
            "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
@@ -49,8 +44,8 @@ M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, M
 # Read in model results
 
 # The model specs
-mod_names <- c("2018 base", "2020","Alt20")
-.MODELDIR = c( "m0/", "m1/","m2/")
+mod_names <- c("2020 no new", "2020 updated fish age","2020 updated fish age drop 95-97")
+.MODELDIR = c( "j1/", "j2/","j3/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -58,16 +53,16 @@ modlst   <- lapply(fn, read_admb)
 names(modlst) <- mod_names
 thismod <- 2 # the selected model
 length(modlst)
-  p1 <- plot_rec(modlst,xlim=c(2004.5,2018.5))
+  p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
   ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
-  p1 <- plot_ssb(modlst[c(1,2,3,5)],xlim=c(2004.5,2018.5),alpha=.1)
-  plot_ssb(modlst,xlim=c(2004.5,2018.5),alpha=.1)
-  plot_bts(modlst,xlim=c(2008.5,2018.5),ylim=c(0,15000)) 
-  ggsave("figs/mod_eval0a.pdf",plot=p1,width=6,height=4,units="in")
-  p1 <- plot_bts(modlst[c(2,3,5)],xlim=c(2010,2018.5),ylim=c(0,15000)) 
-  ggsave("figs/mod_eval0c.pdf",plot=p1,width=8,height=4,units="in")
-  p1 <- plot_sel()
+  p1 <- plot_ssb(modlst[c(1,2,3)],xlim=c(1975.5,2020.5),alpha=.1)
+  plot_bts(modlst) 
+  plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
+
+  p1 <- plot_sel(modlst[[1]]); p1
+  p1 <- plot_sel(modlst[[3]]); p1
   ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
+
   p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
   #plot_sel(sel=M$sel_eit,styr=1994,fill="darkblue") 
   ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
@@ -88,7 +83,6 @@ length(modlst)
   p1 <- plot_srr(modlst[c(2,4)],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
   ggsave("figs/bholt_ricker.pdf",plot=p1,width=7.4,height=3.9,units="in")
   pdf("../doc/figs/mod_fsh_age.pdf",width=6,height=8)
-  plot_agefit(M,type="fishery", case_label="2018 Assessment",gear="fsh")
   dev.off()
   #---Data influence------------
   CAB_names <- factor(c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"),levels=c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"))
