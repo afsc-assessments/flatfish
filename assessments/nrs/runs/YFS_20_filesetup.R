@@ -9,7 +9,7 @@ source("prelims.R")
 #setwd("../../../src")
 #system("make.bat")
 #system("copy fm.exe ../assessments/nrs/runs")
-#setwd("../assessments/nrs/runs")
+setwd("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs")
 
 # Function to make a new directory and copy files for orig=========
 setup_dir <- function(dirname="xx"){
@@ -22,7 +22,7 @@ lapply(.MODELDIR, setup_dir)
 
 # Assuming that latest fm.exe is in path...run models----
 # m1 base case no change===============================
-setwd("m1"); shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
+setwd("./m1"); system("./fm -nox -iprint 200",invisible=FALSE); setwd("..")
 
 # m2 Estimate male m===============================
 ctl <- read_ctl("orig/mod.ctl")
@@ -30,21 +30,18 @@ setwd("m2");
 ctl$phase_m_m <- 7; file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
 shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
 
-# m3 Estimate male m, q===============================
+# m3 estimate male m, Use VAST EBS estimates===============================
 ctl <- read_ctl("orig/mod.ctl")
 setwd("m3"); 
 ctl$phase_m_m <- 7; 
-ctl$q_sigma <- 0.2; 
 file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
 shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
 
-# m4 Estimate male m, q, male selex offset===============================
+# m4 Estimate male m, use VAST NBS and EBS estimates===============================
 ctl <- read_ctl("orig/mod.ctl")
 setwd("m4"); 
 # Estimate male m
 ctl$phase_m_m <- 7; 
-ctl$q_sigma <- 0.2; 
-ctl$lambda[4] <- 6; 
 file.remove("mod.ctl");write_dat(ctl,"mod.ctl")
 shell("fm -nox -iprint 200",invisible=FALSE); setwd("..")
 

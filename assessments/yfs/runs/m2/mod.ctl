@@ -37,7 +37,7 @@
 #phase_m_f
 	-6
 #phase_m_m
-	-7
+	7
 #phase_sr
 	6
 #phase_env_cov  
@@ -71,7 +71,7 @@
 #styr_sr         
 	1978
 #endyr_sr       
-	2013
+	2014
 #styr_wt       
 	1982
 #endyr_wt     
