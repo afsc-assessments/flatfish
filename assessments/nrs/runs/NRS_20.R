@@ -1,4 +1,4 @@
-radian
+radian #what is this line about?
 rm(list=ls())
 library(tidyverse)
 library(grid)
@@ -7,12 +7,13 @@ library(ggridges)
 # Visual compare runs
 #-------------------------------------------------------------------------------
 #Read in functions=========
+#setwd("C:/GitProjects/flatfish/assessments/nrs/runs")
 mydir = getwd()
 Rdir = "../../R"
 setwd(Rdir)
 source("prelims.R")
 setwd(mydir)
-
+#C:\GitProjects\flatfish\assessments\R
 
 #--------------------------------------
 # Read in the output of the assessment
@@ -24,39 +25,56 @@ mod_names <- c("2020 no new", "2020 updated fish age","2020 updated fish age dro
 fn       <- paste0(.MODELDIR, "fm")
 modlst   <- lapply(fn, read_admb)
 names(modlst) <- mod_names
-thismod <- 2 # the selected model
+thismod <- 4 # the selected model
 length(modlst)
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
   ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
   plot_bts(modlst) + theme_few(base_size=11)
-  plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
+  
+  #Can't find this function
+  #plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
 
   p1 <- plot_sel(modlst[[1]]); p1
   p1 <- plot_sel(modlst[[3]]); p1
   ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
 
-  p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
+  #this one doesn't work right now.
+  p1 <- plot_srv_sel(M=modlst[[4]]$sel_srv_f, title="Survey selectivity",bysex=TRUE)
+  #p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
+  #p1 <- plot_sel(mod = modlst[[4]],sel=M$sel_bts,styr=1982,fill="darkblue") 
   #plot_sel(sel=M$sel_eit,styr=1994,fill="darkblue") 
   ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
+ 
+  #this one doesn't work right now
   p1 <- plot_mnage(modlst[thismod]) 
   ggsave("figs/mod_mean_age.pdf",plot=p1,width=5.8,height=8,units="in")
+  
   p1 <- plot_bts(modlst[thismod]) 
   ggsave("figs/mod_bts_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
+ 
+  #couldn't find the function 
   p1 <- plot_ats(modlst[thismod]) 
   ggsave("figs/mod_ats_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  
+  #couldn't find the function
   p1 <- plot_avo(modlst[thismod]) 
   ggsave("figs/mod_avo_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
+  
+  #couldn't find the function
   p1 <- plot_cpue(modlst[[thismod]]) 
   ggsave("figs/mod_cpue_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
   p1 <- plot_recruitment(modlst[thismod],xlim=c(1963.5,2018.5),fill="yellow")
   ggsave("figs/mod_rec.pdf",plot=p1,width=9,height=4,units="in")
+  
+  #this one didn't work
   p1 <- plot_srr(modlst[thismod],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
   ggsave("figs/mod_srr.pdf",plot=p1,width=5.4,height=3.9,units="in")
   p1 <- plot_srr(modlst[c(2,4)],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
   ggsave("figs/bholt_ricker.pdf",plot=p1,width=7.4,height=3.9,units="in")
   pdf("../doc/figs/mod_fsh_age.pdf",width=6,height=8)
   dev.off()
+  
   #---Data influence------------
   CAB_names <- factor(c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"),levels=c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"))
   CAB_names <- c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO")
