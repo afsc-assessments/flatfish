@@ -1,9 +1,6 @@
 radian
 rm(list=ls())
 library(tidyverse)
-install.packages("captioner")
-install.packages("bibtex")
-install.packages("knitcitations")
 library(grid)
 library(ggridges)
 #-------------------------------------------------------------------------------
@@ -17,35 +14,11 @@ source("prelims.R")
 setwd(mydir)
 
 
-#--To compile fm and copy to working directory FIX UP for your machine...
-setwd("../../../src")
-system("make.bat") #on Carey's PC need to open MINGW window in src and run from there.
-#system(copy "" "..\assessments\nrs\runs\fm.exe")
-
-file.copy(from = file.path("fm.exe"),to=file.path("../assessments/nrs/runs/fm.exe"))
-setwd("../assessments/nrs/runs")
-
 #--------------------------------------
-  
-system(paste0("mkdir -p test ; cp orig/* test ") ) 
-A <-  read_rep("test/fm.rep")
-
-M <- list( "Base"=mod1,"q = 1.4" = mod2, "q estimated"=mod3,"Male M est"=mod4,"Est Male M, q"=mod5, "Est Male M, q, sigR"=mod6,
-           "Est female M"=mod7, "Est male and female M"=mod8 ,"Base 50:50"=mod9, "Male, Female, q"=mod10)
-M <- list( "1"=mod1,"2" = mod2, "3"=mod3,"4"=mod4,"5"=mod5, "6"=mod6,"7"=mod7, "8"=mod8)
-M <- list( "Base"=mod1, "Est Male, Female, q"=mod9)
-M <- list( "Base"=mod1, "Est Male M"=mod2,"Est Male M, q"=mod3,"Est Male M, q, Msel"=mod4)
-
-##################################
-# NEEDS LOTS OF edits...
-##################################
-
 # Read in the output of the assessment
-# Read in model results
-
 # The model specs
-mod_names <- c("2020 no new", "2020 updated fish age","2020 updated fish age drop 95-97")
-.MODELDIR = c( "j1/", "j2/","j3/")
+mod_names <- c("2020 no new", "2020 updated fish age","2020 updated fish age drop 95-97","2020 with time-varying fish wt-age")
+.MODELDIR = c( "j1/", "j2/","j3/","j4/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -55,8 +28,8 @@ thismod <- 2 # the selected model
 length(modlst)
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
   ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
-  p1 <- plot_ssb(modlst[c(1,2,3)],xlim=c(1975.5,2020.5),alpha=.1)
-  plot_bts(modlst) 
+  p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
+  plot_bts(modlst) + theme_few(base_size=11)
   plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
 
   p1 <- plot_sel(modlst[[1]]); p1

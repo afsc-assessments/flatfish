@@ -8,6 +8,8 @@ j2 is with the available data including last year's 1995-97 estimates
 
 j3 is omitting those 1995-97 estimates since nobody can figure out where they come from
 
+j4 is as in j3 but includes wt-age estimates from sampler (as opposed to constant values used previously)
+
 
 
 ## Notes on proceeding from the 2018 assessment
