@@ -18,8 +18,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 no new", "2020 with time-varying fish wt-age","2020 all new data added")
-.MODELDIR = c( "j1/","j4/","c1/")
+mod_names <- c("2020 no new", "2020 with time-varying fish wt-age","2020 all new data added","Update recyrs")
+.MODELDIR = c( "j1/","j4/","c1/","c1mod2/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -28,11 +28,11 @@ names(modlst) <- mod_names
 thismod <- 4 # the selected model
 length(modlst)
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
-  ggsave("figs/mod_evalc1_rec.pdf",plot=p1,width=8,height=4.0,units="in")
+  ggsave("figs/mod_evalc1mod2_rec.pdf",plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
-  ggsave("figs/mod_evalc1_ssb.pdf",plot=p1,width=8,height=4.0,units="in")
+  ggsave("figs/mod_evalc1mod2_ssb.pdf",plot=p1,width=8,height=4.0,units="in")
   plot_bts(modlst) + theme_few(base_size=11)
-  ggsave("figs/mod_evalc1_bts.pdf",plot=p1,width=8,height=4.0,units="in")
+  ggsave("figs/mod_evalc1mod2_bts.pdf",plot=p1,width=8,height=4.0,units="in")
   
   #Can't find this function
   #plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
