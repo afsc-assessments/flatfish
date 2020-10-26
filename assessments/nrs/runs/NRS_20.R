@@ -1,4 +1,4 @@
-radian #what is this line about?
+#radian #Carey says what is this line about?
 rm(list=ls())
 library(tidyverse)
 library(grid)
@@ -18,8 +18,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 no new", "2020 updated fish age","2020 updated fish age drop 95-97","2020 with time-varying fish wt-age")
-.MODELDIR = c( "j1/", "j2/","j3/","j4/")
+mod_names <- c("2020 no new", "2020 with time-varying fish wt-age","2020 all new data added")
+.MODELDIR = c( "j1/","j4/","c1/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -28,16 +28,18 @@ names(modlst) <- mod_names
 thismod <- 4 # the selected model
 length(modlst)
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
-  ggsave("figs/mod_eval0b.pdf",plot=p1,width=8,height=4.0,units="in")
+  ggsave("figs/mod_evalc1_rec.pdf",plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
+  ggsave("figs/mod_evalc1_ssb.pdf",plot=p1,width=8,height=4.0,units="in")
   plot_bts(modlst) + theme_few(base_size=11)
+  ggsave("figs/mod_evalc1_bts.pdf",plot=p1,width=8,height=4.0,units="in")
   
   #Can't find this function
   #plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
 
   p1 <- plot_sel(modlst[[1]]); p1
   p1 <- plot_sel(modlst[[3]]); p1
-  ggsave("figs/mod_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
+  ggsave("figs/mod_evalc1_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
 
   #this one doesn't work right now.
   p1 <- plot_srv_sel(M=modlst[[4]]$sel_srv_f, title="Survey selectivity",bysex=TRUE)
