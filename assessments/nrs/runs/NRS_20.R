@@ -27,78 +27,54 @@ modlst   <- lapply(fn, read_admb)
 names(modlst) <- mod_names
 thismod <- 4 # the selected model
 length(modlst)
+# probably want to make this a function w/ naming convention added...
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
+  p1
   ggsave("figs/mod_evalc1mod2_rec.pdf",plot=p1,width=8,height=4.0,units="in")
+
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
   ggsave("figs/mod_evalc1mod2_ssb.pdf",plot=p1,width=8,height=4.0,units="in")
   plot_bts(modlst) + theme_few(base_size=11)
   ggsave("figs/mod_evalc1mod2_bts.pdf",plot=p1,width=8,height=4.0,units="in")
   
   #Can't find this function
-  #plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
+  plot_srr(modlst[4])
 
-  p1 <- plot_sel(modlst[[1]]); p1
+  p1 <- plot_sel(modlst[[4]]); p1
   p1 <- plot_sel(modlst[[3]]); p1
   ggsave("figs/mod_evalc1_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
 
-  #this one doesn't work right now.
-  p1 <- plot_srv_sel(M=modlst[[4]]$sel_srv_f, title="Survey selectivity",bysex=TRUE)
-  #p1 <- plot_sel(sel=M$sel_bts,styr=1982,fill="darkblue") 
-  #p1 <- plot_sel(mod = modlst[[4]],sel=M$sel_bts,styr=1982,fill="darkblue") 
-  #plot_sel(sel=M$sel_eit,styr=1994,fill="darkblue") 
+  #this one works now but is gross...
+  p1 <- plot_srv_sel(modlst[4]); p1
   ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
- 
+
+  # Here's a homegrown one
+  M <- modlst[4]; names(M[]) #to see the names of what's in an object
+  df <- rbind(data.frame(Age=1:20,sel=M$sel_srv_m,sex="Male"),data.frame(Age=1:20,sel=M$sel_srv_f,sex="Female"))
+  p1 <- ggplot(df,aes(x=Age,y=sel,color=sex)) + geom_line(size=2) + theme_few() + ylab("Selectivity") + ggtitle(paste0("Survey selectivity; (Model ",names(modlst[4]),")")) ;p1
+  ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
+
+  # Thes two work for me! 
+  plot_age_comps(modlst[4],title="Survey age compositions",type="Survey")
+  plot_age_comps(modlst[4],title="Fishery age compositions",type="Fishery")
+
   #this one doesn't work right now
-  p1 <- plot_mnage(modlst[thismod]) 
-  ggsave("figs/mod_mean_age.pdf",plot=p1,width=5.8,height=8,units="in")
   
   p1 <- plot_bts(modlst[thismod]) 
   ggsave("figs/mod_bts_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
  
-  #couldn't find the function 
-  p1 <- plot_ats(modlst[thismod]) 
-  ggsave("figs/mod_ats_biom.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  
-  #couldn't find the function
-  p1 <- plot_avo(modlst[thismod]) 
-  ggsave("figs/mod_avo_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  
-  #couldn't find the function
-  p1 <- plot_cpue(modlst[[thismod]]) 
-  ggsave("figs/mod_cpue_fit.pdf",plot=p1,width=5.2,height=3.7,units="in")
-  p1 <- plot_recruitment(modlst[thismod],xlim=c(1963.5,2018.5),fill="yellow")
-  ggsave("figs/mod_rec.pdf",plot=p1,width=9,height=4,units="in")
-  
+
   #this one didn't work
-  p1 <- plot_srr(modlst[thismod],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
+  plot_srr(modlst[thismod])
+  ,alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
   ggsave("figs/mod_srr.pdf",plot=p1,width=5.4,height=3.9,units="in")
   p1 <- plot_srr(modlst[c(2,4)],alpha=.2,xlim=c(0,5200),ylim=c(0,75000))
+  p1
   ggsave("figs/bholt_ricker.pdf",plot=p1,width=7.4,height=3.9,units="in")
   pdf("../doc/figs/mod_fsh_age.pdf",width=6,height=8)
   dev.off()
   
   #---Data influence------------
-  CAB_names <- factor(c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"),levels=c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO"))
-  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "Add ATS", "Add BTS", "Add AVO")
-  #factor(sizes, levels = c("small", "medium", "large"))
-  .CABMODELDIR = c( "../2017/16.0/", "../runs/C/","../runs/CA/","../runs/CAB/","../runs/16.0/")
-
-  # Read report file and create gmacs report object (a list):
-  fn       <- paste0(.CABMODELDIR, "pm")
-  CABmodlst   <- lapply(fn, read_admb)
-  CAB_names <- 1:5
-  names(CABmodlst) <- CAB_names
-  p <-  plot_ssb(CABmodlst,xlim=c(2009.5,2018.5),alpha=.1,ylim=c(0,5200))
-  CAB_names <- c("Model 16.1 \nlast year", "Catch added", "+ ATS", "+ BTS", "+ AVO")
-  p <-  p + scale_fill_discrete(labels=CAB_names) + scale_color_discrete(labels=CAB_names) + theme_classic()
-  p
-  #plot_ssb(modlst[],xlim=c(2004.5,2018.5),alpha=.1,ylim=c(0,5200))
-  ggsave("figs/mod_data.pdf",plot=p,width=6,height=4,units="in")
-  #for (i in 1:length(mod_names)) modlst[[i]] <- c(modlst[[i]],get_vars(modlst[[i]]))
-
-
-
-
 M <- M[refSet]
 M <- M[1]
 refSet=1
@@ -119,7 +95,6 @@ plot_sex_ratio(M,ylim=c(.2,.8))
 plot_sex_ratio(M,ylim=c(.2,.8),type="Population")
 plot_sex_ratio(M,ylim=c(.2,.8),type="Survey")
 
-plot_age_comps(M,title="Survey age compositions",type="Survey")
 .THEME <- .THEME + theme(strip.text.y = element_text(angle = 0))
 plot_bts(M[1] ,alpha=.6) #Plot model one
 plot_bts(M ,alpha=.6) #Plot model one
