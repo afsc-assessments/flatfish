@@ -14,6 +14,7 @@ library(ggplot2)
 library(ggthemes)
 # Set your local directory--------
 	mydir <- "/Users/ingridspies/admbmodels/flatfish/assessments"  #change to mine.
+	mydir <- "~/_mymods/afsc-assessments/flatfish/assessments"  #change to mine.
 # Get tools to read-write control file
 source(paste0(mydir,"/R/read-admb.R"))
 
@@ -43,7 +44,7 @@ source(paste0(mydir,"/R/read-admb.R"))
 
 ############4.VARIABLES ####################
 `%notin%` <- Negate(`%in%`)
-assess_LY=2019					#assessment terminal year
+assess_LY=2020					#assessment terminal year
 endyrvec <-1:10 		                #retrospective peels (Subtracted from endyr in tpl)
 
 # Values used to downweight survey data when invoked written to retro.dat

@@ -1,5 +1,6 @@
 EXEC = fm
-DIST = ~/admbmodels/flatfish/src/
+#DIST = ~/admbmodels/flatfish/src/
+DIST = ../../../../../src/
 ARGS = -nox -iprint 200 
 ts := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 pn = fmpl_$(ts)

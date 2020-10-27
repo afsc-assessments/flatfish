@@ -288,8 +288,6 @@ DATA_SECTION
 	ivector phase_q_beta(1,nsrv)
 	!! phase_q_beta = phase_q_beta_in;
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
-	int nyrs_bts_srv                          // NOTE only works for one survey...
-	!! nyrs_bts_srv = nyrs_srv(1);
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
   init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values  
@@ -445,12 +443,13 @@ DATA_SECTION
    for (int isrv=1;isrv<=nsrv;isrv++)
    {
           //survey biomass
-          for(int iyr=1; iyr<=nyrs_srv(isrv);iyr++)
-          {
+        for(int iyr=1; iyr<=nyrs_srv(isrv);iyr++)
+        {
+					for (int k=1;k<=n_env_cov(isrv);k++) { env_cov(isrv,k) -= mean(env_cov(isrv,k)); }
            if(yrs_srv(isrv,iyr)<=endyr) nyrs_srv_tmp=iyr;
            if(surv_dwnwt==1 & yrs_srv(isrv,iyr)>= endyr) obs_lse_srv(isrv,iyr)=cv_inc;
-          }
-          nyrs_srv(isrv)=nyrs_srv_tmp;
+        }
+        nyrs_srv(isrv)=nyrs_srv_tmp;
      //reset temporary variable
      nyrs_srv_tmp=0;
      for (int iyr=1;iyr<=nyrs_srv_age_c(isrv);iyr++)
@@ -512,8 +511,12 @@ DATA_SECTION
   log_input(offset_fsh);
   log_input(offset_srv);
 
-
  END_CALCS
+
+  // This affected retro runs...was set too early...
+	int nyrs_bts_srv                          // NOTE only works for one survey...
+	!! nyrs_bts_srv = nyrs_srv(1);
+
   !!ad_comm::change_datafile_name("future_catch.dat");  
   init_matrix future_ABC(1,nfsh,styr_fut,endyr_fut)
   !! log_input(future_ABC); 
@@ -935,7 +938,7 @@ INITIALIZATION_SECTION
   wt_pop_fut_f .8;
   wt_pop_fut_m .8;
   q_alpha q_alpha_prior ;
-  q_beta 0. ;
+  q_beta 0.001 ;
   R_logalpha     2.18844741303
   R_logbeta     -5.3380e+00 
   sigmaR  sigmaR_exp
@@ -1200,7 +1203,9 @@ FUNCTION get_numbers_at_age
       dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
       b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
 
-      if (active(q_beta(k))) 
+		  // if (last_phase() ) 
+		  //cout<<" "<<q_beta(1)<<" "<<q_srv(i)<<endl;
+      if (active(q_beta(1))) 
 			{
         q_srv(i) = mfexp(q_alpha(k));
         for (int j=1;j<=n_env_cov(k);j++)
@@ -1331,7 +1336,7 @@ FUNCTION evaluate_the_objective_function
        obj_fun  += sigmaR_prior;
      }
     // Note not general to multiple surveys...also ln_q_srv should be a "free" parameter because q_surve is an sdreport variable?
-    if (active(ln_q_srv)||active(q_alpha))
+    if (active(ln_q_srv)||active(q_beta(1)))
     {
        q_prior(1) = .5* norm2(log(q_srv)-log(q_exp))/(q_sigma*q_sigma);
        obj_fun  += q_prior(1);
@@ -1980,7 +1985,7 @@ REPORT_SECTION
      R_eq = -(log(1/(R_alpha*phi)))/(phi*R_beta);   // Ricker formulation of equilibrium recruitment at each F
      ypr=get_ypr(Ftemp);
      yield=R_eq*ypr;
-     cout <<" Ftemp= "<<Ftemp<<" r= "<<yield/(R_eq*phi)<<" phi= "<<phi<<" R_eq= "<<R_eq<<" ypr= "<<ypr<<" yield= "<<yield<< endl;
+     // cout <<" Ftemp= "<<Ftemp<<" r= "<<yield/(R_eq*phi)<<" phi= "<<phi<<" R_eq= "<<R_eq<<" ypr= "<<ypr<<" yield= "<<yield<< endl;
     }
   }
   report << "Estimated_numbers_of_fish year "<<age_vector << endl;

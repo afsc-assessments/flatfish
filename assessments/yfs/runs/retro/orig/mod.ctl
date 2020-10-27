@@ -9,7 +9,7 @@
 #phase_mn_rec
 	1
 #phase_rec_dev
-	2
+	1
 #phase_mn_f
 	2
 #phase_F40           
@@ -19,7 +19,7 @@
 #phase_proj        
 	7
 #phase_logist_sel    
-	5
+	3
 #phase_logist_sel_devs    
 	4
 #phase_male_sel      
@@ -27,13 +27,13 @@
 #phase_q
 	-5
 #q_alpha_prior
-	-0.071768
+	-0.161768
 #phase_q_alpha
-	4
+	5
 #q_beta_prior
 	0.09287
 #phase_q_beta_in
-	5
+	3
 #phase_m_f
 	-6
 #phase_m_m
