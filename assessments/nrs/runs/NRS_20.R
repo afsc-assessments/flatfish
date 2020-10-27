@@ -31,12 +31,16 @@ length(modlst)
   ggsave("figs/mod_evalc1mod2_rec.pdf",plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
   ggsave("figs/mod_evalc1mod2_ssb.pdf",plot=p1,width=8,height=4.0,units="in")
-  plot_bts(modlst) + theme_few(base_size=11)
+  p1<-plot_bts(modlst) + theme_few(base_size=11)
   ggsave("figs/mod_evalc1mod2_bts.pdf",plot=p1,width=8,height=4.0,units="in")
   
   #Can't find this function
   #plot_agefit(M,type="fishery", case_label="No new data",gear="fsh")
-
+  
+  # Carey worked on this one, but still I think needs to be subset to a particular model.
+  # doesn't work to plot modlst[[4]] for instance.
+  plot_age_comps(modlst)
+   
   p1 <- plot_sel(modlst[[1]]); p1
   p1 <- plot_sel(modlst[[3]]); p1
   ggsave("figs/mod_evalc1_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")

@@ -53,11 +53,14 @@
     mdf <- reshape2::melt(mdf,id.var=1:3)
     mpf <- reshape2::melt(mpf,id.var=1:3)
     head(mdf)
-    
-    for(i in 1:n)
-    {
+
+# Carey commented out this loop. Not sure of its intention. was making 4 identical cols called "pred"    
+#    for(i in 1:n)
+#    {
       mdf <-cbind(mdf,pred=mpf$value)
-    }   
+#    }  
+    
+
     return(mdf)
 }
 
