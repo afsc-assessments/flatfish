@@ -10,12 +10,18 @@
     mdf <- NULL
     for (i in 1:n)
     {
-        A <- M[[i]]
-        df <- data.frame(A$sex_ratio)
+        A        <- M[[i]]
+        df <- data.frame(A$Sex_ratio_population,type="Population")
+        df <- rbind(df,data.frame(A$Sex_ratio_mature,type="Mature"))
+        df <- rbind(df,data.frame(A$Sex_ratio_age_7_plus,type="Age_7_plus"))
+        df <- rbind(df,data.frame(A$Sex_ratio_survey[,1:2],type="Survey_obs"))
+        df <- rbind(df,data.frame(V1=A$Sex_ratio_survey[,1], V2=A$Sex_ratio_survey[,3], type="Survey_pred"))
+        df <- rbind(df,data.frame(A$Sex_ratio_fishery[,1:2],type="Fishery_obs"))
+        df <- rbind(df,data.frame(V1=A$Sex_ratio_fishery[,1], V2=A$Sex_ratio_fishery[,3], type="Fishery_pred"))
         df$Model <- names(M)[i]
-        mdf        <- rbind(mdf, df)
+        mdf      <- rbind(mdf, df)
     }
-    names(mdf) <- c("Year","source","Females","Model")
+    names(mdf) <- c("Year","Ratio","Type")
     mdf$Year   <- as.numeric(mdf$Year)
     return(mdf)
 }

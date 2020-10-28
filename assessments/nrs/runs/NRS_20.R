@@ -24,10 +24,31 @@ mod_names <- c("2020 no new", "2020 with time-varying fish wt-age","2020 all new
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
 modlst   <- lapply(fn, read_admb)
+srn      <- paste0(.MODELDIR, "sex_ratio.rep")
+srn
+sex_rat  <- lapply(srn, read.table,col.names=c("Year","Type","Ratio"))
+nmods    <- length(modlst)
+# To get sex ratio output
 names(modlst) <- mod_names
+names(sex_rat) <- mod_names
 thismod <- 4 # the selected model
 length(modlst)
+
 # probably want to make this a function w/ naming convention added...
+
+# sex ratio
+library(patchwork) ## The best layout software I've seen...
+p1 <- sex_rat[[thismod]] %>% filter(Type %in% c("Survey_est", "Survey_obs") ) %>% 
+   ggplot(aes(y=Ratio,x=Year,color=Type)) + geom_line() + theme_few()+ ylim(c(.25,.75)) + ggtitle(names(sex_rat[thismod])) 
+
+p2 <-sex_rat[[thismod]] %>% filter(Type %in% c("Fishery_est", "Fishery_obs") ) %>% 
+   ggplot(aes(y=Ratio,x=Year,color=Type)) + geom_line() + theme_few()+ ylim(c(.15,.85))
+
+p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fishery_est", "Fishery_obs") ) %>% 
+   ggplot(aes(y=Ratio,x=Year,color=Type)) + geom_line() + theme_few() + ylim(c(.25,.75))
+# this layes them out stacked (/)
+  psex <- p1/p2/p3
+
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
   p1
   ggsave("figs/mod_evalc1mod2_rec.pdf",plot=p1,width=8,height=4.0,units="in")
@@ -37,10 +58,13 @@ length(modlst)
   plot_bts(modlst) + theme_few(base_size=11)
   ggsave("figs/mod_evalc1mod2_bts.pdf",plot=p1,width=8,height=4.0,units="in")
   
-  #Can't find this function
+# Recruitment curve===================
+  #This works
   plot_srr(modlst[4])
 
+# selectivity curve===================
   p1 <- plot_sel(modlst[[4]]); p1
+  p1
   p1 <- plot_sel(modlst[[3]]); p1
   ggsave("figs/mod_evalc1_fsh_sel.pdf",plot=p1,width=4,height=8,units="in")
 
@@ -49,14 +73,14 @@ length(modlst)
   ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
 
   # Here's a homegrown one
-  M <- modlst[4]; names(M[]) #to see the names of what's in an object
+  M <- modlst[[4]]; names(M[]) #to see the names of what's in an object
   df <- rbind(data.frame(Age=1:20,sel=M$sel_srv_m,sex="Male"),data.frame(Age=1:20,sel=M$sel_srv_f,sex="Female"))
   p1 <- ggplot(df,aes(x=Age,y=sel,color=sex)) + geom_line(size=2) + theme_few() + ylab("Selectivity") + ggtitle(paste0("Survey selectivity; (Model ",names(modlst[4]),")")) ;p1
   ggsave("figs/mod_bts_sel.pdf",plot=p1,width=4,height=8,units="in")
 
   # Thes two work for me! 
   plot_age_comps(modlst[4],title="Survey age compositions",type="Survey")
-  plot_age_comps(modlst[4],title="Fishery age compositions",type="Fishery")
+  plot_age_comps(modlst[4],title="Fishery age compositions",type="fishery")
 
   #this one doesn't work right now
   
