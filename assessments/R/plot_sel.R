@@ -20,28 +20,6 @@ if (sexoverlay){
 #}
 }
 }
-plot_srv_sel <- function(M, title="Survey selectivity",bysex=TRUE){
-  n <- length(M)
-    mdf <- NULL
-    for (i in 1:n)
-    {
-        A   <- M[[i]]
-        #length(A$sel_srv_f)
-        #length(A$sel_srv_m)
-        mdf <- rbind(mdf, data.frame(Model= names(M)[i],sex="males",  selectivity=A$sel_srv_m,age=1:length(A$sel_srv_m)))
-        mdf <- rbind(mdf, data.frame(Model= names(M)[i],sex="females",selectivity=A$sel_srv_f,age=1:length(A$sel_srv_f)))
-    }
-    names(mdf) <- c("Model","sex","selectivity","age")
-
-if (bysex) {
-  ggplot(mdf,aes(x=age,y=Model,height = selectivity,fill=sex,color=sex,alpha=.3)) + ggtitle(title) +
-            geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
-} else{
-  ggplot(mdf,aes(x=age,y=sex,height = selectivity,fill=Model,color=Model,alpha=.3)) + ggtitle(title) +
-            geom_density_ridges(stat = "identity",scale=0.8,alpha = .3) + ylab("Year")+ .THEME #+ facet_wrap(~sex) 
-}
-}
-
 
 #mdf <- data.frame(Year=YFS2$Yr,Sex="males",YFS2$sel_fsh_m)
 #mdf <- rbind(mdf,data.frame(Year=A$Yr,Sex="females",YFS2$sel_fsh_f))
