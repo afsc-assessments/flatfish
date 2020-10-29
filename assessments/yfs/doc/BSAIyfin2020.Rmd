@@ -136,6 +136,7 @@ FSB_next=1000*extra_sd2$SSB[2]
 FSB_nextF=formatC(FSB_next,format="d",big.mark=",")
 
 FSB_last=1000*extra_sd1$SSB[1]
+
 FSB_lastF=formatC(FSB_last,format="d",big.mark=",")
 
 FABC_this=round(extra_sd2$HM_Fmsyr[1],3)
@@ -183,7 +184,7 @@ output:
 \begin{centering}
 \fontfamily{cmr}
 \fontsize{10}{12}
-  Ingrid Spies, Rebecca Haehn, and James Ianelli\\
+  Ingrid Spies, Rebecca Haehn, Elizabeth Siddon, Jason Conner and James Ianelli\\
 \selectfont
   Alaska Fisheries Science Center, National Marine Fisheries Service \\
   National Oceanic and Atmospheric Administration \\ 
@@ -202,24 +203,26 @@ _Changes in the data_
    1. The `r thisyr-1` fishery age composition was added.
    2. The `r thisyr-1` survey age composition was added.
    3. The estimate of the total catch made through the end of 2019 was updated as reported by the NMFS Alaska Regional office. The catch through the end of 2020 was estimated based on available data. Catch of 139,283 t was assumed for the `r thisyr+1` and `r thisyr+2` projections.
-   4. Due to COVID-19, the 2020 NMFS eastern Bering Sea shelf bottom-trawl survey was not conducted. Therefore, there is no survey biomass estimate from 2020.
+   4. Due to COVID-19, the 2020 NMFS Eastern Bering Sea (EBS) shelf bottom-trawl survey was not conducted. Therefore, there is no survey biomass estimate from 2020.
    5. Fishery weight at age was calculated based on methodology in the document.
 
 _Changes in the assessment methods_
-
-Two models were considered in this assessment.
-
-   1. Last year's accepted model is referred to as Model 18.1. Model 18.1 uses the same natural mortality for males and females, $M$=0.12. 
-   
-   2. A second model is presented (Model 18.2) that uses a fixed value for female natural mortality ($M$=0.12) and allows male natural mortality to be estimated within the model. This model was reviewed by the BSAI Plan Team in September, 2020. Model 18.2 is the authors' preferred model. 
+   There are no changes to the assessment methods presented in 2019.
 
 ## Summary of Results
 
-In `r thisyr` a new model was introduced based on the `r thisyr-1` Model 18.2 that retains female natural mortality fixed at 0.12 while allowing the model to estimate male natural mortality. This model is referred to as Model 18.2. The 2019 accepted Model 18.1 included the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as in previous years, but added survey start date as an additional covariate within the model, based on a recent study by Nichol et al. (2018). Model 18.2 retains these features.
+Four models are presented in this assessment. Models 18.1 and 18.2 are presented in full, and Model 18.2 is the preferred model. Models 18.3 and 18.4 are presented to promote discussion on the use of VAST biomass estimates and incorporation of the Northern Bering Sea (NBS) survey.
 
-In the most recent bottom trawl survey performed in 2019, the Yellowfin Sole biomass in the Eastern Bering Sea was estimated to be `r 100*round((YFS2$ob_bts[38]/YFS2$ob_bts[37])-1,2)`% higher than in 2018 at `r formatC(YFS2$ob_bts[38]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 remained high at `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2014 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
+   1. Last year's accepted model is referred to as Model 18.1. This model has not changed and uses the same natural mortality for males and females, $M$=0.12. 
+   2. A second model is presented (Model 18.2) that uses a fixed value for female natural mortality ($M$=0.12) and allows male natural mortality to be estimated within the model. This model was reviewed by the BSAI Plan Team in September, 2020. Model 18.2 is the authors' preferred model. 
+   3. Model 18.3 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the Eastern Bering Sea survey region, 1982-2019.
+   4. Model 18.4 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the EBS and NBS, 1982-2019.
+   
+The accepted 2019 Model 18.1 included the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as in previous years, but added survey start date as an additional covariate within the model, based on a recent study by Nichol et al. (2018). Model 18.2 retains these features. Model 18.2 retains female natural mortality fixed at 0.12 while allowing the model to estimate male natural mortality. 
 
-This assessment updates last year’s assessment with results and management quantities that are higher than the `r thisyr-1` assessment. The model 18.2 estimated male natural mortality slightly higher than female natural mortality, `r round(YFS2$natmort_m,3)`, which increased biomass estimates.
+In the most recent Eastern Bering Sea (EBS) bottom trawl survey performed in 2019, the Yellowfin Sole biomass in the Eastern Bering Sea was estimated to be `r 100*round((YFS2$ob_bts[38]/YFS2$ob_bts[37])-1,2)`% higher than in 2018 at `r formatC(YFS2$ob_bts[38]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 remained high at `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2014 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
+
+This assessment updates last year’s assessment with results and management quantities that are higher than the `r thisyr-1` assessment. Model 18.2 estimated male natural mortality to be higher than female natural mortality, `r round(YFS2$natmort_m,3)`, which increased biomass estimates.
 
 Catch as of October 13, `r thisyr` was `r catchZ$Total[nrow(catchZ)]` t. Over the past 5 years (`r thisyr-5` - `r thisyr-1`), `r 100*round(prop,3)`% of the catch has taken place by this date. Therefore, the full year's estimate of catch in `r thisyr` was `r formatC(as.numeric(str_replace(catchZ$Total[nrow(catchZ)],",",""))/round(prop,4),format="d",big.mark=",")` t. This is lower than the average catch over the past ten years `r formatC(cn10,format="d",big.mark=",")` t.  Future catch for the next 10 years, `r thisyr+1` - `r thisyr+10` was estimated as the mean of the past 10 years catch.
 
@@ -259,8 +262,9 @@ Approaching overfished	              &	n/a	        &	No	      &	n/a	            
 \end{table}
 
  
+## Responses to SSC and Plan Team Comments on Assessments in General
 
-## Responses to SSC and Plan Team Comments specific to this assessment
+## Responses to SSC and Plan Team Comments Specific to this Assessment
 
 _SSC October 2020_
 
@@ -274,7 +278,7 @@ _Authors' response: This will be investigated in future assessments._
 
 The SSC recommends consideration of including the Northern Bering Sea (NBS) in the modeled area even for species that have low density there now but could increase under shifting environmental conditions. This would avoid another change in the survey analysis paradigm required to extend the modeled area, as has been the case with recent extensions to include the NBS for pollock, Pacific cod and yellowfin sole.
 
-_Authors' response: Two models, 18.2a and 18.2b in the current assessment incorporate VAST estimates, one for the Eastern Bering Sea (EBS) (18.2a) and one for the EBS+NBS (18.2b)._
+_Authors' response: Two models, 18.3 and 18.4 in the current assessment incorporate VAST estimates, one for the Eastern Bering Sea (EBS) (18.3) and one for the EBS+NBS (18.4)._
 
 _SSC December 2019_
 
@@ -353,7 +357,9 @@ In 2011, federally permitted vessels using non-pelagic trawl gear whose harvest 
 
 Experiments examining the bridle efficiency of the Bering Sea survey trawl indicate that Yellowfin Sole are herded into the trawl path from an area between the wing tips of the net and the point where the bridles contact the seafloor (Somerton and Munro 2001).  The herding experiments suggest that the survey trawl vulnerability (a component of catchability) is greater than 1.0.  The likelihood profile of $q$ from the model indicated a small variance with a narrow range of likely values with a low probability of $q$ being equal to the value of 1.0 in a past assessment (Wilderbuer and Nichol 2003). 
 
-The 1997 catch of 181,389 t (retained and discarded) was the largest since the fishery became completely domestic, but decreased from 1998–2010, averaging 94,004 t (`r table_nums("retdis",display="cite")`).  From 2011-2014 the catch increased, averaging 155,000 t.  The 2013 catch totaled approximately 165,000 t (73% of the ABC), and was the highest annual catch since prior to 1990.  For `r thisyr`, the catch distribution has been spread out from January through May with the majority coming from four BSAI management areas (509, 513, 514, 517). The directed fishery historically occurred from winter through autumn, and NMFS research surveys take place during summer months (Wilderbuer et al. 1992).  In 2020, catch occurred primarily betweeen February-May (`r figure_nums("pie_bymonth",display="cite")`). 
+The 1997 catch of 181,389 t (retained and discarded) was the largest since the fishery became completely domestic, but decreased from 1998–2010, averaging 94,004 t (`r table_nums("retdis",display="cite")`).  From 2011-2014 the catch increased, averaging 155,000 t.  The 2013 catch totaled approximately 165,000 t (73% of the ABC), and was the highest annual catch since prior to 1990. Catches have declined since 2013 and the average catch over the past ten years is `r formatC(cn10,format="d",big.mark=",")` t. The full year's estimate of catch in `r thisyr` was `r formatC(as.numeric(str_replace(catchZ$Total[nrow(catchZ)],",",""))/round(prop,4),format="d",big.mark=",")` t.  
+
+For `r thisyr`, the catch distribution was largest in March, followed by January, April, and May, with the majority coming from BSAI management areas (513 and 514). The directed fishery historically occurred from winter through autumn, and NMFS research surveys take place during summer months (Wilderbuer et al. 1992).  In 2020, catch occurred primarily betweeen February-May (`r figure_nums("pie_bymonth",display="cite")`). 
 
 As of late October `r thisyr`, the fishing season is ongoing.  In order to estimate the total `r thisyr` catch for the stock assessment model, the average proportion of the `r thisyr-5`-`r thisyr-1` cumulative catch attained by the end of October was applied to the `r thisyr` catch amount at the same time period and resulted in a `r thisyr` catch estimate of `r formatC(as.numeric(str_replace(catchZ$Total[nrow(catchZ)],",",""))/round(prop,4),format="d",big.mark=",")` t, `r round(100*as.numeric(str_replace(catchZ$Total[nrow(catchZ)],",",""))/round(prop,4)/ABC_last,2)`% of the ABC.  
 
@@ -619,38 +625,63 @@ _Retrospective Analysis_
 
 ```{r, echo=FALSE, message=FALSE}
 
+YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro0/fm.rep")
+YFS2019=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro1/fm.rep")
+YFS2018=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro2/fm.rep")
+YFS2017=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro3/fm.rep")
+YFS2016=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro4/fm.rep")
+YFS2015=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro5/fm.rep")
+YFS2014=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro6/fm.rep")
+YFS2013=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro7/fm.rep")
+YFS2012=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro8/fm.rep")
+YFS2011=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro9/fm.rep")
+YFS2010=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro10/fm.rep")
 
-YFS2019=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_0.rep")
-YFS2018retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_1.rep")
-YFS2017retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_2.rep")
-YFS2016retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_3.rep")
-YFS2015retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_4.rep")
-YFS2014retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_5.rep")
-YFS2013retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_6.rep")
-YFS2012retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_7.rep")
-YFS2011retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_8.rep")
-YFS2010retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_9.rep")
-YFS2009retro=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_10.rep")
+a=-1*(YFS2020$SSB[1:66,2]-YFS2019$SSB[,2])/YFS2020$SSB[1:66,2]
+b=-1*(YFS2020$SSB[1:65,2]-YFS2018$SSB[,2])/YFS2020$SSB[1:65,2]
+c=-1*(YFS2020$SSB[1:64,2]-YFS2017$SSB[,2])/YFS2020$SSB[1:64,2]
+d=-1*(YFS2020$SSB[1:63,2]-YFS2016$SSB[,2])/YFS2020$SSB[1:63,2]
+e=-1*(YFS2020$SSB[1:62,2]-YFS2015$SSB[,2])/YFS2020$SSB[1:62,2]
+f=-1*(YFS2020$SSB[1:61,2]-YFS2014$SSB[,2])/YFS2020$SSB[1:61,2]
+g=-1*(YFS2020$SSB[1:60,2]-YFS2013$SSB[,2])/YFS2020$SSB[1:60,2]
+h=-1*(YFS2020$SSB[1:59,2]-YFS2012$SSB[,2])/YFS2020$SSB[1:59,2]
+i=-1*(YFS2020$SSB[1:58,2]-YFS2011$SSB[,2])/YFS2020$SSB[1:58,2]
+j=-1*(YFS2020$SSB[1:57,2]-YFS2010$SSB[,2])/YFS2020$SSB[1:57,2]
 
-
-a=-1*(YFS2019$SSB[1:65,2]-YFS2018retro$SSB[,2])/YFS2019$SSB[1:65,2]
-b=-1*(YFS2019$SSB[1:64,2]-YFS2017retro$SSB[,2])/YFS2019$SSB[1:64,2]
-c=-1*(YFS2019$SSB[1:63,2]-YFS2016retro$SSB[,2])/YFS2019$SSB[1:63,2]
-d=-1*(YFS2019$SSB[1:62,2]-YFS2015retro$SSB[,2])/YFS2019$SSB[1:62,2]
-e=-1*(YFS2019$SSB[1:61,2]-YFS2014retro$SSB[,2])/YFS2019$SSB[1:61,2]
-f=-1*(YFS2019$SSB[1:60,2]-YFS2013retro$SSB[,2])/YFS2019$SSB[1:60,2]
-g=-1*(YFS2019$SSB[1:59,2]-YFS2012retro$SSB[,2])/YFS2019$SSB[1:59,2]
-h=-1*(YFS2019$SSB[1:58,2]-YFS2011retro$SSB[,2])/YFS2019$SSB[1:58,2]
-i=-1*(YFS2019$SSB[1:57,2]-YFS2010retro$SSB[,2])/YFS2019$SSB[1:57,2]
-j=-1*(YFS2019$SSB[1:56,2]-YFS2009retro$SSB[,2])/YFS2019$SSB[1:56,2]
-
-Rho=(a[length(a)]+b[length(b)]+c[length(c)]+d[length(d)]+e[length(e)]+
+Rho18_2=(a[length(a)]+b[length(b)]+c[length(c)]+d[length(d)]+e[length(e)]+
       f[length(f)]+g[length(g)]+h[length(h)]+i[length(i)]+j[length(j)])/10;
+
+#Model 18_1
+YFS202018_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro0/fm.rep")
+YFS201918_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro1/fm.rep")
+YFS201818_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro2/fm.rep")
+YFS201718_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro3/fm.rep")
+YFS201618_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro4/fm.rep")
+YFS201518_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro5/fm.rep")
+YFS201418_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro6/fm.rep")
+YFS201318_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro7/fm.rep")
+YFS201218_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro8/fm.rep")
+YFS201118_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro9/fm.rep")
+YFS201018_1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_1/retrospectives/retro10/fm.rep")
+
+a_18_1=-1*(YFS202018_1$SSB[1:66,2]-YFS201918_1$SSB[,2])/YFS202018_1$SSB[1:66,2]
+b_18_1=-1*(YFS202018_1$SSB[1:65,2]-YFS201818_1$SSB[,2])/YFS202018_1$SSB[1:65,2]
+c_18_1=-1*(YFS202018_1$SSB[1:64,2]-YFS201718_1$SSB[,2])/YFS202018_1$SSB[1:64,2]
+d_18_1=-1*(YFS202018_1$SSB[1:63,2]-YFS201618_1$SSB[,2])/YFS202018_1$SSB[1:63,2]
+e_18_1=-1*(YFS202018_1$SSB[1:62,2]-YFS201518_1$SSB[,2])/YFS202018_1$SSB[1:62,2]
+f_18_1=-1*(YFS202018_1$SSB[1:61,2]-YFS201418_1$SSB[,2])/YFS202018_1$SSB[1:61,2]
+g_18_1=-1*(YFS202018_1$SSB[1:60,2]-YFS201318_1$SSB[,2])/YFS202018_1$SSB[1:60,2]
+h_18_1=-1*(YFS202018_1$SSB[1:59,2]-YFS201218_1$SSB[,2])/YFS202018_1$SSB[1:59,2]
+i_18_1=-1*(YFS202018_1$SSB[1:58,2]-YFS201118_1$SSB[,2])/YFS202018_1$SSB[1:58,2]
+j_18_1=-1*(YFS202018_1$SSB[1:57,2]-YFS201018_1$SSB[,2])/YFS202018_1$SSB[1:57,2]  
+
+Rho18_1=(a_18_1[length(a_18_1)]+b_18_1[length(b_18_1)]+c_18_1[length(c_18_1)]+d_18_1[length(d_18_1)]+e_18_1[length(e_18_1)]+
+      f_18_1[length(f_18_1)]+g_18_1[length(g_18_1)]+h_18_1[length(h_18_1)]+i_18_1[length(i_18_1)]+j_18_1[length(j_18_1)])/10;
 
 thisyr=2020
 ```
 
-A within-model retrospective analysis was included for the recommended assessment model (Model 18.2). In this analysis, retrospective female spawning biomass was calculated by sequentially dropping data one year at a time and then comparing the peeled estimate to the reference stock assessment model used in the assessment (`r figure_nums("retro1",display="cite")`). Mohn's rho was `r round(Rho,3)` using this model. A similar retrospective pattern was observed as in similar years, in which earlier retrospective years indicated a lower level of spawning biomass than the current year's data (`r figure_nums("retro1",display="cite")`). The difference in female spawning biomass was negative for all years, except for the most recent, 2018 (`r figure_nums("retro2",display="cite")`).
+A within-model retrospective analysis was included for the recommended assessment model (Model 18.2). In this analysis, retrospective female spawning biomass was calculated by sequentially dropping data one year at a time and then comparing the peeled estimate to the reference stock assessment model used in the assessment (`r figure_nums("retro1",display="cite")`). Mohn's rho did not change significantly for Model 18.2; it was `r round(Rho18_2,3)` for Model 18.2 and `r round(Rho18_1,3)` for Model 18.1. A similar retrospective pattern was observed as in recent years, in which earlier retrospective years indicated a lower level of spawning biomass than the current year's data (`r figure_nums("retro1",display="cite")`). The difference in female spawning biomass was negative for all years, except for the most recent, 2018 (`r figure_nums("retro2",display="cite")`).
 
 There is a large amount of variability in the annual survey biomass of Yellowfin Sole due to the temperature-influenced availability to the survey.  This large variability can contribute to undesirable retrospective patterns since earlier years do not fit the same highly variable information as the current year.  In particular, retrospective model runs are outside the confidence intervals of the assessment model spawning biomass trajectory for about a 17 year period from 1986-`r thisyr`.   
 
@@ -662,29 +693,32 @@ The retrospective technique may not always be the best tool for model selection,
 
 ## Assessment related considerations
 
-The BSAI Yellowfin Sole assessment is based on surveys conducted annually on the EBS shelf from 1982-2019 (no skipped years).  Fish ages, derived from otoliths collected during the surveys and the fishery to calculate annual estimates of population and fishery age composition, have been validated.  The assessment model exhibits good fits to all compositional and abundance data and converges to a single minima in the likelihood surface.  Recruitment estimates track strong year classes that are consistent with the data.  
+The BSAI Yellowfin Sole assessment is based on surveys conducted annually on the EBS shelf from 1982-2019, continually except for 2020 due to the COVID-19 pandemic.  Fish ages, derived from otoliths collected during the surveys and the fishery to calculate annual estimates of population and fishery age composition, have been validated.  The assessment model exhibits good fits to all compositional and abundance data and converges to a single minima in the likelihood surface.  Recruitment estimates track strong year classes that are consistent with the data.  
 
 The retrospective pattern from the current assessment model was less than desirable and has been the subject of some concern for the assessment.  Peculiar to the Yellowfin Sole assessment, in comparison to the northern rock sole and Alaska plaice assessments (that have nice patterns), is the large amount of variability in the annual survey biomass assessments for this stock due to the temperature-influenced availability to the survey.  This large variability in the annual estimates can contribute to undesirable patterns since the earlier years are not fitting the same highly variable information as the current year.  
 
 ## Population dynamics considerations
 
-Stock assessment model results indicate that Yellowfin Sole total biomass (age 2+) was at low levels during most of the 1960s and early 1970s (700,000-1,000,000 t) after a period of high exploitation.  Sustained above average recruitment from 1967-76 combined with light exploitation resulted in a biomass increase to a peak of 3.6 million t by 1985.  The population biomass has since been in a slow decline as the strong 1981 and 1983 year-classes have passed through the population, with only the 1991, 1995 and 2003 year-classes at levels observed during the 1970s, although the 2006-2010 year-classes all look about average according to the 2018 stock assessment.  The present biomass is estimated at 78% of the peak 1985 level and is at twice the level of BMSY.  Projections indicate that the FSB will remain well-above the BMSY level through 2032 (`r figure_nums("fishingavgF",display="cite")`).  Population dynamics are not a concern for this assessment.
+Stock assessment model results indicate that Yellowfin Sole total biomass (age 2+) was at low levels during most of the 1960s and early 1970s (700,000-1,000,000 t) after a period of high exploitation.  Sustained above average recruitment from 1967-76 combined with light exploitation resulted in a biomass increase to a peak of 3.6 million t by 1985.  The population biomass has since been in a slow decline as the strong 1981 and 1983 year-classes have passed through the population, with only the 1991, 1995 and 2003 year-classes at levels observed during the 1970s, although the 2006-2010 year-classes all look about average according to the 2018 stock assessment.  The present biomass is estimated at 78% of the peak 1985 level and is at twice the level of BMSY.  Projections indicate that the FSB will remain well-above the BMSY level through 2033 (`r figure_nums("fishingavgF",display="cite")`).  Population dynamics are not a concern for this assessment.
 
 ## Environmental/ecosystem considerations
 
-Yellowfin Sole (YFS) demonstrate earlier migration to spawning grounds and spawning events in warm years, also somatic growth increases in warmer temperatures. In 2019, fish condition (as measured by length-weight residuals) was positive in all strata and continued an upward trend since 2017. The mean size of the groundfish community increased in 2019 and was buoyed by prominent species including Yellowfin Sole, which had above average mean length (Whitehouse 2019 EBS ESR).
+Following two years of physical oceanographic perturbations, the eastern Bering Sea experienced a return to near-normal climatic conditions in 2020. Summer bottom temperatures and spatial extent of the cold pool were average based on the ROMS hindcast model and observations from the 2020 Dyson cruise. However, summer sea surface temperatures through August were above average in the southern and northern Bering Sea, similar to those observed in 2019 (Siddon 2020). 
 
-Over the southern Bering Sea shelf, YFS abundance and biomass were largely stable from 2018 and remained below the long-term mean. Over the northern Bering Sea shelf, both abundance and biomass increased between 2017 and 2019. The 2019 distribution of age-classes shows older/larger fish over the southern shelf and younger/smaller fish over the northern shelf (L. Britt, Sept. GPT presentation).
+Yellowfin Sole (YFS) demonstrate earlier migration to spawning grounds and spawning events in warm years, also somatic growth increases in warmer temperatures. In 2019, fish condition (as measured by length-weight residuals [updated method]) was positive in the southeastern Bering Sea (SEBS) and NBS and continued upward trends since 2017 in both areas (Rohan and Lahman 2020). The mean length of the groundfish community increased in 2019 and was buoyed by prominent species including Yellowfin Sole, which had above average mean length (Whitehouse 2020).
 
-The dominant prey of YFS are polychaete worms, miscellaneous worms, clams, and benthic amphipods. Direct measurements of infaunal abundance trends are not available, however, abundance trends of motile epifauna that also consume infauna (i.e., indirect measurements) are quantified from the NOAA AFSC bottom trawl survey. The biomass of motile epifauna (e.g., brittle stars, urchins, sand dollars) remained above the long-term mean in 2019, although decreased 10% from 2018. This suggests sufficient prey availability for YFS over the southern Bering Sea shelf (Whitehouse 2019 EBS ESR). 
+The 2019 distribution of age-classes showed older/larger fish over the southern shelf and younger/smaller fish over the northern shelf (L. Britt, pers comm). This indicates favorable growth and survival of juvenile YFS in the NBS. A proposed thermal window (Yeung et al. In Prep.) suggests continued warming over the EBS shelf may result in temperatures above the thermal physiological maximum of YFS. Such high temperatures in juvenile habitats (i.e., inner domain) could negatively affect production of YFS, which may be adapted to colder temperatures.
+
+The dominant prey of YFS are polychaete worms, miscellaneous worms, clams, and benthic amphipods. Direct measurements of infaunal abundance trends are not available, however, abundance trends of motile epifauna that also consume infauna (i.e., indirect measurements) are quantified from the NOAA AFSC bottom trawl survey. The biomass of motile epifauna (e.g., brittle stars, urchins, sand dollars) remained above the long-term mean in 2019, although decreased 10% from 2018. This suggests sufficient prey availability for YFS over the southern Bering Sea shelf (Whitehouse 2019). 
 
 Predators of YFS include Pacific cod and Pacific halibut. In 2019, the abundance and biomass of Pacific cod increased across the eastern Bering Sea, especially in abundance indicating successful recruitment of early age classes (L. Britt, Sept. GPT presentation). This dramatic increase of predators over the shelf suggests potential increased risk of predation, although size, spatial, and/or temporal mismatches may exist and provide refuge for YFS. 
 
 Competitors for YFS prey resources in the northern Bering Sea may include gray whales (e.g., benthic amphipods). Since January 2019, a total of 213 gray whale strandings have been reported, with 49 of those within Alaska. An Unusual Mortality Event was declared for gray whales in 2019 (see K. Savage ‘Noteworthy’ in the 2019 Eastern Bering Sea Ecosystem Status Report for more information). Gray whale life history includes annual migrations of up to 20,000 km from summer feeding grounds in the northern Bering and Chukchi seas to southern Baja California to mate and calve. Preliminary findings in several of the whales shows evidence of emaciation; benthic prey (primarily amphipods) in the Bering, Chukchi, and Beaufort seas are a main prey source. The 2019 strandings may reflect 2018 conditions (prior to their migration) of poor feeding or competition for limited prey resources and/or indicate thresholds in the carrying capacity of the northern Bering Sea ecosystem.
 
-Overall the Environmental/Ecosystem considerations for Yellowfin Sole are Level 1 – Normal: “No apparent environmental/ecosystem concerns.” The main points are summarized below:
+Together, the most recent data available suggest there are no apparent ecosystem concerns--level 1. The main points are summarized below:
 
-*	YFS condition (length-weight residuals) was positive in all strata and continued an upward trend since 2017;
+* Summer bottom temperatures and spatial extent of the cold pool were average, indicating a cooler thermal experience for YFS, which may be adapted to colder temperatures, than in recent years.	
+* In 2019, YFS condition (weighted length-weight residuals) was positive in the SEBS and NBS and continued upward trends since 2017;
 *	The mean size of the groundfish community increased in 2019 buoyed by species including YFS, which had above average mean length;
 *	YFS abundance and biomass remained below the long-term mean over the southern shelf;
 *	YFS abundance and biomass increased between 2017 and 2019 over the northern shelf;
@@ -723,14 +757,14 @@ thisyr    = 2020
 
 _Scenario Projections and Two-Year Ahead Overfishing Level_
 
-In addition to the seven standard harvest scenarios, Amendments 48/48 to the BSAI and GOA Groundfish Fishery Management Plans require projections of the likely OFL two years into the future.  The `r thisyr` numbers at age from the stock assessment model are projected to 2019 given the 2018 catch and then a 2019 catch of 150,000 t is applied to the projected 2019 population biomass to obtain the 2020 OFL. 
+In addition to the seven standard harvest scenarios, Amendments 48/48 to the BSAI and GOA Groundfish Fishery Management Plans require projections of the likely OFL two years into the future.  The `r thisyr` numbers at age from the stock assessment model are projected to `r thisyr` given the `r thisyr-1` catch and then a `r thisyr` catch of `r formatC(cn10,format="d",big.mark=",")` t was applied to the projected `r thisyr` population biomass to obtain the `r thisyr+1` OFL. 
 
 The SSC has determined that Yellowfin Sole qualify as a Tier 1 stock and therefore the `r thisyr+1`  ABC is calculated using Tier 1 methodology. The Tier 1 harvest level is calculated as the product of the harmonic mean of $F_{MSY}$ and the geometric mean of the `r thisyr+1`  biomass estimate.
 
 The geometric mean of the `r thisyr+1`  biomass estimate, $B_{gm}$, is estimated using the equation  $B_{gm}=e^{ln(B)-(cv^2/2)},$ 
 where  $B$ is the point estimate of the `r thisyr+1`  biomass from the stock assessment model and $cv^2$ is the coefficient of variation of the point estimate (a proxy for sigma). The harmonic mean of $F_{MSY}$, $F_{har}$ is estimated as $F_{har}=e^{ln(F_{MSY}-(ln(sd^2)/2)}$, where $F_{MSY}$ is the peak mode of the $F_{MSY}$ distribution and $sd^2$ is the square of the standard deviation of the $F_{MSY}$ distribution.
 
-In 2006 the SSC selected the 1978-2001 data set for the Tier 1 harvest recommendation.  Using this approach for the `r thisyr+1` harvest (now the 1978-2014 time-series) recommendation (Model 18.2), the $F_{ABC}$ =  $F_{harmonic_mean}$ = `r FABC_this`. The estimate of age 6+ total biomass for `r thisyr+1` is `r TotBio_thisF` t. The calculations outlined above give a Tier 1 ABC harvest recommendation of `r ABC_thisF` t and an OFL of `r OFL_thisF` t for `r thisyr+1`.  This results in an `r 100*(1-round(ABC_this/OFL_this,2))` % (`r formatC(OFL_this-ABC_this,format="d",big.mark=",")` t) buffer between ABC and OFL. The ABC value is % lower than last year, primarily due to the 32% decline in the survey estimate from `r thisyr-1` to `r thisyr`. 
+In 2006 the SSC selected the 1978-2001 data set for the Tier 1 harvest recommendation.  Using this approach for the `r thisyr+1` harvest (now the 1978-2014 time-series) recommendation (Model 18.2), the $F_{ABC}$ =  $F_{harmonic_mean}$ = `r FABC_this`. The estimate of age 6+ total biomass for `r thisyr+1` is `r TotBio_thisF` t. The calculations outlined above give a Tier 1 ABC harvest recommendation of `r ABC_thisF` t and an OFL of `r OFL_thisF` t for `r thisyr+1`.  This results in an `r 100*(1-round(ABC_this/OFL_this,2))` % (`r formatC(OFL_this-ABC_this,format="d",big.mark=",")` t) buffer between ABC and OFL. 
 
 The stock assessment analysis must also consider harvest limits, usually described as overfishing fishing mortality levels with corresponding yield amounts. Amendment 56 to the BSAI FMP sets the Tier 1 harvest limit at the $F_{MSY}$ fishing mortality value.  The overfishing fishing mortality values, ABC fishing mortality values and their corresponding yields are given as follows:
 
@@ -751,11 +785,10 @@ For each scenario, the projections begin with the vector of `r thisyr` numbers a
 Five of the seven standard scenarios will be used in an Environmental Assessment prepared in conjunction with the final SAFE.  These five scenarios, which are designed to provide a range of harvest alternatives that are likely to bracket the final TAC for `r thisyr+1`, are as follows (max $F_{ABC}$ refers to the maximum permissible value of $F_{ABC}$ under Amendment 56):
 
 * Scenario 1:  In all future years, $F$ is set equal to max $F_{ABC}$.  (Rationale:  Historically, $TAC$ has been constrained by ABC, so this scenario provides a likely upper limit on future TACs.)
-* Scenario 2:  In all future years, F is set equal to a constant fraction of max $F_{ABC}$, where this fraction is equal to the ratio of the FABC value for 2019 recommended in the assessment to the max $F_{ABC}$ for `r thisyr+1`.  (Rationale:  When $F_{ABC}$ is set at a value below max $F_{ABC}$, it is often set at the value recommended in the stock assessment.)
-* Scenario 3:  In all future years, the upper bound on $F_{ABC}$ is set at F60%. (Rationale: This scenario
-provides a likely lower bound on $F_{ABC}$ that still allows future harvest rates to be adjusted
-downward when stocks fall below reference levels.)
-* Scenario 4:  In all future years, $F$ is set equal to the 2014-`r thisyr` average $F$.  (Rationale:  For some stocks, $TAC$ can be well below ABC, and recent average F may provide a better indicator of $F_{TAC}$ than $F_{ABC}$.)
+* Scenario 2:  In all future years, F is set equal to a constant fraction of max $F_{ABC}$, where this fraction is equal to the ratio of the $F_{ABC}$ value for 2019 recommended in the assessment to the max $F_{ABC}$ for `r thisyr+1`.  (Rationale:  When $F_{ABC}$ is set at a value below max $F_{ABC}$, it is often set at the value recommended in the stock assessment.)
+* Scenario 3:  In all future years, $F$ is set equal to the `r thisyr-5` - `r thisyr-1` average $F$.  (Rationale:  For some stocks, $TAC$ can be well below ABC, and recent average $F$ may provide a better indicator of $F_{TAC}$ than $F_{ABC}$.)
+* Scenario 4:  In all future years, $F$ is set equal to $F_{60}$%. (Rationale: This scenario
+provides a likely lower bound on $F_{ABC}$ that still allows future harvest rates to be adjusted downward when stocks fall below reference levels.)
 * Scenario 5:  In all future years, $F$ is set equal to zero.  (Rationale:  In extreme cases, $TAC$ may be set at a level close to zero.)
 
 Two other scenarios are needed to satisfy the MSFCMA’s requirement to determine whether a stock is currently in an overfished condition or is approaching an overfished condition.  These two scenarios are as follow (for Tier 3 stocks, the $MSY$ level is defined as $B_{35\%}$):
@@ -768,8 +801,8 @@ Simulation results shown in `r table_nums("projection",display="cite")` indicate
 
 Year	 Catch	    FSB	              Geom. mean 6+ biomass	    ABC	            OFL
 ----- --------- ----------------- ------------------------- --------------- ---------
-`r thisyr+1`	 137,230	  `r FSB_thisF` 	        `r TotBio_thisF`	           `r ABC_thisF`      `r OFL_thisF`
-`r thisyr+2`	 137,230	  `r FSB_nextF`	         `r TotBio_nextF`	           `r ABC_nextF`      `r OFL_nextF`
+`r thisyr+1`	 `r formatC(cn10,format="d",big.mark=",")`	  `r FSB_thisF` 	        `r TotBio_thisF`	           `r ABC_thisF`      `r OFL_thisF`
+`r thisyr+2`	 `r formatC(cn10,format="d",big.mark=",")`	  `r FSB_nextF`	         `r TotBio_nextF`	           `r ABC_nextF`      `r OFL_nextF`
 -------------------------------------------------------------
 
 
@@ -861,7 +894,13 @@ O’Leary, C.A., Thorson, J.T., Ianelli, J.N. and Kotwicki, S., 2020. Adapting t
 
 Ricker, W. E.  1958.  Handbook of computations for biological statistics of fish populations.  Bull. Fish. Res. Bd. Can.,  (119) 300 p.
 
+Rohan, S., and Laman, N., 2020. Eastern and Northern Bering Sea Groundfish Condition. In Siddon, E.C., 2020. Ecosystem Status Report 2020: Eastern Bering Sea, Stock Assessment and Fishery Evaluation Report, North Pacific Fishery Management Council, 1007 West Third, Suite 400, Anchorage, Alaska 99501   
+
 Rose, C. S., J. R. Gauvin and C. F. Hammond.  2010. Effective herding of flatfish by cables with minimal seafloor contact.  Fishery Bulletin 108(2):136-144.
+
+Savage, K., 2020. 2019-2020 Gray Whale Unusual Mortality Event. In Siddon, E.C., 2020. Ecosystem Status Report 2020: Eastern Bering Sea, Stock Assessment and Fishery Evaluation Report, North Pacific Fishery Management Council, 1007 West Third, Suite 400, Anchorage, Alaska 99501   
+
+Siddon, E.C., 2020. Ecosystem Status Report 2020: Eastern Bering Sea, Stock Assessment and Fishery Evaluation Report, North Pacific Fishery Management Council, 1007 West Third, Suite 400, Anchorage, Alaska 99501   
 
 Somerton, D. A. and P. Munro.  2001.  Bridle efficiency of a survey trawl for flatfish.  Fish. Bull. 99:641-652 (2001).
 
@@ -877,6 +916,10 @@ Wakabayashi, K.   1989.  Studies on the fishery biology of yellowfin sole in the
 
 Walters, G. E. and T. K. Wilderbuer.  2000.  Decreasing length at age in a rapidly expanding population of northern rock sole in the eastern Bering Sea and its effect on management advice.  Journal of Sea Research 44(2000)17-26.
 
+Whitehouse, G.A., 2019. 2019 Report Card. In Siddon, E., and Zador, S., 2019. Ecosystem Status Report 2019: Eastern Bering Sea, Stock Assessment and Fishery Evaluation Report, North Pacific Fishery Management Council, 605 W 4th Ave, Suite 306, Anchorage, AK 99501.
+
+Whitehouse, G.A., 2020. Mean Length of the Fish Community. In Siddon, E.C., 2020. Ecosystem Status Report 2020: Eastern Bering Sea, Stock Assessment and Fishery Evaluation Report, North Pacific Fishery Management Council, 1007 West Third, Suite 400, Anchorage, Alaska 99501   
+
 Wilderbuer, T.K., G.E. Walters, and R.G. Bakkala   1992.  Yellowfin sole, _Pleuronectes aspera_, of the eastern Bering Sea: biological characteristics, history of exploitation, and management.  Mar Fish. Rev. 54(4):1-18.
 
 Wilderbuer, T. K.  1992.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 1993, chapter 3.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak 99510.
@@ -888,6 +931,8 @@ Wilderbuer, T.K. and Turnock, B.J., 2009. Sex-specific natural mortality of arro
 Wilderbuer, T. K. and D. Nichol.  2003.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2004, chapter 4.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
 
 Wilderbuer, T. K. D. G. Nichol, and J. Ianelli.  2018.  Yellowfin sole.  In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2019, chapter 4.  North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, Ak  99510.
+
+Yeung, C., Copeman, L. A., Matta, M. E., Yang, M.-S. In Prep. Latitudinal variation in the growth and condition of juvenile flatfishes in the Bering Sea.
 
 
 
@@ -1081,10 +1126,10 @@ for(i in 1:length(yrs)){
     {catage_m[i,j]=catage_s$AGEPOP[which(catage_s$YEAR==yrs[i]&catage_s$SEX==1&catage_s$AGE==(j+1)&catage_s$SUBAREA==999999)]}
   }
   if (yrs[i] >=1987){
-   if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]))
-  catage_f[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]
-      if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]))
-  catage_m[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$SUBAREA==999999)]
+   if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$STRATUM==999999)]))
+  catage_f[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==2&catage_p$AGE==(j+1)&catage_p$STRATUM==999999)]
+      if(!isEmpty(catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$STRATUM==999999)]))
+  catage_m[i,j]=catage_p$AGEPOP[which(catage_p$YEAR==yrs[i]&catage_p$SEX==1&catage_p$AGE==(j+1)&catage_p$STRATUM==999999)]
   }
  }
 }
@@ -1271,20 +1316,20 @@ alt6=read.table("/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/alt6
 alt7=read.table("/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/alt7.csv",header=TRUE,sep=",");colnames(alt7)=c("","Year","FSB","Catch","F")
 
 
-bigfile=read.table("/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/bigfile.out",header=TRUE)
+#bigfile=read.table("/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/bigfile.out",header=TRUE)
 
 #use this function to generate files
-altfn=function(source,alt,thisyr){
- Year=seq(thisyr,thisyr+13,1)
- altT=matrix(0,14,4)
- altT[,1]=Year
- for(i in 1:length(Year)){
-  altT[i,3]=formatC(round(1000*mean(source$Catch[which(source$Alternative==alt&source$Yr==Year[i])])),format="d",big.mark=",")
-  altT[i,2]=formatC(round(1000*mean(source$SSB[which(source$Alternative==alt&source$Yr==Year[i])])),format="d",big.mark=",")
-  altT[i,4]=round(mean(source$F[which(source$Alternative==alt&source$Yr==Year[i])]),3)
- }
- return(altT)
-}
+#altfn=function(source,alt,thisyr){
+# Year=seq(thisyr,thisyr+13,1)
+## altT=matrix(0,14,4)
+# altT[,1]=Year
+# for(i in 1:length(Year)){
+#  altT[i,3]=formatC(round(1000*mean(source$Catch[which(source$Alternative==alt&source$Yr==Year[i])])),format="d",big.mark=",")
+#  altT[i,2]=formatC(round(1000*mean(source$SSB[which(source$Alternative==alt&source$Yr==Year[i])])),format="d",big.mark=",")
+#  altT[i,4]=round(mean(source$F[which(source$Alternative==alt&source$Yr==Year[i])]),3)
+ #}
+ #return(altT)
+#}
 
 #alt12=altfn(bigfile,1,2020)#good
 #alt3=altfn(bigfile,3,2020)#good?
@@ -1300,14 +1345,14 @@ altfn=function(source,alt,thisyr){
 #write.csv(alt7,"/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/alt7.csv")
 
 t1 <- kable(alt12[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("Maximum ABC harvest permissible"=4),align="l")%>%add_header_above(c("Scenarios 1 and 2"=4),line=FALSE,align="l")
-t2 <- kable(alt3[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c(" harvest permissible set at F60"=4),align="l")%>%add_header_above(c("Scenario 3, Maximum Tier 3 ABC"=4),line=FALSE,align="l")
+t2 <- kable(alt3[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("Harvest at average F over past 5 years"=4),align="l")%>%add_header_above(c("Scenario 3"=4),line=FALSE,align="l")
 cat(c("\\begin{table}[h] \\centering ", 
       t1,
     "\\hspace{1cm} \\centering ",
       t2,
     "\\end{table}"))  
 
-t3 <- kable(alt4[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("Harvest at average F over past 5 years"=4),align="l")%>%add_header_above(c("Scenario 4"=4),line=FALSE,align="l")
+t3 <- kable(alt4[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c(" harvest permissible set at F60"=4),align="l")%>%add_header_above(c("Scenario 4, Maximum Tier 3 ABC"=4),line=FALSE,align="l")
 t4 <- kable(alt5[,2:5], format = 'latex',booktabs=TRUE,linesep="")%>%add_header_above(c("No fishing"=4),align="l")%>%add_header_above(c("Scenario 5"=4),line=FALSE,align="l")
 cat(c("\\begin{table}[h] \\centering ", 
       t3,
@@ -1394,9 +1439,11 @@ spp=names(table(bycatch3$Species.Group.Name))
 b3=matrix(0,length(yrs),length(spp))
 for(i in 1: length(yrs)){
  for(j in 1:length(spp)){
-  b3[i,j]=sum(bycatch3$Nontarget.Estimate..mt.[which(bycatch3$Year==yrs[i]&bycatch3$Species.Group.Name==spp[j])])
+  b3[i,j]=sum(bycatch3$Nontarget.Estimate..mt.[which(bycatch3$Year==yrs[i]&bycatch3$Species.Group.Name==spp[j])],na.rm=TRUE)
  }
 }
+b3=na.omit(b3)
+
 
 b3f=formatC(b3,format="d",big.mark=",")
 
@@ -1535,7 +1582,8 @@ pf= ggplot(wts_f2)+aes(x=Age,y=Weight)+geom_bar(stat="identity")+facet_wrap(~Yea
  
 pm=  ggplot(wts_m2)+aes(x=Age,y=Weight)+geom_bar(stat="identity")+facet_wrap(~Year)+scale_x_discrete(breaks = seq(1,20, by = 4))+theme_bw()+ylab("Weight (g)")+ggtitle("Survey empirical weight at age (g), males")
 
-grid.arrange(pf,pm,ncol=1,nrow=2)
+pf
+pm
  
 ```
 `r figure_nums(name="wtage",caption = "Empirical estimates of weight (g) at age for Yellowfin Sole females and males, 2000-2020.")`
@@ -1668,7 +1716,7 @@ blank_theme <- theme_minimal()+
   plot.title=element_text(size=14, face="bold")
   )
 
-ggplot(area_res5, aes(x="", y=Catch, fill=NMFS.Area))+geom_bar(width = 2, stat = "identity")+coord_polar("y",start=0,direction=1)+blank_theme+theme(axis.text.x=element_blank()) +geom_text(aes(label = NMFS.Area),position = position_stack(vjust = 0.5),size=c(4,4,8,4,4))+scale_fill_discrete(name = "NMFS Area")+ theme(legend.text=element_text(size=15),legend.title=element_text(size=16))
+ggplot(area_res5, aes(x="", y=Catch, fill=NMFS.Area))+geom_bar(width = 2, stat = "identity")+coord_polar("y",start=0,direction=1)+blank_theme+theme(axis.text.x=element_blank()) +geom_text(aes(label = NMFS.Area),position = position_stack(vjust = 0.5),size=c(4,8,8,4,4))+scale_fill_discrete(name = "NMFS Area")+ theme(legend.text=element_text(size=15),legend.title=element_text(size=16))
 
 ```
 
@@ -2032,7 +2080,7 @@ p +ggtitle("Fit to Fishery Age Compositions, Model 18.2")
 \pagebreak
 
 ```{r srvbio_fit, message=FALSE, echo=FALSE}  
-#fit to survey biomass
+#fit to survey biomass models 18.1 and 18.2
 LCI=YFS1$ob_bts-1.96*YFS1$sd_ob_bts
 HCI=YFS1$ob_bts+1.96*YFS1$sd_ob_bts
 srv_bio1=data.frame(cbind(YFS1$yrs_srv,YFS1$ob_bts,YFS1$sd_ob_bts,LCI,HCI,YFS1$pred_srv[29:66]))
@@ -2044,9 +2092,35 @@ Model=c(rep("Model 18.1",nrow(srv_bio1)),rep("Model 18.2",nrow(srv_bio1)))
 srv_bio4=cbind(srv_bio3,Model)
 colnames(srv_bio4)=c("Year","Biomass","sd","LCI","HCI","Predicted","Model")
 
-ggplot(data=srv_bio4,aes(x=Year,y=Biomass))+geom_ribbon(aes(x=Year,y=Biomass,ymin=LCI,ymax=HCI),alpha=0.2)+geom_line(aes(x=Year,y=Biomass))+geom_line(aes(x=Year,y=Predicted,col=Model))+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
+m1=ggplot(data=srv_bio4,aes(x=Year,y=Biomass))+geom_ribbon(aes(x=Year,y=Biomass,ymin=LCI,ymax=HCI),alpha=0.2)+geom_line(aes(x=Year,y=Biomass))+geom_line(aes(x=Year,y=Predicted,col=Model))+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
  ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+ylim(0,4500)+
  theme(legend.position="right")+scale_color_discrete(name="")+theme_bw()+theme(axis.text.x=element_text(angle=270,hjust=1))
+
+#fit to survey biomass models 18.3
+LCI=YFS3$ob_bts-1.96*YFS3$sd_ob_bts
+HCI=YFS3$ob_bts+1.96*YFS3$sd_ob_bts
+srv_bio3=data.frame(cbind(YFS3$yrs_srv,YFS3$ob_bts,YFS3$sd_ob_bts,LCI,HCI,YFS3$pred_srv[29:66]))
+Model=c(rep("Model 18.3",nrow(srv_bio3)))
+srv_bio4=cbind(srv_bio3,Model)
+colnames(srv_bio4)=c("Year","Biomass","sd","LCI","HCI","Predicted","Model")
+
+m2=ggplot(data=srv_bio4,aes(x=Year,y=Biomass))+geom_ribbon(aes(x=Year,y=Biomass,ymin=LCI,ymax=HCI),alpha=0.2)+geom_line(aes(x=Year,y=Biomass))+geom_line(aes(x=Year,y=Predicted,col=Model))+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
+ ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+ylim(0,4500)+
+ theme(legend.position="right")+scale_color_discrete(name="")+theme_bw()+theme(axis.text.x=element_text(angle=270,hjust=1))
+
+#fit to survey biomass models 18.4
+LCI=YFS4$ob_bts-1.96*YFS4$sd_ob_bts
+HCI=YFS4$ob_bts+1.96*YFS4$sd_ob_bts
+srv_bio4=data.frame(cbind(YFS4$yrs_srv,YFS4$ob_bts,YFS4$sd_ob_bts,LCI,HCI,YFS4$pred_srv[29:66]))
+Model=c(rep("Model 18.4",nrow(srv_bio4)))
+srv_bio5=cbind(srv_bio4,Model)
+colnames(srv_bio5)=c("Year","Biomass","sd","LCI","HCI","Predicted","Model")
+
+m3=ggplot(data=srv_bio5,aes(x=Year,y=Biomass))+geom_ribbon(aes(x=Year,y=Biomass,ymin=LCI,ymax=HCI),alpha=0.2)+geom_line(aes(x=Year,y=Biomass))+geom_line(aes(x=Year,y=Predicted,col=Model))+theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
+ ylab("Biomass (x 1,000 t)")+scale_x_continuous(breaks = seq(1982,2018, by = 2))+ylim(0,4500)+
+ theme(legend.position="right")+scale_color_discrete(name="")+theme_bw()+theme(axis.text.x=element_text(angle=270,hjust=1))
+
+grid.arrange(m1,m2,m3,ncol=1,nrow=3)
 
 ```
 `r figure_nums(name="srvbio_fit",caption = paste("NMFS eastern Bering Sea survey biomass estimates, with 95% confidence intervals and Model 18.1 and Model 18.2 fit to survey biomass estimates,  from 1982-",thisyr-1,".",sep=""))`
@@ -2137,45 +2211,44 @@ ggplot(data=recf)+geom_bar(aes(x=Year,y=Recruitment),alpha=0.4,stat="identity")+
 #c(a[length(a)],b[length(b)],c[length(c)],d[length(d)],e[length(e)],f[length(f)],g[length(g)],h[length(h)],i[length(i)],j[length(j)])
 
 #retrospective
+std2020=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro0/fm.std")
+std2019=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro1/fm.std")
+std2018=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro2/fm.std")
+std2017=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro3/fm.std")
+std2016=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro4/fm.std")
+std2015=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro5/fm.std")
+std2014=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro6/fm.std")
+std2013=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro7/fm.std")
+std2012=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro8/fm.std")
+std2011=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro9/fm.std")
+std2010=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro10/fm.std")
 
-std2019=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_0.std")
-std2018=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_1.std")
-std2017=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_2.std")
-std2016=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_3.std")
-std2015=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_4.std")
-std2014=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_5.std")
-std2013=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_6.std")
-std2012=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_7.std")
-std2011=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_8.std")
-std2010=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_9.std")
-std2009=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/retro/r_10.std")
+ret20=data.frame(cbind(c(1954:2020),YFS2020$SSB[,2],YFS2020$SSB[,2]+1.96*as.numeric(as.vector(std2020[['V4']][608:674])),YFS2020$SSB[,2]-1.96*as.numeric(as.vector(std2020[['V4']][608:674]))))
 
+ret19=data.frame(cbind(c(1954:2019),YFS2019$SSB[,2],YFS2019$SSB[,2]+1.96*as.numeric(as.vector(std2019[['V4']][601:666])),YFS2019$SSB[,2]-1.96*as.numeric(as.vector(std2019[['V4']][601:666]))))
 
-ret18=data.frame(cbind(c(1954:2018),YFS2018retro$SSB[,2],YFS2018retro$SSB[,2]+1.96*as.numeric(as.vector(std2018[['V4']][594:658])),YFS2018retro$SSB[,2]-1.96*as.numeric(as.vector(std2018[['V4']][594:658]))))
+ret18=data.frame(cbind(c(1954:2018),YFS2018$SSB[,2],YFS2018$SSB[,2]+1.96*as.numeric(as.vector(std2018[['V4']][594:658])),YFS2018$SSB[,2]-1.96*as.numeric(as.vector(std2018[['V4']][594:658]))))
 
-ret17=data.frame(cbind(c(1954:2017),YFS2017retro$SSB[,2],YFS2017retro$SSB[,2]+1.96*as.numeric(as.vector(std2017[['V4']][587:650])),YFS2017retro$SSB[,2]-1.96*as.numeric(as.vector(std2017[['V4']][587:650]))))
+ret17=data.frame(cbind(c(1954:2017),YFS2017$SSB[,2],YFS2017$SSB[,2]+1.96*as.numeric(as.vector(std2017[['V4']][587:650])),YFS2017$SSB[,2]-1.96*as.numeric(as.vector(std2017[['V4']][587:650]))))
 
-ret16=data.frame(cbind(c(1954:2016),YFS2016retro$SSB[,2],YFS2016retro$SSB[,2]+1.96*as.numeric(as.vector(std2016[['V4']][580:642])),YFS2016retro$SSB[,2]-1.96*as.numeric(as.vector(std2016[['V4']][580:642]))))
+ret16=data.frame(cbind(c(1954:2016),YFS2016$SSB[,2],YFS2016$SSB[,2]+1.96*as.numeric(as.vector(std2016[['V4']][580:642])),YFS2016$SSB[,2]-1.96*as.numeric(as.vector(std2016[['V4']][580:642]))))
 
-ret15=data.frame(cbind(c(1954:2015),YFS2015retro$SSB[,2],YFS2015retro$SSB[,2]+1.96*as.numeric(as.vector(std2015[['V4']][573:634])),YFS2015retro$SSB[,2]-1.96*as.numeric(as.vector(std2015[['V4']][573:634]))))
+ret15=data.frame(cbind(c(1954:2015),YFS2015$SSB[,2],YFS2015$SSB[,2]+1.96*as.numeric(as.vector(std2015[['V4']][573:634])),YFS2015$SSB[,2]-1.96*as.numeric(as.vector(std2015[['V4']][573:634]))))
 
-ret14=data.frame(cbind(c(1954:2014),YFS2014retro$SSB[,2],YFS2014retro$SSB[,2]+1.96*as.numeric(as.vector(std2014[['V4']][566:626])),YFS2014retro$SSB[,2]-1.96*as.numeric(as.vector(std2014[['V4']][566:626]))))
+ret14=data.frame(cbind(c(1954:2014),YFS2014$SSB[,2],YFS2014$SSB[,2]+1.96*as.numeric(as.vector(std2014[['V4']][566:626])),YFS2014$SSB[,2]-1.96*as.numeric(as.vector(std2014[['V4']][566:626]))))
 
-ret13=data.frame(cbind(c(1954:2013),YFS2013retro$SSB[,2],YFS2013retro$SSB[,2]+1.96*as.numeric(as.vector(std2013[['V4']][559:618])),YFS2013retro$SSB[,2]-1.96*as.numeric(as.vector(std2013[['V4']][559:618]))))
+ret13=data.frame(cbind(c(1954:2013),YFS2013$SSB[,2],YFS2013$SSB[,2]+1.96*as.numeric(as.vector(std2013[['V4']][559:618])),YFS2013$SSB[,2]-1.96*as.numeric(as.vector(std2013[['V4']][559:618]))))
 
-ret12=data.frame(cbind(c(1954:2012),YFS2012retro$SSB[,2],YFS2012retro$SSB[,2]+1.96*as.numeric(as.vector(std2012[['V4']][552:610])),YFS2012retro$SSB[,2]-1.96*as.numeric(as.vector(std2012[['V4']][552:610]))))
+ret12=data.frame(cbind(c(1954:2012),YFS2012$SSB[,2],YFS2012$SSB[,2]+1.96*as.numeric(as.vector(std2012[['V4']][552:610])),YFS2012$SSB[,2]-1.96*as.numeric(as.vector(std2012[['V4']][552:610]))))
 
-ret11=data.frame(cbind(c(1954:2011),YFS2011retro$SSB[,2],YFS2011retro$SSB[,2]+1.96*as.numeric(as.vector(std2011[['V4']][545:602])),YFS2011retro$SSB[,2]-1.96*as.numeric(as.vector(std2011[['V4']][545:602]))))
+ret11=data.frame(cbind(c(1954:2011),YFS2011$SSB[,2],YFS2011$SSB[,2]+1.96*as.numeric(as.vector(std2011[['V4']][545:602])),YFS2011$SSB[,2]-1.96*as.numeric(as.vector(std2011[['V4']][545:602]))))
 
-ret10=data.frame(cbind(c(1954:2010),YFS2010retro$SSB[,2],YFS2010retro$SSB[,2]+1.96*as.numeric(as.vector(std2010[['V4']][538:594])),YFS2010retro$SSB[,2]-1.96*as.numeric(as.vector(std2010[['V4']][538:594]))))
-
-ret09=data.frame(cbind(c(1954:2009),YFS2009retro$SSB[,2],YFS2009retro$SSB[,2]+1.96*as.numeric(as.vector(std2009[['V4']][531:586])),YFS2009retro$SSB[,2]-1.96*as.numeric(as.vector(std2009[['V4']][531:586]))))
-
-
-retro=as.data.frame(rbind(ret09,ret10,ret11,ret12,ret13,ret14,ret15,ret16,ret17,ret18))
+ret10=data.frame(cbind(c(1954:2010),YFS2010$SSB[,2],YFS2010$SSB[,2]+1.96*as.numeric(as.vector(std2010[['V4']][538:594])),YFS2010$SSB[,2]-1.96*as.numeric(as.vector(std2010[['V4']][538:594]))))
+ 
+retro=as.data.frame(rbind(ret10,ret11,ret12,ret13,ret14,ret15,ret16,ret17,ret18,ret19,ret20))
 colnames(retro)=c("Year","Female_Spawning_Biomass","UI","LI")
 
-year=rev(c(rep("2018",length(c(1954:2018))),rep("2017",length(c(1954:2017))),rep("2016",length(c(1954:2016))),rep("2015",length(c(1954:2015))),rep("2014",length(c(1954:2014))),rep("2013",length(c(1954:2013))),rep("2012",length(c(1954:2012))),rep("2011",length(c(1954:2011))),rep("2010",length(c(1954:2010))),rep("2009",length(c(1954:2009)))))
+year=rev(c(rep("2020",length(c(1954:2020))),rep("2019",length(c(1954:2019))),rep("2018",length(c(1954:2018))),rep("2017",length(c(1954:2017))),rep("2016",length(c(1954:2016))),rep("2015",length(c(1954:2015))),rep("2014",length(c(1954:2014))),rep("2013",length(c(1954:2013))),rep("2012",length(c(1954:2012))),rep("2011",length(c(1954:2011))),rep("2010",length(c(1954:2010)))))
 retro=cbind(retro,year)
 
 
@@ -2192,23 +2265,23 @@ print(p)
 
 ```{r retro2, echo=FALSE,message=FALSE}
 #plot differences
-Years=c(c(1954:2018),c(1954:2017),c(1954:2016),c(1954:2015),c(1954:2014),c(1954:2013),c(1954:2012),c(1954:2011),c(1954:2010),c(1954:2009))
+Years=c(c(1954:2019),c(1954:2018),c(1954:2017),c(1954:2016),c(1954:2015),c(1954:2014),c(1954:2013),c(1954:2012),c(1954:2011),c(1954:2010))
 
 
-Difference=c(-1*(YFS2019$SSB[1:65,2]-YFS2018retro$SSB[,2])/YFS2019$SSB[1:65,2],
--1*(YFS2019$SSB[1:64,2]-YFS2017retro$SSB[,2])/YFS2019$SSB[1:64,2],
--1*(YFS2019$SSB[1:63,2]-YFS2016retro$SSB[,2])/YFS2019$SSB[1:63,2],
--1*(YFS2019$SSB[1:62,2]-YFS2015retro$SSB[,2])/YFS2019$SSB[1:62,2],
--1*(YFS2019$SSB[1:61,2]-YFS2014retro$SSB[,2])/YFS2019$SSB[1:61,2],
--1*(YFS2019$SSB[1:60,2]-YFS2013retro$SSB[,2])/YFS2019$SSB[1:60,2],
--1*(YFS2019$SSB[1:59,2]-YFS2012retro$SSB[,2])/YFS2019$SSB[1:59,2],
--1*(YFS2019$SSB[1:58,2]-YFS2011retro$SSB[,2])/YFS2019$SSB[1:58,2],
--1*(YFS2019$SSB[1:57,2]-YFS2010retro$SSB[,2])/YFS2019$SSB[1:57,2],
--1*(YFS2019$SSB[1:56,2]-YFS2009retro$SSB[,2])/YFS2019$SSB[1:56,2])
+Difference=c(-1*(YFS2020$SSB[1:66,2]-YFS2019$SSB[,2])/YFS2020$SSB[1:66,2],
+-1*(YFS2020$SSB[1:65,2]-YFS2018$SSB[,2])/YFS2020$SSB[1:65,2],
+-1*(YFS2020$SSB[1:64,2]-YFS2017$SSB[,2])/YFS2020$SSB[1:64,2],
+-1*(YFS2020$SSB[1:63,2]-YFS2016$SSB[,2])/YFS2020$SSB[1:63,2],
+-1*(YFS2020$SSB[1:62,2]-YFS2015$SSB[,2])/YFS2020$SSB[1:62,2],
+-1*(YFS2020$SSB[1:61,2]-YFS2014$SSB[,2])/YFS2020$SSB[1:61,2],
+-1*(YFS2020$SSB[1:60,2]-YFS2013$SSB[,2])/YFS2020$SSB[1:60,2],
+-1*(YFS2020$SSB[1:59,2]-YFS2012$SSB[,2])/YFS2020$SSB[1:59,2],
+-1*(YFS2020$SSB[1:58,2]-YFS2011$SSB[,2])/YFS2020$SSB[1:58,2],
+-1*(YFS2020$SSB[1:57,2]-YFS2010$SSB[,2])/YFS2020$SSB[1:57,2]) 
 
 
 
-Year=(c(rep("2018",length(c(1954:2018))),rep("2017",length(c(1954:2017))),rep("2016",length(c(1954:2016))),rep("2015",length(c(1954:2015))),rep("2014",length(c(1954:2014))),rep("2013",length(c(1954:2013))),rep("2012",length(c(1954:2012))),rep("2011",length(c(1954:2011))),rep("2010",length(c(1954:2010))),rep("2009",length(c(1954:2009)))))
+Year=(c(rep("2019",length(c(1954:2019))),rep("2018",length(c(1954:2018))),rep("2017",length(c(1954:2017))),rep("2016",length(c(1954:2016))),rep("2015",length(c(1954:2015))),rep("2014",length(c(1954:2014))),rep("2013",length(c(1954:2013))),rep("2012",length(c(1954:2012))),rep("2011",length(c(1954:2011))),rep("2010",length(c(1954:2010)))))
 
 #dat=data.frame(cbind(Years,Difference,Year))
 dat=data.frame(Years,Difference,Year)
