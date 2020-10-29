@@ -67,15 +67,20 @@ length(modlst)
   ggsave(paste0("figs/",thismodname,"_survey_age_comps.pdf"),plot=p1,width=11,height=8.5,units="in")
 
   #plot fishery age comps
-  p1<-plot_age_comps(modlst[4],title="Fishery age compositions",type="fishery")
+  p1<-plot_age_comps(modlst[thismod],title="Fishery age compositions",type="fishery")
   ggsave(paste0("figs/",thismodname,"_fish_age_comps.pdf"),plot=p1,width=11,height=8.5,units="in")
 
+ #plot catches
+  p1<-plot_catch(modlst,themod = thismod,obspred= TRUE); p1
+  ggsave(paste0("figs/",thismodname,"total_catches_w_pred.pdf"),plot=p1,width=11,height=8.5,units="in")
+
+  p1<-plot_catch(modlst,themod = thismod,obspred= FALSE); p1
+  ggsave(paste0("figs/",thismodname,"total_catches.pdf"),plot=p1,width=11,height=8.5,units="in")
+  
   #plot sex ratio (doesn't work right now; Jim fixing.):
   plot_sex_ratio(modlst,ylim=c(.2,.8),type = "Fishery")
   plot_sex_ratio(modlst,ylim=c(.2,.8),type="Population")
-  plot_sex_ratio(modlst,ylim=c(.2,.8),type="Survey")
-  
- 
+  plot_sex_ratio(modlst,ylim=c(.2,.8),type="Survey") 
   
   
   
