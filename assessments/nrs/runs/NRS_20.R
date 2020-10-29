@@ -17,8 +17,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 no new", "2020 with time-varying fish wt-age","2020 all new data added","Update recyrs")
-.MODELDIR = c( "j1/","j4/","c1/","c1mod2/")
+mod_names <- c("2020 Base Model","2020 Model 18.3")
+.MODELDIR = c( "c1/","c1mod4/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -30,8 +30,8 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 4 # the selected model
-thismodname<-"mod_evalc1mod2"
+thismod <- 2 # the selected model
+thismodname<-"c1mod4"
 length(modlst)
 
 
@@ -49,6 +49,8 @@ p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fi
    ggplot(aes(y=Ratio,x=Year,color=Type)) + geom_line() + theme_few() + ylim(c(.25,.75))
 # this layes them out stacked (/)
   psex <- p1/p2/p3
+  ggsave(paste0("figs/",thismodname,"_sexratios.pdf"),plot=psex,width=6,height=4.0,units="in")
+  
 
   #Compare recruitment, ssb, and bts for all the models
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
@@ -74,12 +76,12 @@ p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fi
  
 
   #plot survey selectivity
-  p1 <- plot_srv_sel(modlst,themod=4, title="Survey selectivity",bysex=TRUE,maxage = 20)
+  p1 <- plot_srv_sel(modlst,themod=thismod, title="Survey selectivity",bysex=TRUE,maxage = 20)
   ggsave(paste0("figs/",thismodname,"_bts_sel.pdf"),plot=p1) #,width=4,height=8,units="in")
   
   #plot survey age comps 
   # These two work - they make really small plots though - come back to this 
-  p1<-plot_age_comps(modlst[4],title="Survey age compositions",type="survey")
+  p1<-plot_age_comps(modlst[thismod],title="Survey age compositions",type="survey")
   ggsave(paste0("figs/",thismodname,"_survey_age_comps.pdf"),plot=p1,width=11,height=8.5,units="in")
 
   #plot fishery age comps
@@ -93,10 +95,7 @@ p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fi
   p1<-plot_catch(modlst,themod = thismod,obspred= FALSE); p1
   ggsave(paste0("figs/",thismodname,"total_catches.pdf"),plot=p1,width=11,height=8.5,units="in")
   
-  #plot sex ratio (doesn't work right now; Jim fixing.):
-  plot_sex_ratio(modlst,ylim=c(.2,.8),type = "Fishery")
-  plot_sex_ratio(modlst,ylim=c(.2,.8),type="Population")
-  plot_sex_ratio(modlst,ylim=c(.2,.8),type="Survey") 
+
   
   
   

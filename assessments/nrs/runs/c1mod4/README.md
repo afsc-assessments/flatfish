@@ -12,10 +12,11 @@ j4 is as in j3 but includes wt-age estimates from sampler (as opposed to constan
 
 c1 is as in j4 but replaces and adds survey and pop wt-age for 2001 onward (which are the same as each other and empirical with a three-yr rolling avg for ages 15-20)
 
+c1mod4 is 2020 version of Model 18.3 estimating male M and q_sigma wider and selex offset
 ## Updates to mod.ctl file
-mod   is as for 2018 estimates recruitment through 2012 and uses wt-age through 2012
+mod   is as for 2018 but estimates SRR curve through 2014 (and still uses wt-age through 2012)
 
-mod2  estimates recruitment through 2014
+
 
 ## Notes on proceeding from the 2018 assessment
 
