@@ -11,17 +11,16 @@
 {
     n <- length(M)
     mdf <- NULL
-    for (i in 1:n)
-    {
+    for (i in 1:n) {
         A <- M[[i]]
-        df <- data.frame(ssb = A$SRR_SSB)
-        df$Model <- names(M)[i]
-        #df$ssb  <- A$SRR_SSB
-        df$Year <- A$Year
-        df$rhat <- A$rechat
-        df$rhat.sd <- A$rechat.sd
-        df$lb   <- df$rhat/exp(2*sqrt(log(1+df$rhat.sd^2/df$rhat^2)))
-        df$ub   <- df$rhat*exp(2*sqrt(log(1+df$rhat.sd^2/df$rhat^2)))
+        df <- data.frame(
+        ssb     = A$SRR_SSB,
+        Model   = names(M)[i],
+        rhat    = A$rechat,
+        rhat.sd = A$rechat.sd,
+        lb      = A$rechat/exp(2*sqrt(log(1+A$rechat.sd^2/A$rechat^2))),
+        ub      = A$rechat*exp(2*sqrt(log(1+A$rechat.sd^2/A$rechat^2)))
+        )
         mdf     <- rbind(mdf, df)
     }
     return(mdf)
@@ -35,12 +34,13 @@
     {
         A <- M[[i]]
         ts_len   <- 2:(length(A$SSB[,2]))
-        df <- data.frame(Model <- names(M)[i])
-        ssb     <- A$SSB[ts_len-1,2]
-        df$Year <- A$SSB[ts_len,1]
-        df$rhat <- A$R[ts_len,2]
-        df$lb   <- A$R[ts_len,4]
-        df$ub   <- A$R[ts_len,5]
+        df    = data.frame(
+        Model = names(M)[i],
+        ssb   = A$SSB[ts_len-1,2],
+        Year  = A$SSB[ts_len,1],
+        rhat  = A$R[ts_len,2],
+        lb    = A$R[ts_len,4],
+        ub    = A$R[ts_len,5])
         mdf2    <- rbind(mdf2, df)
     }
     return(mdf2)
