@@ -17,8 +17,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 Base","2020 18.3","2020 18.3 UpWt Srv")
-.MODELDIR = c( "c1/","c1mod4/","c1mod5/")
+mod_names <- c("2020 Base","2020 18.3","2020 18.3 UpWt Srv","2020 18.3 Low SS")
+.MODELDIR = c( "c1/","c1mod4/","c1mod5/","c2mod4/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -30,8 +30,8 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 3 # the selected model
-thismodname<-"c1mod5"
+thismod <- 4 # the selected model
+thismodname<-"c2mod4"
 length(modlst)
 
 
