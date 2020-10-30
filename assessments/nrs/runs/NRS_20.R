@@ -17,8 +17,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 Base Model","2020 Model 18.3")
-.MODELDIR = c( "c1/","c1mod4/")
+mod_names <- c("2020 Base","2020 18.3","2020 18.3 UpWt Srv")
+.MODELDIR = c( "c1/","c1mod4/","c1mod5/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -30,8 +30,8 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 2 # the selected model
-thismodname<-"c1mod4"
+thismod <- 3 # the selected model
+thismodname<-"c1mod5"
 length(modlst)
 
 
@@ -76,7 +76,7 @@ p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fi
  
 
   #plot survey selectivity
-  p1 <- plot_srv_sel(modlst,themod=thismod, title="Survey selectivity",bysex=TRUE,maxage = 20)
+  p1 <- plot_srv_sel(modlst,themod=thismod, title="Survey selectivity",bysex=TRUE,maxage = 20); p1
   ggsave(paste0("figs/",thismodname,"_bts_sel.pdf"),plot=p1) #,width=4,height=8,units="in")
   
   #plot survey age comps 
