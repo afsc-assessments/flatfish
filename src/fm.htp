@@ -96,7 +96,6 @@ class model_data : public ad_comm{
   data_int nsrv;
   ivector phase_q_beta;
   data_ivector nyrs_srv;
-  int nyrs_bts_srv;
   data_imatrix yrs_srv;
   data_vector mo_srv;
   data_matrix obs_srv;
@@ -144,6 +143,7 @@ class model_data : public ad_comm{
   dvector offset_srv;
   dvector offset_fsh;
   double R_guess;
+  int nyrs_bts_srv;
   data_matrix future_ABC;
   ~model_data();
   model_data(int argc,char * argv[]);
