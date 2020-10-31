@@ -17,7 +17,7 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("2020 Base","2020 18.3","2020 18.3 UpWt Srv","2020 18.3 Low SS")
+mod_names <- c("Base","18.3","18.3 UpWt Srv","18.3 Low SS")
 .MODELDIR = c( "c1/","c1mod4/","c1mod5/","c2mod4/")
 
 # Read report files and create report object (a list):
@@ -30,14 +30,12 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 4 # the selected model
-thismodname<-"c2mod4"
+thismod <- 2 # the selected model
+thismodname<-"c1mod4"
 length(modlst)
 
-
-# probably want to make this a function w/ naming convention added...
-
 # sex ratio
+# probably want to make this a function w/ naming convention added...
 library(patchwork) ## The best layout software I've seen...
 p1 <- sex_rat[[thismod]] %>% filter(Type %in% c("Survey_est", "Survey_obs") ) %>% 
    ggplot(aes(y=Ratio,x=Year,color=Type)) + geom_line() + theme_few()+ ylim(c(.25,.75)) + ggtitle(names(sex_rat[thismod])) 
@@ -50,7 +48,6 @@ p3 <- sex_rat[[thismod]] %>% filter(!Type %in% c("Survey_est", "Survey_obs", "Fi
 # this layes them out stacked (/)
   psex <- p1/p2/p3
   ggsave(paste0("figs/",thismodname,"_sexratios.pdf"),plot=psex,width=6,height=4.0,units="in")
-  
   psex
   
 # Fishing mortality
@@ -62,15 +59,19 @@ M<-modlst[[thismod]]
             ylab("Age")+ geom_contour(aes(z=F),color="darkgrey",size=.5,alpha=.4) + theme_few() +
             scale_fill_gradient(low = "white", high = "red") + scale_x_continuous(breaks=seq(1975,2020,5)) + 
             scale_y_continuous(breaks=seq(5,20,5)) +facet_grid(sex~.);
-  #mean of Fs -------------------------------------
+  ggsave(paste0("figs/",thismodname,"_FatAge.pdf"),plot=p1,width=8,height=4.0,units="in")
+  
+    #mean of Fs -------------------------------------
   p2 <- df.g %>% filter(as.numeric(age)>9) %>% group_by(Year,sex) %>% summarise(Apical_F=max(F),Mean=mean(F))          %>%
              ggplot(aes(x=Year,y=Apical_F,color=sex)) + geom_line(size=1) + theme_few() #+ ggtitle("Age 10-20 Mean F")
-             p1/p2c
->>>>>>> master
+  p1/p2
+  p3 <-p1/p2
+ ggsave(paste0("figs/",thismodname,"_F.pdf"),plot=p3,width=8,height=8,units="in")
+             
 
   #Compare recruitment, ssb, and bts for all the models
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
-  ggsave(paste0("figs/",thismodname,"_rec.pdf"),plot=p1,width=8,height=4.0,units=in")
+  ggsave(paste0("figs/",thismodname,"_rec.pdf"),plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
   ggsave(paste0("figs/",thismodname,"_ssb.pdf"),plot=p1,width=8,height=4.0,units="in")
   p1<-plot_bts(modlst) + theme_few(base_size=11)
@@ -80,7 +81,7 @@ M<-modlst[[thismod]]
 #Plotting just the preferred model (thismod) 
   #Single model plot fit to biomass index
 
-  #Time-varying fishery selectivity 1991 onward
+  #Time-varying fishery selectivity
   p1 <- plot_sel(modlst[[thismod]],title = NULL, alpha = 0.3,styr= 1975,endyr = 1990,bysex = TRUE,sexoverlay = TRUE); p1
   ggsave(paste0("figs/",thismodname,"_fsh_sel_early.pdf"),plot=p1,width=4,height=8,units="in")
  
@@ -97,13 +98,19 @@ M<-modlst[[thismod]]
   
   #plot survey age comps 
   # These two work - they make really small plots though - come back to this 
-  p1<-plot_age_comps(modlst[thismod],title="Survey age compositions",type="survey")
-  ggsave(paste0("figs/",thismodname,"_survey_age_comps.pdf"),plot=p1,width=11,height=8.5,units="in")
+  p1<-plot_age_comps(modlst[thismod],title="Survey age compositions",type="survey",styr=1979,endyr=2000)
+  ggsave(paste0("figs/",thismodname,"_survey_age_comps_1.pdf"),plot=p1,width=11,height=8.5,units="in")
 
+  p1<-plot_age_comps(modlst[thismod],title="Survey age compositions",type="survey",styr=2001,endyr=2019)
+  ggsave(paste0("figs/",thismodname,"_survey_age_comps_2.pdf"),plot=p1,width=11,height=8.5,units="in")
+  
   #plot fishery age comps
-  p1<-plot_age_comps(modlst[thismod],title="Fishery age compositions",type="fishery")
-  ggsave(paste0("figs/",thismodname,"_fish_age_comps.pdf"),plot=p1,width=11,height=8.5,units="in")
+  p1<-plot_age_comps(modlst[thismod],title="Fishery age compositions",type="fishery",styr = 1975,endyr = 1999)
+  ggsave(paste0("figs/",thismodname,"_fish_age_comps_1.pdf"),plot=p1,width=11,height=8.5,units="in")
 
+  p1<-plot_age_comps(modlst[thismod],title="Fishery age compositions",type="fishery",styr = 2000,endyr = 2019)
+  ggsave(paste0("figs/",thismodname,"_fish_age_comps_2.pdf"),plot=p1,width=11,height=8.5,units="in")
+  
  #plot catches
   p1<-plot_catch(modlst,themod = thismod,obspred= TRUE); p1
   ggsave(paste0("figs/",thismodname,"total_catches_w_pred.pdf"),plot=p1,width=11,height=8.5,units="in")
