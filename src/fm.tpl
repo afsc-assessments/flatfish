@@ -2412,6 +2412,8 @@ REPORT_SECTION
   L_report<<"#STOCKNOTES"<<endl;
   L_report<<"\"SAFE report indicates that this stock was not subjected to overfishing in 2012 and is neither overfished nor approaching a condition of being overfished in 2013.\""<<endl;
 
+  if(last_phase()) write_projfile();
+
   cout <<"End of report file for phase "<<current_phase()<<endl;
 	// if (last_phase()) ssb_retro << SSB <<endl;
 
@@ -2456,10 +2458,10 @@ GLOBALS_SECTION
   ofstream SimDat("sim.dat");
   adstring model_name;
   adstring datafile;
-  adstring projfile_name;
   adstring cntrlfile_name;
   adstring tmpstring;
   adstring repstring;
+  ofstream projmod("fm.prj");
   ofstream evalout("evalout.rep");
   ofstream srecpar("srecpar.rep"); // To write srec-parameters for projection model
   // ofstream ssb_retro("ssb_retro.rep",ios::app); // To write srec-parameters for projection model
@@ -3069,6 +3071,56 @@ FUNCTION Write_R
 	  R_report<< endl;
 	}      
   R_report.close();
+
+FUNCTION write_projfile
+    projmod <<"fm projection model output  "<<endl;
+    projmod <<"0 # SSL Species???         " <<endl;                       
+    projmod <<"0 # Constant  buffer  of  Dorn? " <<endl;                          
+    projmod <<"1 # Number  of  fsheries    "<<endl;                          
+    projmod <<"2 # Number  of  sexes??     "<<endl;
+    projmod <<" 0.0283 # averagei  5yr f"   <<endl;
+    projmod << "1.0 # author  f            "<<endl;
+    projmod << "0.4     # SPR ABC          "<<endl;               
+    projmod << "0.35    # SPR MSY          "<<endl;
+    projmod << "2 # Spawnmo                "<<endl;
+    projmod << "20  # Number  of  ages     "<<endl;
+    projmod << "1 # Fratio                 "<<endl;
+    projmod << "#females first             "<<endl;
+    for (j=1;j<=nages;j++)  projmod << natmort_f <<" "; projmod<<endl;
+    projmod << "#male"<<endl;
+    for (j=1;j<=nages;j++)  projmod << natmort_m <<" "; projmod<<endl;
+    projmod << "# Maturity Females"<<endl;                     
+    for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
+    projmod << "# Maturity Males same as females!!    "<<endl;
+    for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
+    projmod << "# Wt  spawn females                                 "<<endl;
+    for (j=1;j<=nages;j++)  projmod << wt_pop_f(endyr,j) <<" "; projmod<<endl;
+    // SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
+    // 3darray wt_fsh_f(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
+    projmod << "# WtAge Females,  by  fishery                               "<<endl;
+    for (j=1;j<=nages;j++)  projmod << wt_fsh_f(1,endyr,j) <<" "; projmod<<endl;
+    projmod << "# WtAge Males,  by  fishery                               "<<endl;
+    for (j=1;j<=nages;j++)  projmod << wt_fsh_m(1,endyr,j) <<" "; projmod<<endl;
+    // 3darray sel_fsh_m(1,nfsh,styr,endyr,1,nages)
+    projmod << "# Selectivity Females,  by  fishery                               "<<endl;
+    for (j=1;j<=nages;j++)  projmod << sel_fsh_f(1,endyr,j) <<" "; projmod<<endl;
+    projmod << "# Selectivity males,  by  fishery"<<endl;
+    for (j=1;j<=nages;j++)  projmod << sel_fsh_m(1,endyr,j) <<" "; projmod<<endl;
+    projmod << "# N at  age in  endyr  Females,  Males                         "<<endl;
+    for (j=1;j<=nages;j++)  projmod << natage_f(endyr,j) <<" "; projmod<<endl;
+    for (j=1;j<=nages;j++)  projmod << natage_m(endyr,j) <<" "; projmod<<endl;
+    // matrix natage_f(styr,endyr,1,nages)
+    projmod << "# No  Recruitments "<<endl;                                   
+    int nrecs = endyr - 1977 - 5;                           
+    projmod << nrecs <<endl;
+    projmod << "# Recruitment  1978-2004"<<endl;
+    for (j=1978;j<(nrecs+1978);j++)  projmod << 2*natage_f(j,1) <<" "; projmod<<endl;
+    projmod << "# SSB       "<<endl;                                          
+    projmod << "# used only for S/R analysis "<<endl;
+    for (j=1977;j<(nrecs+1977);j++)  projmod << SSB(j) <<" "; projmod<<endl;
+    // projmod << "60634.2 74206.2 88603.3 99620.3 104246  107030  113149  124035  124795  140114  158678  182136  205398  248734  316385  349013  377421  399774  480785  578688  661617  701288  745334  773574  771844  753292  726387"<<endl;
+
+
 
 FINAL_SECTION
   if (!do_wt_only)
