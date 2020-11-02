@@ -3073,12 +3073,15 @@ FUNCTION Write_R
   R_report.close();
 
 FUNCTION write_projfile
-    projmod <<"fm projection model output  "<<endl;
+    projmod <<"fm_projection_model_output  "<<endl;
     projmod <<"0 # SSL Species???         " <<endl;                       
     projmod <<"0 # Constant  buffer  of  Dorn? " <<endl;                          
     projmod <<"1 # Number  of  fsheries    "<<endl;                          
     projmod <<"2 # Number  of  sexes??     "<<endl;
-    projmod <<" 0.0283 # averagei  5yr f"   <<endl;
+		double mean5yrF=0.;
+		for (int iyr=endyr-5;iyr<=endyr;iyr++) 
+		  mean5yrF += max(value(F_f(1,iyr)));  mean5yrF/=5.;
+    projmod <<mean5yrF <<" # averagei 5yr f"<<endl;
     projmod << "1.0 # author  f            "<<endl;
     projmod << "0.4     # SPR ABC          "<<endl;               
     projmod << "0.35    # SPR MSY          "<<endl;

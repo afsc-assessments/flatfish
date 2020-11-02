@@ -3,7 +3,7 @@
   # Number of species                                         
 1 
 # OY Minimum                      
-  1343.248  # Note that this is for age-structured species    1330.148                
+  1.  # Note that this is for age-structured species    1330.148                
   # OY Maximum                      
   1943.248  # Note that this is for age-structured species    1930.148                
 # data files for each species                 
@@ -20,5 +20,5 @@
   # TAC model indices (for aggregating)         (should be 1)
 1
 # Catch in each future year           
-2018 146.5
-2019 150
+2020 40
+2021 40
