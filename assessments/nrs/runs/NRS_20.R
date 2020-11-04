@@ -17,8 +17,8 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("Base","18.3","18.3 UpWt Srv","18.3 Low SS")
-.MODELDIR = c( "c1/","c1mod4/","c1mod5/","c2mod4/")
+mod_names <- c("15.1","18.3","18.3 Downwt")
+.MODELDIR = c( "c1/","c1mod4/","c2mod4/")
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -30,8 +30,8 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 2 # the selected model
-thismodname<-"c1mod4"
+thismod <- 3 # the selected model
+thismodname<-"c2mod4"
 length(modlst)
 
 # sex ratio
@@ -118,18 +118,41 @@ M<-modlst[[thismod]]
   p1<-plot_catch(modlst,themod = thismod,obspred= FALSE); p1
   ggsave(paste0("figs/",thismodname,"total_catches.pdf"),plot=p1,width=11,height=8.5,units="in")
   
+  thenames<-cbind("Likelihood Component","15.1","18.3","18.3 Downwt")
+  like<-cbind("Total",modlst[[1]]$obj_fun,modlst[[2]]$obj_fun,modlst[[3]]$obj_fun)
+  surv_like<-cbind("Survey Biomass",modlst[[1]]$survey_likelihood,modlst[[2]]$survey_likelihood,modlst[[3]]$survey_likelihood)
+  surv_age_like<-cbind("Survey Age",modlst[[1]]$age_likeihood_for_survey,modlst[[2]]$age_likeihood_for_survey,modlst[[3]]$age_likeihood_for_survey)
+  fsh_age_like<-cbind("Fishery Age",modlst[[1]]$age_likelihood_for_fishery,modlst[[2]]$age_likelihood_for_fishery,modlst[[3]]$age_likelihood_for_fishery)
+  
+  like_table<-as.data.frame(rbind(thenames,like,surv_like,surv_age_like,fsh_age_like))
+  write.csv(like_table,paste0(getwd(),"/tables/likelihood_table.csv"),row.names = FALSE,col.names = FALSE)
 
   
+  params<- read.table(file.path(mydir,thismodname,"fm.std"),header = TRUE)  
   
+  p.table<-params[params$name=="ln_q_srv" | 
+                    params$name=="natmort_m" |
+                    params$name=="mean_log_rec" |
+                    params$name=="mean_log_init" |
+                    params$name=="log_avg_fmort" |
+                    params$name=="sel_slope_fsh_f" |
+                    params$name=="sel50_fsh_f" |
+                    params$name=="sel_slope_fsh_m" |
+                    params$name=="male_sel_offset" |
+                    params$name=="sel_slope_srv" |
+                    params$name=="sel_slope_srv_m" |
+                    params$name=="sel50_srv" |
+                    params$name=="sel50_srv_m" |
+                    params$name=="R_logalpha" |
+                    params$name=="R_logbeta" |
+                    params$name=="msy" |
+                    params$name=="Fmsy" |
+                    params$name=="logFmsy" |
+                    params$name=="Fmsyr" |
+                    params$name=="logFmsyr" |
+                    params$name=="Bmsy" |
+                    params$name=="Bmsyr",]
   
-  
-  
-  
-  # #Plot survey selectivity (commented out because incorporated into R file function plot-srv-sel)
-  #  M <- modlst[[4]]; names(M[]) #to see the names of what's in an object
-  #  df <- rbind(data.frame(Age=1:20,sel=M$sel_srv_m,sex="Male"),data.frame(Age=1:20,sel=M$sel_srv_f,sex="Female"))
-  #  p1 <- ggplot(df,aes(x=Age,y=sel,color=sex)) + geom_line(size=2) + theme_few() + ylab("Selectivity") + ggtitle(paste0("Survey selectivity; (Model ",names(modlst[4]),")")) ;p1
-  #  ggsave(paste0("figs/",thismodname,"_bts_sel_alternative.pdf"),plot=p1,width=4,height=8,units="in")
-  
+  write.csv(p.table,paste0(getwd(),"/tables/",thismodname,"_params.csv"))
  
  
