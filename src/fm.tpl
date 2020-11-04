@@ -3117,7 +3117,7 @@ FUNCTION write_projfile
     int nrecs = endyr - 1977 - 5;                           
     projmod << nrecs <<endl;
     projmod << "# Recruitment  1978-2004"<<endl;
-    for (j=1978;j<(nrecs+1978);j++)  projmod << 2*natage_f(j,1) <<" "; projmod<<endl;
+    for (j=1978;j<(nrecs+1978);j++)  projmod << natage_f(j,1) <<" "; projmod<<endl;
     projmod << "# SSB       "<<endl;                                          
     projmod << "# used only for S/R analysis "<<endl;
     for (j=1977;j<(nrecs+1977);j++)  projmod << SSB(j) <<" "; projmod<<endl;
