@@ -2004,13 +2004,15 @@ REPORT_SECTION
      report <<endl<< "ObsSurvey "<< k <<"  " <<"predSurvey "<< endl;
      for (i=styr;i<=endyr;i++)
      {
-        if (yrs_srv(k,ii)==i)
-        {
-          report << i << ", " << obs_srv(k,ii) << ", " << pred_srv(k,i)<< endl;
-          ii++;
-        }
-        else
-         report << i<< ",NA, "<<pred_srv(k,i)<<endl;
+        if (nyrs_srv(k) < ii) 
+				{
+          if (yrs_srv(k,ii)==i)
+          {
+            report << i << ", " << obs_srv(k,ii) << ", " << pred_srv(k,i)<< endl;
+          }
+          else
+           report << i<< ",NA, "<<pred_srv(k,i)<<endl;
+       }
      }
   }
 
