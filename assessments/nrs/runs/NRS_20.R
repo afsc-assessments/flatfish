@@ -73,7 +73,7 @@ M<-modlst[[thismod]]
   p1 <- plot_rec(modlst,xlim=c(1975.5,2020.5))
   ggsave(paste0("figs/",thismodname,"_rec.pdf"),plot=p1,width=8,height=4.0,units="in")
   p1 <- plot_ssb(modlst,xlim=c(1975.5,2020.5),alpha=.1)
-  ggsave(paste0("figs/",thismodname,"_ssb.pdf"),plot=p1,width=8,height=4.0,units="in")
+  ggsave(paste0("figs/",thismodname,"_ssb.pdf"),plot=p1,width=8,height=4.5,units="in")
   p1<-plot_bts(modlst) + theme_few(base_size=11)
   ggsave(paste0("figs/",thismodname,"_bts.pdf"),plot=p1,width=8,height=4.0,units="in")
   
@@ -155,4 +155,39 @@ M<-modlst[[thismod]]
   
   write.csv(p.table,paste0(getwd(),"/tables/",thismodname,"_params.csv"))
  
- 
+
+  #For FOCI appendix (send to Lauren Rogers and Dan Cooper)
+  Rec.df<-as.data.frame(modlst[[thismod]]$R) %>% rename(year="V1",rec = "V2", lowerbound = "V4", upperbound = "V5") %>% select(-V3)
+  SSB.df<-as.data.frame(modlst[[thismod]]$R) %>% rename(year="V1",ssb = "V2", lowerbound = "V4", upperbound = "V5") %>% select(-V3)
+  write.csv(Rec.df,paste0(getwd(),"/tables/",thismodname,"_nrs_recruitment.csv"))
+  write.csv(SSB.df,paste0(getwd(),"/tables/",thismodname,"_nrs_ssb.csv"))
+  
+  
+  #For Executive Summary table:
+  tier1.df<-read.table(file.path(mydir,thismodname,"ABC_OFL.rep"),header = TRUE)
+  endyr<-max(modlst[[thismod]]$Yr)
+Mstuff<-paste0(round(modlst[[thismod]]$natmort_f,2)," (f), ",round(modlst[[thismod]]$natmort_m,2)," (m)   ",round(modlst[[thismod]]$natmort_f,2)," (f), ",round(modlst[[thismod]]$natmort_m,2)," (m)")
+Tier<-"1a  1a"  
+GMBio<-paste0(1000*tier1.df$GM_Biom[tier1.df$Year==endyr+1],"   ",1000*tier1.df$GM_Biom[tier1.df$Year==endyr+2])
+SSB<-paste0(1000*tier1.df$SSB[tier1.df$Year==endyr+1],"   ",1000*tier1.df$SSB[tier1.df$Year==endyr+2])
+B0<-paste0(1000*modlst[[thismod]]$Bzero,"   ",1000*modlst[[thismod]]$Bzero)
+Bmsy<-paste0(1000*tier1.df$Bmsy[tier1.df$Year==endyr+1],"   ",1000*tier1.df$Bmsy[tier1.df$Year==endyr+2])
+Fofl<-paste0(round(tier1.df$AM_Fmsyr[tier1.df$Year==endyr+1],3),"   ",round(tier1.df$AM_Fmsyr[tier1.df$Year==endyr+2],3))
+maxFabc<-paste0("?   ?")
+Fabc<-paste0(round(tier1.df$HM_Fmsyr[tier1.df$Year==endyr+1],3),"   ",round(tier1.df$HM_Fmsyr[tier1.df$Year==endyr+2],3))
+OFL<-paste0(1000*tier1.df$OFL_AM[tier1.df$Year==endyr+1],"   ",1000*tier1.df$OFL_AM[tier1.df$Year==endyr+2])
+maxABC<-paste0(1000*tier1.df$ABC_HM[tier1.df$Year==endyr+1],"   ",1000*tier1.df$ABC_HM[tier1.df$Year==endyr+2])
+ABC<-maxABC
+
+exec.df<-rbind(Mstuff,
+               Tier,
+               GMBio,
+               SSB,
+               B0,
+               Bmsy,
+               Fofl,
+               maxFabc,
+               Fabc,
+               OFL,
+               maxABC,
+               ABC)
