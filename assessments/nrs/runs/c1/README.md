@@ -1,6 +1,6 @@
 # Northern rocksole sole directory
 
-## Updating fishery ages and wt-age
+## Updating fishery ages and wt-age and survey and pop wt-age
 
 j1 is w/out any new data
 
@@ -11,6 +11,11 @@ j3 is omitting those 1995-97 estimates since nobody can figure out where they co
 j4 is as in j3 but includes wt-age estimates from sampler (as opposed to constant values used previously)
 
 c1 is as in j4 but replaces and adds survey and pop wt-age for 2001 onward (which are the same as each other and empirical with a three-yr rolling avg for ages 15-20)
+
+## Updates to mod.ctl file
+mod   is as for 2018 but estimates SRR curve through 2014 (and still uses wt-age through 2012)
+
+
 
 ## Notes on proceeding from the 2018 assessment
 
