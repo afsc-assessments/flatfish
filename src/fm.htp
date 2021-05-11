@@ -165,6 +165,10 @@ public:
   {
     return initial_params::mceval_phase;
   }
+  static int hessian_phase(void)
+  {
+    return initial_params::in_hessian_phase;
+  }
   static int sd_phase(void)
   {
     return initial_params::sd_phase;

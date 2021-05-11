@@ -19,11 +19,11 @@
 #phase_proj									
 7									
 #phase_logist_sel									
-4									
+-4									
 #phase_logist_sel_devs									
-4									
+-4									
 #phase_male_sel									
-5									
+-5									
 #phase_q									
 5									
 #q_alpha_prior									
