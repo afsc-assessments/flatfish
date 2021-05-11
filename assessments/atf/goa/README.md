@@ -1,6 +1,7 @@
 # GOA ATF Try w/ shell data
 ## to do list...
 
+     [ ] Get Ingrid's document bits prepped and in here
      [ ] Put in correct data
      [ ] Construct the datafile within R using # name convention for all segments
      [ ] Selectivity is fixed until size and/or age for fishery is added back in
