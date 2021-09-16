@@ -17,8 +17,11 @@ setwd(mydir)
 #--------------------------------------
 # Read in the output of the assessment
 # The model specs
-mod_names <- c("15.1","18.3","18.3 Downwt")
-.MODELDIR = c( "c1/","c1mod4/","c2mod4/")
+#mod_names <- c("15.1","18.3","18.3 Downwt")
+#.MODELDIR = c( "c1/","c1mod4/","c2mod4/")
+mod_names <- c("2018 Accepted","18.3")
+.MODELDIR = c("orig/","c1mod4/")
+
 
 # Read report files and create report object (a list):
 fn       <- paste0(.MODELDIR, "fm")
@@ -30,8 +33,8 @@ nmods    <- length(modlst)
 # To get sex ratio output
 names(modlst) <- mod_names
 names(sex_rat) <- mod_names
-thismod <- 1 # the selected model
-thismodname<-"c1"
+thismod <- 2 # the selected model
+thismodname<-"c1mod4"
 length(modlst)
 
 # sex ratio
@@ -158,7 +161,7 @@ M<-modlst[[thismod]]
 
   #For FOCI appendix (send to Lauren Rogers and Dan Cooper)
   Rec.df<-as.data.frame(modlst[[thismod]]$R) %>% rename(year="V1",rec = "V2", lowerbound = "V4", upperbound = "V5") %>% select(-V3)
-  SSB.df<-as.data.frame(modlst[[thismod]]$R) %>% rename(year="V1",ssb = "V2", lowerbound = "V4", upperbound = "V5") %>% select(-V3)
+  SSB.df<-as.data.frame(modlst[[thismod]]$SSB) %>% rename(year="V1",ssb = "V2", lowerbound = "V4", upperbound = "V5") %>% select(-V3)
   write.csv(Rec.df,paste0(getwd(),"/tables/",thismodname,"_nrs_recruitment.csv"))
   write.csv(SSB.df,paste0(getwd(),"/tables/",thismodname,"_nrs_ssb.csv"))
   
@@ -193,3 +196,23 @@ exec.df<-rbind(Mstuff,
                ABC)
 
 write.table(exec.df,paste0(getwd(),"/tables/",thismodname,"_execsumm.dat"),quote = F)
+
+#Time-series results tables (modlst[[1]]=last accepted, modlst[[2]]=this yrs model)
+#SSB: 
+SSBprev.df<-as.data.frame(modlst[[1]]$SSB) %>% rename(year="V1",ssb_previous = "V2", std_prev = "V3",lowerbound_prev = "V4", upperbound_prev = "V5")
+SSBcurr.df<-as.data.frame(modlst[[2]]$SSB) %>% rename(year="V1",ssb_current = "V2", std_curr = "V3",lowerbound_curr = "V4", upperbound_curr = "V5")
+write.csv(SSBprev.df,paste0(getwd(),"/tables/",names(modlst[1]),"_nrs_ssb_prev.csv"))
+write.csv(SSBcurr.df,paste0(getwd(),"/tables/",names(modlst[2]),"_nrs_ssb_curr.csv"))
+
+#Recruitment (age 1)
+Rec_prev.df<-as.data.frame(modlst[[1]]$R) %>% rename(year="V1",rec_prev = "V2", std_prev = "V3", lowerbound_prev = "V4", upperbound_prev = "V5")
+Rec_curr.df<-as.data.frame(modlst[[2]]$R) %>% rename(year="V1",rec_curr = "V2", std_curr = "V3",lowerbound_curr = "V4", upperbound_curr = "V5") 
+write.csv(Rec_prev.df,paste0(getwd(),"/tables/",names(modlst[1]),"_nrs_recruits.csv"))
+write.csv(Rec_curr.df,paste0(getwd(),"/tables/",names(modlst[2]),"_nrs_recruits.csv"))
+
+#Numbers-at-age
+natage_f.df<-as.data.frame(modlst[[2]]$natage_f)
+natage_m.df<-as.data.frame(modlst[[2]]$natage_m)
+write.csv(natage_f.df,paste0(getwd(),"/tables/",names(modlst[2]),"_natage_f.csv"))
+write.csv(natage_m.df,paste0(getwd(),"/tables/",names(modlst[2]),"_natage_m.csv"))
+
