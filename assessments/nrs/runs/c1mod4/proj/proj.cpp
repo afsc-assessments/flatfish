@@ -12,6 +12,7 @@
   adstring_array spname(1,90);
   adstring_array areaname(1,8);
   adstring       run_name;
+ 
   ofstream write_log("Input_Log.rep");
   #undef write_log
   #define write_log(object) write_log << #object "\n" << object << endl;
@@ -28,14 +29,9 @@
     return(vtmp);
   }
   // #include <lpcode.cpp>
-#ifdef DEBUG
-  #include <chrono>
-#endif
 #include <admodel.h>
-#ifdef USE_ADMB_CONTRIBS
 #include <contrib.h>
 
-#endif
   extern "C"  {
     void ad_boundf(int i);
   }
@@ -43,35 +39,6 @@
 
 model_data::model_data(int argc,char * argv[]) : ad_comm(argc,argv)
 {
-  adstring tmpstring;
-  tmpstring=adprogram_name + adstring(".dat");
-  if (argc > 1)
-  {
-    int on=0;
-    if ( (on=option_match(argc,argv,"-ind"))>-1)
-    {
-      if (on>argc-2 || argv[on+1][0] == '-')
-      {
-        cerr << "Invalid input data command line option"
-                " -- ignored" << endl;
-      }
-      else
-      {
-        tmpstring = adstring(argv[on+1]);
-      }
-    }
-  }
-  global_datafile = new cifstream(tmpstring);
-  if (!global_datafile)
-  {
-    cerr << "Error: Unable to allocate global_datafile in model_data constructor.";
-    ad_exit(1);
-  }
-  if (!(*global_datafile))
-  {
-    delete global_datafile;
-    global_datafile=NULL;
-  }
   pad_means_out = new ofstream("means.out");
   pad_alts_proj = new ofstream("alt_proj.out");
   pad_percent_out = new ofstream("percentiles.out");
@@ -538,11 +505,6 @@ void model_parameters::initializationfunction(void)
   steepness.set_initial_value(0.78);
   sigr.set_initial_value(0.5);
   log_Rzero.set_initial_value(R_guess);
-  if (global_datafile)
-  {
-    delete global_datafile;
-    global_datafile = NULL;
-  }
 }
 
 model_parameters::model_parameters(int sz,int argc,char * argv[]) : 
@@ -2782,7 +2744,6 @@ int main(int argc,char * argv[])
   #ifndef __SUNPRO_C
 std::feclearexcept(FE_ALL_EXCEPT);
   #endif
-  auto start = std::chrono::high_resolution_clock::now();
 #endif
     gradient_structure::set_YES_SAVE_VARIABLES_VALUES();
     if (!arrmblsize) arrmblsize=15000000;
@@ -2791,7 +2752,6 @@ std::feclearexcept(FE_ALL_EXCEPT);
     mp.preliminary_calculations();
     mp.computations(argc,argv);
 #ifdef DEBUG
-  std::cout << endl << argv[0] << " elapsed time is " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " microseconds." << endl;
   #ifndef __SUNPRO_C
 bool failedtest = false;
 if (std::fetestexcept(FE_DIVBYZERO))
