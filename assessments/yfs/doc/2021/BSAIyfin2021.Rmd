@@ -66,7 +66,7 @@ knitr::opts_chunk$set(fig.pos = 'H')
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache=FALSE,results="asis")
 #clean_cache(clean = TRUE)
 
-thisyr    = 2020
+thisyr    = 2021
 
 
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/prelims.R")
@@ -159,8 +159,36 @@ Bmsy_nextF=formatC(Bmsy_next,format="d",big.mark=",")
 #this came from AKFIN and I checked that it was same as downloaded from obsint.
 catmo=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/norpac_age_report_YFS_10_1_20.csv",header=TRUE)
 
-YFS_catch=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/YFS_catch_1991_2020.csv",header=TRUE)
-prop=sum(YFS_catch$Extrapolated_weight[which(YFS_catch$Month.1<11&YFS_catch$Year<2020&YFS_catch$Year>2014)],na.rm=TRUE)/sum(YFS_catch$Extrapolated_weight[which(YFS_catch$Year<2020&YFS_catch$Year>2014)],na.rm=TRUE)
+#AKFIN groundfish total catch only YFS selected and Bering Sea
+YFS_catch1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/GroundfishTotalCatch_YFS_10_1_21_1991_2021.csv",header=TRUE)
+
+#AKFIN total catch by fishery all fisheries selected and YFS
+YFS_catch=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/GroundfishTotalCatchbyFishery_YFS_10_1_21_1991_2021.csv",header=TRUE)
+
+prop=sum(YFS_catch$Catch..mt.[which(YFS_catch$Month<11&YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)/sum(YFS_catch$Catch..mt.[which(YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)
+
+#How about survey biomass?
+srv_bio=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey/flatfish_biomass_ebs_plusnw.csv",header=TRUE)
+srv_bio1=data.frame(cbind(c(seq(1987,2019,1),2021),srv_bio$BIOMASS[which(srv_bio$STRATUM==999&srv_bio$SPECIES_CODE==10210)]))
+srv_bio1[34,]=c(2020,0)
+colnames(srv_bio1)=c("Year","Biomass")
+srv_bio1=rbind(srv_bio1,c(2021,1622913))
+#estimate catch
+yrz=seq(1987,2021,1)
+Catch=vector()
+for(i in 1:length(yrz)){
+  Catch[i]=sum(YFS_catch$Catch..mt.[which(YFS_catch$Year==yrz[i])])
+}
+Catch[35]=95195
+
+srv_bio2=data.frame(cbind(srv_bio1,Catch*15))[5:35,]
+library(reshape2)
+srv_bio3=melt(srv_bio2,id="Year")
+ggplot(srv_bio3)+geom_line(aes(x=Year,y=value,color=variable))+theme_bw()
+
+#88851.15t caught by Oct1, 2021
+#93.33603% caught by Oct1 for yrs 2016-2020.
+#extrapolate to 95194.91 t.
 
 #proportion caught before November 2015-2019 (was 93.1 for 2015-2019) first way has more data.
 #prop=sum(catmo$Weight..kg.[which(catmo$Month<11&catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)/sum(catmo$Weight..kg.[which(catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)
