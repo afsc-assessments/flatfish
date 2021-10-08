@@ -401,6 +401,7 @@ public:
   void Get_Pred_wt(void);
   void Write_R_wts(void);
   void Write_R(void);
+  void write_projfile(void);
 
 };
 #endif
