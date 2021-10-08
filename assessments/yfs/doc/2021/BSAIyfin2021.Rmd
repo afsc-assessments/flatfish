@@ -72,7 +72,7 @@ thisyr    = 2021
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/prelims.R")
 source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/plot_m.R")
-YFS0=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2019/fm.rep")
+YFS0=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2019/fm.rep")#Last year's preferred model is now called 
 YFS1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/fm.rep")#this is single natural mortality.
 YFS2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/fm.rep")#this is the preferred model. Male M is estimated.
 YFS3=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m3/fm.rep")#this is with EBS vast
@@ -474,6 +474,7 @@ Applications of dendrochronology (tree-ring techniques) have been used to develo
 The relationship between temperature and growth was further explored by reanalyzing Yellowfin Sole growth by age and year.  Length-weight data collected when obtaining otolith (age) samples in RACE surveys (n=7,000 from 1987, 1994 and 1999-2009) also indicate that weight-at-age exhibits annual variability and is highly correlated with summer bottom water temperature observations with a lag of 2-3 years for the temperature effect to be seen (shown for age 5 fish in `r figure_nums("tempanom",display="cite")`).  These observations were then extended back to 1979 using survey population length-at-age estimates (since weight-at-age is a power function of the length-at-age, Clark et al. 1999, Walters and Wilderbuer 2000). 
 
 We used the annual observed population mean weight-at-age (time-varying) from the trawl survey to incorporate time-varying (year effect on growth) and temperature-dependent growth functions into the age-structured stock assessment model. These empirical data indicate good somatic growth correspondence with annual bottom temperature anomalies (`r figure_nums("tempanom",display="cite")`).  
+
 _Survey Biomass Estimates and Population Age Composition Estimates_
 
 Indices of relative abundance available from AFSC surveys showed high NMFS surveys biomass estimates in the 1980s (`r table_nums("Srvbio_CI",display="cite")`.  High levels of biomass in the late 1970s have been documented through Japanese commercial pair trawl data and catch-at-age modeling in past assessments (Bakkala and Wilderbuer 1990).
