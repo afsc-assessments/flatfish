@@ -1,7 +1,7 @@
 #model_name 
 #Base
 #datafile 
-#../data/yfs_2019.dat
+#../data/yfs_2021.dat
 #Growth_Option
 	1
 #ABC_age_lb
