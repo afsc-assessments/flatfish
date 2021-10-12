@@ -72,17 +72,17 @@ thisyr    = 2021
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/prelims.R")
 source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/plot_m.R")
-YFS0=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2019/fm.rep")#Last year's preferred model is now called 
-YFS1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/fm.rep")#this is single natural mortality.
-YFS2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/fm.rep")#this is the preferred model. Male M is estimated.
-YFS3=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m3/fm.rep")#this is with EBS vast
-YFS4=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m4/fm.rep")#this is with EBS+NBSvast
+YFS0=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#Last year's preferred model is now called 
+YFS1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is single natural mortality.
+YFS2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is the preferred model. Male M is estimated.
+YFS3=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is with EBS vast
+YFS4=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is with EBS+NBSvast
 
-extra_sd2=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/ABC_OFL.rep",header=TRUE)
-extra_sd1=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/ABC_OFL.rep",header=TRUE)
-extra_sd3=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m3/ABC_OFL.rep",header=TRUE)
-extra_sd4=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m4/ABC_OFL.rep",header=TRUE)
-extra_sd0=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2019/extra_sd.rep",header=TRUE)
+extra_sd2=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
+extra_sd1=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
+extra_sd3=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
+extra_sd4=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
+extra_sd0=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
 B0_2=formatC(1000*YFS2$Bzero,format="d",big.mark=",")
 B0_1=formatC(1000*YFS1$Bzero,format="d",big.mark=",")
 B0_0=formatC(1000*YFS0$Bzero,format="d",big.mark=",")
@@ -157,13 +157,13 @@ Bmsy_next=1000*extra_sd2$Bmsy[2]
 Bmsy_nextF=formatC(Bmsy_next,format="d",big.mark=",")
 
 #this came from AKFIN and I checked that it was same as downloaded from obsint.
-catmo=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/norpac_age_report_YFS_10_1_20.csv",header=TRUE)
+catmo=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2020 YFS/norpac_age_report_YFS_10_1_20.csv",header=TRUE)
 
 #AKFIN groundfish total catch only YFS selected and Bering Sea
-YFS_catch1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/GroundfishTotalCatch_YFS_10_1_21_1991_2021.csv",header=TRUE)
+YFS_catch1=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalCatch_YFS_10_1_21_1991_2021.csv",header=TRUE)
 
 #AKFIN total catch by fishery all fisheries selected and YFS
-YFS_catch=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/GroundfishTotalCatchbyFishery_YFS_10_1_21_1991_2021.csv",header=TRUE)
+YFS_catch=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalCatchbyFishery_YFS_10_1_21_1991_2021.csv",header=TRUE)
 
 prop=sum(YFS_catch$Catch..mt.[which(YFS_catch$Month<11&YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)/sum(YFS_catch$Catch..mt.[which(YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)
 
@@ -193,7 +193,7 @@ ggplot(srv_bio3)+geom_line(aes(x=Year,y=value,color=variable))+theme_bw()
 #proportion caught before November 2015-2019 (was 93.1 for 2015-2019) first way has more data.
 #prop=sum(catmo$Weight..kg.[which(catmo$Month<11&catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)/sum(catmo$Weight..kg.[which(catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)
 
-catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/catch_YFS.csv",header=TRUE,skip=1)
+catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/catch_YFS.csv",header=TRUE,skip=1)
 
 c10=catchZ$Total[(nrow(catchZ)-10):(nrow(catchZ)-1)]
 cn=str_replace(c10, ",", "")
@@ -232,28 +232,28 @@ Relative to last year’s Bering Sea and Aleutian Islands (BSAI) SAFE report, th
 _Changes in the data_
 
    1. The `r thisyr-1` fishery age composition was added.
-   2. The `r thisyr-1` survey age composition was added.
-   3. The estimate of the total catch made through the end of 2019 was updated as reported by the NMFS Alaska Regional office. The catch through the end of 2020 was estimated based on available data. Catch of 139,283 t was assumed for the `r thisyr+1` and `r thisyr+2` projections.
-   4. Due to COVID-19, the 2020 NMFS Eastern Bering Sea (EBS) shelf bottom-trawl survey was not conducted. Therefore, there is no survey biomass estimate from 2020.
-   5. Fishery weight-at-age was calculated based on methodology in the document.
+   2. The estimate of the total catch made through the end of `r thisyr-1` was updated as reported by the NMFS Alaska Regional office. The catch through the end of `r thisyr` was estimated based on available data to be `r Catch[35]`. Catch for the `r thisyr+1` and `r thisyr+2` projections were assumed to be the mean of the past 5 years, `r thisyr-4` - `r thisyr`, `r formatC(mean(Catch[31:35]),format="d",big.mark=",")` t.
+   4. The `r thisyr` NMFS survey biomass estimate and standard error was included. The `r thisyr` Northern Bering Sea biomass estimate and standard error were combined with the `r thisyr` EBS survey estimate in Model 18.2b.
+   5. Fishery weight-at-age was calculated based on methodology described in the document.
 
 _Changes in the assessment methods_
 
-Four models are presented in this assessment. Models 18.1 and 18.2 are presented in full, and Model 18.2 is the preferred model. Models 18.3 and 18.4 are presented to promote discussion on the use of VAST biomass estimates and incorporation of the Northern Bering Sea (NBS) survey.
+Three models are presented in this assessment. Model 18.2 is presented in full, and is the preferred model. Models 18.3 and 18.4 are presented to promote discussion on the use of VAST biomass estimates and incorporation of the Northern Bering Sea (NBS) survey.
 
-   1. Last year's accepted model is referred to as Model 18.1. This model has not changed and uses the same natural mortality for males and females, $M$=0.12. 
-   2. A second model is presented (Model 18.2) that uses a fixed value for female natural mortality ($M$=0.12) and allows male natural mortality to be estimated within the model. This model was reviewed by the BSAI Plan Team in September, 2020. Model 18.2 is the authors' preferred model. 
-   3. Model 18.3 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the Eastern Bering Sea survey region, 1982-2019.
-   4. Model 18.4 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the EBS and NBS, 1982-2019.
+   1. Model 18.2 uses a fixed value for female natural mortality ($M$=0.12) and allows male natural mortality to be estimated within the model. This model was accepted by the BSAI Plan Team and the SSC in 2021. Model 18.2 is the authors' preferred model. 
+   2. Model 18.3 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the Eastern Bering Sea survey region, 1982-2021.
+   3. Model 18.4 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the EBS and NBS, 1982-2021.
 
 ## Summary of Results
 
    
-The accepted 2019 Model 18.1 included the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as in previous years, but added survey start date as an additional covariate within the model, based on a recent study by Nichol et al. (2019). Model 18.2 retains these features. Model 18.2 retains female natural mortality fixed at 0.12 while allowing the model to estimate male natural mortality. 
+The accepted 2021 Model 18.2 included the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as well as survey start date as an additional covariate within the model, based on Nichol et al. (2019).  Model 18.2 specifies female natural mortality to be fixed at 0.12 while allowing the model to estimate male natural mortality. 
 
-In the most recent Eastern Bering Sea (EBS) bottom trawl survey performed in 2019, the Yellowfin Sole biomass in the Eastern Bering Sea was estimated to be `r 100*round((YFS2$ob_bts[38]/YFS2$ob_bts[37])-1,2)`% higher than in 2018 at `r formatC(YFS2$ob_bts[38]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 remained high at `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2014 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
+In the Eastern Bering Sea (EBS) bottom trawl survey performed in `r thisyr`, the Yellowfin Sole biomass in the Eastern Bering Sea was estimated to be `r -100*round((YFS2$ob_bts[39]/YFS2$ob_bts[38])-1,2)`% lower than estimated by the `r thisyr-2` EBS bottom trawl survey, at `r formatC(YFS2$ob_bts[39]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 remained high at `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2014 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
 
 This assessment updates last year’s assessment with results and management quantities that are higher than the `r thisyr-1` assessment. Model 18.2 estimated male natural mortality to be higher than female natural mortality, `r round(YFS2$natmort_m,3)`, which increased biomass estimates.
+
+*******Doing that seems reasonable and defensible as a precautionary level (assuming low tariff-impacted catches would be less precautionary, in ABC/OFL terms).
 
 Catch as of October 13, `r thisyr` was `r catchZ$Total[nrow(catchZ)]` t. Over the past 5 years (`r thisyr-5` - `r thisyr-1`), `r 100*round(prop,3)`% of the catch has taken place by this date. Therefore, the full year's estimate of catch in `r thisyr` was `r formatC(as.numeric(str_replace(catchZ$Total[nrow(catchZ)],",",""))/round(prop,4),format="d",big.mark=",")` t. This is lower than the average catch over the past ten years `r formatC(cn10,format="d",big.mark=",")` t.  Future catch for the next 10 years, `r thisyr+1` - `r thisyr+10` was estimated as the mean of the past 10 years catch.
 
@@ -629,7 +629,7 @@ where $R$ is age 1 recruitment, $S$ is female spawning biomass in metric tons th
 
 For this assessment, two models were examined in full (Model 18.1 and 18.2), and two additional exploratory models were examined, Model 18.3 and 18.4. Model 18.1 was the accepted model in the 2018 and 2019 Yellowfin Sole stock assessments. Model 18.2 fixed female natural mortality at $M$=0.12 as in previous years, but allowed the model to freely estimate male natural mortality. The model estimated male natural mortality to be higher than female natural mortality, which is in common with known life history parameters of other Alaska flatfish. In Arrowtooth Flounder, higher natural mortality is assumed for males and is consistent with their skewed sex ratio (Wilderbuer and Turnock 2009). Higher natural mortality for male flatfish has been assumed to flatfish from other regions as well (Maunder and Wong 2011).
 
-Models 18.1 and 18.2 differ for some parameter estimates. The trend in survey catchability was similar with Model 18.1 and Model 18.2, but catchability was lower with Model 18.2 (`r figure_nums("plotq",display="cite")`). The sex ratio estimate changed slightly with Model 18.2. The proportion female was estimated to be slightly lower in Model 18.1 than Model 18.2, as higher male natural mortality increased the estimated number of males in the population (`r figure_nums("sexratio",display="cite")`). Overall, the total negative log likelihod was lower for Model 18.2, and provided a better fit to the survey and fishery ages, as well as an improvement to the fit to survey catchability, with the total negative log likelihood reduced from 1,449 in Model 18.1 to 1,386 in Model 18.2 (`r table_nums("liketab",display="cite")`, `r figure_nums("srv_agecomp1",display="cite")`, `r figure_nums("srv_agecomp2",display="cite")`,  `r figure_nums("fsh_agecomp1",display="cite")`,  `r figure_nums("fsh_agecomp2",display="cite")`). 
+Models 18.1 and 18.2 differ for some parameter estimates. The trend in survey catchability was similar with Model 18.1 and Model 18.2, but catchability was lower with Model 18.2 (`r figure_nums("plotq",display="cite")`). The sex ratio estimate changed slightly with Model 18.2. The proportion female was estimated to be slightly lower in Model 18.1 than Model 18.2, as higher male natural mortality increased the estimated number of males in the population (`r figure_nums("sexratio",display="cite")`). Overall, the total negative log likelihood was lower for Model 18.2, and provided a better fit to the survey and fishery ages, as well as an improvement to the fit to survey catchability, with the total negative log likelihood reduced from 1,449 in Model 18.1 to 1,386 in Model 18.2 (`r table_nums("liketab",display="cite")`, `r figure_nums("srv_agecomp1",display="cite")`, `r figure_nums("srv_agecomp2",display="cite")`,  `r figure_nums("fsh_agecomp1",display="cite")`,  `r figure_nums("fsh_agecomp2",display="cite")`). 
 
 `r table_nums("Mcomparison",display="cite")` indicates that the ABC from Model 18.2 for `r thisyr+1` would be `r formatC(1000*(extra_sd2$ABC_HM[1]-extra_sd1$ABC_HM[1]),format="d",big.mark=",")` t higher than Model 18.1. This is due to the higher biomass estimate resulting from an increased value of male natural mortality in Model 18.2. Model 18.2 also provided a slightly better fit to survey biomass, but this effect was primarily noticeable during the years 1988-1995. Overall Model 18.2 provided very little change in the fit to survey biomass (`r figure_nums("srvbio_fit",display="cite")`). Models 18.3 and 18.4 fit their corresponding estimates of survey biomass fairly well, but there was some discontinuity in the fit for 2015, that was consistent among models.
 
