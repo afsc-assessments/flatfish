@@ -1,7 +1,3 @@
-#model_name 
-#Base
-#datafile 
-#../data/yfs_2021.dat
 #Growth_Option
 	1
 #ABC_age_lb
@@ -41,7 +37,7 @@
 #phase_m_f
 	-6
 #phase_m_m
-	-7
+	7
 #phase_sr
 	6
 #phase_env_cov  
@@ -84,13 +80,5 @@
 	150
 #yr2_futcat      
 	150
-	# n_retro;
-	0
-#surv_dwnwt
-0
-#cv_inc
-10
-#n_comp
-1
-#eof_check
-123456
+#n_retro
+4
