@@ -72,30 +72,27 @@ thisyr    = 2021
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/prelims.R")
 source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
 #source("/Users/ingridspies/admbmodels/flatfish/assessments/R/plot_m.R")
-YFS0=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#Last year's preferred model is now called 
-YFS1=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is single natural mortality.
-YFS2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is the preferred model. Male M is estimated.
-YFS3=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is with EBS vast
-YFS4=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/fm.rep")#this is with EBS+NBSvast
+YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2020/fm.rep")#last years model 
+YFS18_2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/fm.rep")#this is the preferred model. Male M is estimated.
+YFS18_2a=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2a/fm.rep")#this is with EBS vast
+YFS18_2b=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2b/fm.rep")#this is with EBS+NBSvast
 
-extra_sd2=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
-extra_sd1=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
-extra_sd3=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
-extra_sd4=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
-extra_sd0=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m21/ABC_OFL.rep",header=TRUE)
-B0_2=formatC(1000*YFS2$Bzero,format="d",big.mark=",")
-B0_1=formatC(1000*YFS1$Bzero,format="d",big.mark=",")
-B0_0=formatC(1000*YFS0$Bzero,format="d",big.mark=",")
-B0_3=formatC(1000*YFS3$Bzero,format="d",big.mark=",")
-B0_4=formatC(1000*YFS4$Bzero,format="d",big.mark=",")
+ABC_OFL18_2=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/ABC_OFL.rep",header=TRUE)
+ABC_OFL18_2a=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2a/ABC_OFL.rep",header=TRUE)
+ABC_OFL18_2b=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2b/ABC_OFL.rep",header=TRUE)
+ABC_OFL2020=read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2020/ABC_OFL.rep",header=TRUE)
+B0_2020=formatC(1000*YFS2020$Bzero,format="d",big.mark=",")
+B0_18_2=formatC(1000*YFS18_2$Bzero,format="d",big.mark=",")
+B0_18_2a=formatC(1000*YFS18_2a$Bzero,format="d",big.mark=",")
+B0_18_2b=formatC(1000*YFS18_2b$Bzero,format="d",big.mark=",")
 
-ABC_this=1000*extra_sd2$ABC_HM[1]
-ABC_next=1000*extra_sd2$ABC_HM[1]
-TotBio_this=extra_sd2$GM_Biom[1]*1000
-TotBio_next=extra_sd2$GM_Biom[2]*1000
+ABC_this=1000*ABC_OFL18_2$ABC_HM[1]
+ABC_next=1000*ABC_OFL18_2$ABC_HM[1]
+TotBio_this=ABC_OFL18_2$GM_Biom[1]*1000
+TotBio_next=ABC_OFL18_2$GM_Biom[2]*1000
 
-femcat=YFS2$catage_f/rowSums(YFS2$catage_f)
-malcat=YFS2$catage_m/rowSums(YFS2$catage_m)
+femcat=YFS18_2$catage_f/rowSums(YFS2$catage_f)
+malcat=YFS18_2$catage_m/rowSums(YFS2$catage_m)
 
 #Base version M0.34,with fishlenlikelihood, stark mat
 bigfile=read.table("/Users/ingridspies/admbmodels/projection/bsai_yfin2020_out/bigfile.out",header=TRUE)
@@ -112,48 +109,48 @@ PABC_nextF=formatC(PABC_next,format="d",big.mark=",")
 
 ABC_last=1000*extra_sd1$ABC_HM[1]
 ABC_lastF=formatC(ABC_last,format="d",big.mark=",")
-ABC_this=1000*extra_sd2$ABC_HM[1]
+ABC_this=1000*ABC_OFL$ABC_HM[1]
 ABC_thisF=formatC(ABC_this,format="d",big.mark=",")
 
-ABC_next=1000*extra_sd2$ABC_HM[2]
+ABC_next=1000*ABC_OFL$ABC_HM[2]
 ABC_nextF=formatC(ABC_next,format="d",big.mark=",")
 
-OFL_this=1000*extra_sd2$OFL_AM[1]
+OFL_this=1000*ABC_OFL$OFL_AM[1]
 OFL_thisF=formatC(OFL_this,format="d",big.mark=",")
 
-OFL_next=1000*extra_sd2$OFL_AM[2]
+OFL_next=1000*ABC_OFL$OFL_AM[2]
 OFL_nextF=formatC(OFL_next,format="d",big.mark=",")
 
-TotBio_this=1000*extra_sd2$GM_Biom[1]
+TotBio_this=1000*ABC_OFL$GM_Biom[1]
 TotBio_thisF=formatC(TotBio_this,format="d",big.mark=",")
 
-TotBio_next=1000*extra_sd2$GM_Biom[2]
+TotBio_next=1000*ABC_OFL$GM_Biom[2]
 TotBio_nextF=formatC(TotBio_next,format="d",big.mark=",")
 
 TotBio_last=1000*extra_sd1$GM_Biom[1]
 TotBio_lastF=formatC(TotBio_last,format="d",big.mark=",")
 
-FSB_this=1000*extra_sd2$SSB[1]
+FSB_this=1000*ABC_OFL$SSB[1]
 FSB_thisF=formatC(FSB_this,format="d",big.mark=",")
 
-FSB_next=1000*extra_sd2$SSB[2]
+FSB_next=1000*ABC_OFL$SSB[2]
 FSB_nextF=formatC(FSB_next,format="d",big.mark=",")
 
 FSB_last=1000*extra_sd1$SSB[1]
 
 FSB_lastF=formatC(FSB_last,format="d",big.mark=",")
 
-FABC_this=round(extra_sd2$HM_Fmsyr[1],3)
+FABC_this=round(ABC_OFL$HM_Fmsyr[1],3)
 
-FABC_next=round(extra_sd2$HM_Fmsyr[2],3)
+FABC_next=round(ABC_OFL$HM_Fmsyr[2],3)
 
-FOFL_this=round(extra_sd2$AM_Fmsyr[1],3)
-FOFL_next=round(extra_sd2$AM_Fmsyr[2],3)
+FOFL_this=round(ABC_OFL$AM_Fmsyr[1],3)
+FOFL_next=round(ABC_OFL$AM_Fmsyr[2],3)
 
-Bmsy_this=1000*extra_sd2$Bmsy[1]
+Bmsy_this=1000*ABC_OFL$Bmsy[1]
 Bmsy_thisF=formatC(Bmsy_this,format="d",big.mark=",")
 
-Bmsy_next=1000*extra_sd2$Bmsy[2]
+Bmsy_next=1000*ABC_OFL$Bmsy[2]
 Bmsy_nextF=formatC(Bmsy_next,format="d",big.mark=",")
 
 #this came from AKFIN and I checked that it was same as downloaded from obsint.
@@ -162,8 +159,11 @@ catmo=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2020 
 #AKFIN groundfish total catch only YFS selected and Bering Sea
 YFS_catch1=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalCatch_YFS_10_1_21_1991_2021.csv",header=TRUE)
 
-#AKFIN total catch by fishery all fisheries selected and YFS
+
+#AKFIN total catch by fishery all fisheries selected and YFS and Bering Sea
 YFS_catch=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalCatchbyFishery_YFS_10_1_21_1991_2021.csv",header=TRUE)
+
+YFS_catAI=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalCatchbyFishery_YFS_AI_10_13_21.csv",header=TRUE)
 
 prop=sum(YFS_catch$Catch..mt.[which(YFS_catch$Month<11&YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)/sum(YFS_catch$Catch..mt.[which(YFS_catch$Year<2021&YFS_catch$Year>2015)],na.rm=TRUE)
 
@@ -193,11 +193,32 @@ ggplot(srv_bio3)+geom_line(aes(x=Year,y=value,color=variable))+theme_bw()
 #proportion caught before November 2015-2019 (was 93.1 for 2015-2019) first way has more data.
 #prop=sum(catmo$Weight..kg.[which(catmo$Month<11&catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)/sum(catmo$Weight..kg.[which(catmo$Year2<2020&catmo$Year2>2014)],na.rm=TRUE)
 
-catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/catch_YFS.csv",header=TRUE,skip=1)
+#####NOTE LOWEST REcruitment in 2012 which was first high temp anomaly year
+#Actually there is a lag...
+temprec=as.data.frame(cbind(YFS18_2$yrs_srv[1:38],YFS18_2$natage_f[25:62,1]*1000+YFS18_2$natage_f[25:62,1]*1000,1000*YFS18_2$Bottom_temp[1,1:38]))
+colnames(temprec)=c("Year","Recruitment","Temp_Anomaly*1000")
+library(reshape2)
+text=melt(temprec,id.var="Year")
+ggplot(text)+geom_line(aes(x=Year,y=value,color=variable))+ylab(label="Value")+ggtitle("Numbers at age 1 and bottom temp YFS")+theme_bw()
 
-c10=catchZ$Total[(nrow(catchZ)-10):(nrow(catchZ)-1)]
+#low recruitment in 2012 appears to be correlated with warm temps in 2016.
+#YFS that were age 4 experienced those warm temps.
+
+plot(YFS18_2$yrs_srv,YFS18_2$Bottom_temp[1,1:39],type="l")
+plot(YFS18_2$Yr,YFS18_2$natage_f[,1])#recruitment
+
+catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/catch_YFS.csv",header=TRUE,skip=1)
+
+c10=catchZ$BS[(nrow(catchZ)-10):(nrow(catchZ)-1)]
 cn=str_replace(c10, ",", "")
 cn10=mean(as.numeric(cn))#average catch last 10 years
+
+#cn5 is the estimate of catch for the past 5 years (2017-2021) including the current years projections
+c4=catchZ$BS[(nrow(catchZ)-4):(nrow(catchZ)-1)]
+cn4=str_replace(c4, ",", "")
+cn5=mean(as.numeric(c(cn4,Catch[35])))
+
+
 ```
 
 
@@ -233,7 +254,7 @@ _Changes in the data_
 
    1. The `r thisyr-1` fishery age composition was added.
    2. The estimate of the total catch made through the end of `r thisyr-1` was updated as reported by the NMFS Alaska Regional office. The catch through the end of `r thisyr` was estimated based on available data to be `r Catch[35]`. Catch for the `r thisyr+1` and `r thisyr+2` projections were assumed to be the mean of the past 5 years, `r thisyr-4` - `r thisyr`, `r formatC(mean(Catch[31:35]),format="d",big.mark=",")` t.
-   4. The `r thisyr` NMFS survey biomass estimate and standard error was included. The `r thisyr` Northern Bering Sea biomass estimate and standard error were combined with the `r thisyr` EBS survey estimate in Model 18.2b.
+   4. The `r thisyr` NMFS survey biomass estimate and standard error was included. The `r thisyr` Northern Bering Sea biomass estimate and standard error were combined with the `r thisyr` EBS survey VAST estimate in Model 18.2b.
    5. Fishery weight-at-age was calculated based on methodology described in the document.
 
 _Changes in the assessment methods_
@@ -241,15 +262,14 @@ _Changes in the assessment methods_
 Three models are presented in this assessment. Model 18.2 is presented in full, and is the preferred model. Models 18.3 and 18.4 are presented to promote discussion on the use of VAST biomass estimates and incorporation of the Northern Bering Sea (NBS) survey.
 
    1. Model 18.2 uses a fixed value for female natural mortality ($M$=0.12) and allows male natural mortality to be estimated within the model. This model was accepted by the BSAI Plan Team and the SSC in 2021. Model 18.2 is the authors' preferred model. 
-   2. Model 18.3 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the Eastern Bering Sea survey region, 1982-2021.
-   3. Model 18.4 is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the EBS and NBS, 1982-2021.
+   2. Model 18.2a is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the Eastern Bering Sea survey region, 1982-2021.
+   3. Model 18.2c is the same as Model 18.2 except it incorporates VAST biomass estimates and standard errors for the EBS and NBS, 1982-2021.
 
 ## Summary of Results
 
-   
-The accepted 2021 Model 18.2 included the survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as well as survey start date as an additional covariate within the model, based on Nichol et al. (2019).  Model 18.2 specifies female natural mortality to be fixed at 0.12 while allowing the model to estimate male natural mortality. 
+The accepted 2021 Model 18.2 includes survey mean bottom temperature across stations < 100m as a covariate on survey catchability, as well as survey start date as an additional covariate within the model, based correlations documented in Nichol et al. (2019).  Model 18.2 specifies female natural mortality to be fixed at 0.12 while allowing the model to estimate male natural mortality. This model is presented in this year's assessment and is the preferred model.
 
-In the Eastern Bering Sea (EBS) bottom trawl survey performed in `r thisyr`, the Yellowfin Sole biomass in the Eastern Bering Sea was estimated to be `r -100*round((YFS2$ob_bts[39]/YFS2$ob_bts[38])-1,2)`% lower than estimated by the `r thisyr-2` EBS bottom trawl survey, at `r formatC(YFS2$ob_bts[39]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 remained high at `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2014 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
+In the Eastern Bering Sea (EBS) bottom trawl survey performed in `r thisyr`, the EBS Yellowfin Sole biomass was estimated to be `r -100*round((YFS2$ob_bts[39]/YFS2$ob_bts[38])-1,2)`% lower than estimated by the `r thisyr-2` EBS bottom trawl survey, at `r formatC(YFS2$ob_bts[39]*1000, format="d",big.mark=",")` t. Spawning biomass estimated by Model 18.2 was `r round(FSB_this/Bmsy_this,2)` * $B_{MSY}$. Therefore, Yellowfin Sole continues to qualify for management under Tier 1a. The 1978-2015 age-1 recruitments and the corresponding spawning biomass estimates were used to fit the stock recruitment curve and determine the Tier 1 harvest recommendations. 
 
 This assessment updates last year’s assessment with results and management quantities that are higher than the `r thisyr-1` assessment. Model 18.2 estimated male natural mortality to be higher than female natural mortality, `r round(YFS2$natmort_m,3)`, which increased biomass estimates.
 
@@ -631,7 +651,7 @@ For this assessment, two models were examined in full (Model 18.1 and 18.2), and
 
 Models 18.1 and 18.2 differ for some parameter estimates. The trend in survey catchability was similar with Model 18.1 and Model 18.2, but catchability was lower with Model 18.2 (`r figure_nums("plotq",display="cite")`). The sex ratio estimate changed slightly with Model 18.2. The proportion female was estimated to be slightly lower in Model 18.1 than Model 18.2, as higher male natural mortality increased the estimated number of males in the population (`r figure_nums("sexratio",display="cite")`). Overall, the total negative log likelihood was lower for Model 18.2, and provided a better fit to the survey and fishery ages, as well as an improvement to the fit to survey catchability, with the total negative log likelihood reduced from 1,449 in Model 18.1 to 1,386 in Model 18.2 (`r table_nums("liketab",display="cite")`, `r figure_nums("srv_agecomp1",display="cite")`, `r figure_nums("srv_agecomp2",display="cite")`,  `r figure_nums("fsh_agecomp1",display="cite")`,  `r figure_nums("fsh_agecomp2",display="cite")`). 
 
-`r table_nums("Mcomparison",display="cite")` indicates that the ABC from Model 18.2 for `r thisyr+1` would be `r formatC(1000*(extra_sd2$ABC_HM[1]-extra_sd1$ABC_HM[1]),format="d",big.mark=",")` t higher than Model 18.1. This is due to the higher biomass estimate resulting from an increased value of male natural mortality in Model 18.2. Model 18.2 also provided a slightly better fit to survey biomass, but this effect was primarily noticeable during the years 1988-1995. Overall Model 18.2 provided very little change in the fit to survey biomass (`r figure_nums("srvbio_fit",display="cite")`). Models 18.3 and 18.4 fit their corresponding estimates of survey biomass fairly well, but there was some discontinuity in the fit for 2015, that was consistent among models.
+`r table_nums("Mcomparison",display="cite")` indicates that the ABC from Model 18.2 for `r thisyr+1` would be `r formatC(1000*(ABC_OFL$ABC_HM[1]-extra_sd1$ABC_HM[1]),format="d",big.mark=",")` t higher than Model 18.1. This is due to the higher biomass estimate resulting from an increased value of male natural mortality in Model 18.2. Model 18.2 also provided a slightly better fit to survey biomass, but this effect was primarily noticeable during the years 1988-1995. Overall Model 18.2 provided very little change in the fit to survey biomass (`r figure_nums("srvbio_fit",display="cite")`). Models 18.3 and 18.4 fit their corresponding estimates of survey biomass fairly well, but there was some discontinuity in the fit for 2015, that was consistent among models.
 
 Posterior distributions of several key parameters in the model capture variability in posterior distributions of parameter estimates and differences between Model 18.2 and Model 18.1 (`r figure_nums("mcmcplots",display="cite")`). Model 18.2 resulted in higher estimates for $B_{MSY}$, total and age 6 biomass and female spawning biomass and recruitment, but similar values to Model 18.1 for $F_{MSY}$. The posterior distribution for female spawning biomass is above the Model 18.2 estimate for $B_{MSY}$ (`r figure_nums("mcmcplots",display="cite")`).
 
@@ -1013,9 +1033,9 @@ tab.27_cap <- table_nums(name = "tab_27", caption = "Catch and bycatch (t) of ot
 \pagebreak
 # Tables
 
-`r table_nums(name = "catch", caption = paste("Foreign and domestic catch (t) of Yellowfin Sole 1954-",thisyr,".  Foreign catches are designated as joint venture processing (JVP) and domestic annual processing (DAP). Domestic catch since 1991 is subdivided into catch from the Aleutian Islands and the Bering Sea. Catch for ",thisyr," was downloaded November 15, 2020.",sep=""))`
+`r table_nums(name = "catch", caption = paste("Foreign and domestic catch (t) of Yellowfin Sole 1954-",thisyr,".  Foreign catches are designated as joint venture processing (JVP), and non-foreign catches as domestic annual processing (DAP). Domestic catch since 1991 is subdivided into catch from the Aleutian Islands and the Bering Sea. Catch for ",thisyr," was downloaded October 13, 2021.",sep=""))`
 ```{r catch,message=FALSE,echo=FALSE}
-catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/catch_YFS.csv",header=TRUE,skip=1)
+catchZ=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/catch_YFS.csv",header=TRUE,skip=1)
 colnames(catchZ)=c("Year","Foreign","JVP","DAP","Aleutian Islands","Bering Sea","Total")
 kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE,align=c('r','r','r','r','r','r','r'))%>%
   add_header_above(c(" ", " ","Domestic" = 4, " " ))
@@ -1024,7 +1044,8 @@ kable(catchZ,"latex",booktabs=T,linesep="",longtable=TRUE,align=c('r','r','r','r
 \pagebreak
 `r table_nums(name = "retdis", caption = paste("Estimates of retained and discarded (t) Yellowfin Sole caught in Bering Sea fisheries from 1991 through October 12th, ",thisyr,", and the proportion discarded.",sep=""))`
 ```{r retdis,message=FALSE,echo=FALSE}
-retdis=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/RetDis_2020.csv",header=TRUE)#Oct. 12 2020
+retdis=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/RetDis_2020.csv",header=TRUE)#Oct. 12 2020
+retdis=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/GroundfishTotalDiscards_EBS_YFS_10_13_21.csv",header=TRUE)#October 13,2021
 Year=names(table(retdis$Year))
 rdtable_full=matrix(0,length(Year),3)
 colnames(rdtable_full)=c("Year","Retained (t)","Discarded (t)")
@@ -1048,8 +1069,8 @@ kable(rdfull,"latex",booktabs=T,linesep="",longtable=TRUE,align='r')
 ```{r retdiscat,message=FALSE, echo=FALSE}
 #note: get FMP groundfish total discards and discard rate by regulatory area in BSAI
 #retdis2018=read.csv(here("/doc/Rmd/retdis2018.csv"),header=TRUE)
-retdis2019=retdis[which(retdis$Year=="2019"),]
-target=names(table(retdis2019$Target))[2:18]
+retdis2020=retdis[which(retdis$Year=="2020"),]
+target=names(table(retdis2020$Target))
 gear=c("HAL","NPT","POT","PTR")
 rdtab=matrix(0,length(target)*4,3)
 rownames(rdtab)=rep(target,4)
@@ -1057,15 +1078,13 @@ colnames(rdtab)=c("Gear","Discarded","Retained")
 rdtab[,1]=rep(gear,each=length(target))
 for(i in 1:length(target)){
  for(j in 1:length(gear)){
- rdtab[i+((j-1)*13),2]=sum(retdis2019$Discards..mt.[which(retdis2019$Target==target[i]&retdis2019$Gear==gear[j])])
- rdtab[i+((j-1)*13),3]=sum(retdis2019$Retained..mt.[which(retdis2019$Target==target[i]&retdis2019$Gear==gear[j])])
+ rdtab[i+((j-1)*13),2]=sum(retdis2020$Discards..mt.[which(retdis2020$Target==target[i]&retdis2020$Gear==gear[j])])
+ rdtab[i+((j-1)*13),3]=sum(retdis2020$Retained..mt.[which(retdis2020$Target==target[i]&retdis2020$Gear==gear[j])])
  }}
 rd=data.frame(rdtab[which((as.numeric(rdtab[,2])+as.numeric(rdtab[,3]))>0),])
-rowz=c("Halibut","Other Species","Pacific Cod","Alaska Plaice","Atka Mackerel",
-"Greenland Turbot","Halibut","Kamchatka Flounder","Other Species","Pacific Cod","Pollock - bottom",
-"Pollock - midwater","Atka Mackerel","Yellowfin Sole")
+rowz=c("Halibut","Pacific Cod","Alaska Plaice","Arrowtooth Flounder","Atka Mackerel","Flathead Sole","Halibut","Other Flatfish","Other Species","Pacific Cod","Pollock - midwater","Rock Sole","Rockfish","Flathead Sole","Other Flatfish","Pollock - midwater","Alaska Plaice","Other Flatfish","Other Species","Pollock - midwater")
 
-rd1=cbind(as.character(rowz),as.character(rd[1:14,1]),formatC(round(as.numeric(as.character(rd[1:14,2]))),big.mark=",",format="d"),formatC(as.numeric(as.character(rd[1:14,3])),big.mark=",",format="d"))
+rd1=cbind(as.character(rowz),as.character(rd[,1]),formatC(round(as.numeric(as.character(rd[,2]))),big.mark=",",format="d"),formatC(as.numeric(as.character(rd[,3])),big.mark=",",format="d"))
 colnames(rd1)=c("Trip target name","Gear type","Discarded (t)","Retained (t)")
 
 kable(rd1,"latex",booktabs=T,linesep="",longtable=FALSE,align="r")
@@ -1074,7 +1093,7 @@ kable(rd1,"latex",booktabs=T,linesep="",longtable=FALSE,align="r")
 \pagebreak
 `r table_nums(name = "occurrence", caption = "Occurrence of Yellowfin Sole in the eastern Bering Sea trawl survey and collections of length and age structures and the number of otoliths aged from the survey. The final column represents the number of otoliths read in each year from the fishery.")`
 ```{r occurrence}
-haul_oto=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/Hauls_otoliths.csv",header=TRUE)
+haul_oto=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/Hauls_otoliths.csv",header=TRUE)
 colnames(haul_oto)=c("Year","Total hauls","Hauls with length","Number of lengths","Hauls with otoliths","Hauls with ages","N. ages (survey)","N. ages (fishery)")
 kable(haul_oto,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")
 ```
@@ -1100,7 +1119,7 @@ kable(b,"latex",booktabs=T,linesep="")%>%
 \pagebreak
 `r table_nums(name = "mature", caption = "Female Yellowfin Sole proportion mature at age from Nichol (1995) and TenBrink and Wilderbuer (2015).")`
 ```{r mature,message=FALSE,echo=FALSE}
-mat=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/maturity_T10.csv",header=TRUE)
+mat=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/maturity_T10.csv",header=TRUE)
 colnames(mat)=c("Age","1992, 1993 samples","2012 samples","Combined")
 kable(mat,"latex",booktabs=T,linesep="")%>%add_header_above(c(" "=1,"Nichol (1995)"=1,"TenBrink and Wilderbuer (2015)"=1,"Total"=1))
 
@@ -1109,16 +1128,17 @@ kable(mat,"latex",booktabs=T,linesep="")%>%add_header_above(c(" "=1,"Nichol (199
 
 
 \pagebreak
-`r table_nums(name = "wtagetab", caption = "Mean unsmoothed weight-at-age (grams) for Yellowfin Sole, based on survey data, females presented first, followed by males, 1964-2019.")`
+`r table_nums(name = "wtagetab", caption = "Mean unsmoothed weight-at-age (grams) for Yellowfin Sole, based on survey data, females presented first, followed by males, 1964-2021, except 2020.")`
 ```{r wtagetab}
-thisyr=2020 #No new data in 2020
-nyrs=length(seq(1964,thisyr-1,1))
+#No new data in 2020
+thisyr=2021
+nyrs=length(seq(1964,thisyr,1)[-57])
 wt_f=YFS2$wt_srv_f[11:(nyrs+10),]#YFS2 is the accepted model.
 wt_m=YFS2$wt_srv_m[11:(nyrs+10),]
 colnames(wt_f)=seq(1,20,1)
-rownames(wt_f)=seq(1964,thisyr-1,1)
+rownames(wt_f)=seq(1964,thisyr,1)[-57]
 colnames(wt_m)=seq(1,20,1)
-rownames(wt_m)=seq(1964,thisyr-1,1)
+rownames(wt_m)=seq(1964,thisyr,1)[-57]
 print(kable(wt_f,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Females)"=19 )))
 
 print(kable(wt_m,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="scale_down")%>%add_header_above(c("Year", "Age (Males)"=19 )))
@@ -1130,7 +1150,7 @@ print(kable(wt_m,"latex",booktabs=T,linesep="")%>%kable_styling(latex_options="s
 \pagebreak
 `r table_nums(name = "Srvbio_CI", caption = "Yellowfin Sole biomass estimates (t) from the annual Bering Sea shelf bottom trawl survey, with upper and lower 95% confidence intervals, based on Model 18.2. Note that this survey was not conducted in 2020.")`
 ```{r Srvbio_CI, message=FALSE,echo=FALSE}
-srvbio=cbind(YFS2$yr_bts,formatC(1000*YFS2$ob_bts,format="d",big.mark=","),formatC(1000*YFS2$ob_bts-1.96*YFS2$sd_ob_bts,format="d",big.mark=","),formatC(1000*YFS2$ob_bts+1.96*YFS2$sd_ob_bts,format="d",big.mark=","))
+srvbio=cbind(YFS18_2$yr_bts,formatC(1000*YFS18_2$ob_bts,format="d",big.mark=","),formatC(1000*YFS18_2$ob_bts-1.96*YFS18_2$sd_ob_bts,format="d",big.mark=","),formatC(1000*YFS18_2$ob_bts+1.96*YFS18_2$sd_ob_bts,format="d",big.mark=","))
 colnames(srvbio)=c("Year","Biomass (t)","Lower confidence interval","Upper confidence interval")
 kable(srvbio,"latex",booktabs=T,linesep="")
 
@@ -1139,12 +1159,12 @@ kable(srvbio,"latex",booktabs=T,linesep="")
 
 
 \pagebreak
-`r table_nums(name = "biomCI", caption = paste("Model estimates of Yellowfin Sole age 2+ total biomass (t) from the",thisyr-1," and ",thisyr," stock assessments, Model 18.1, Model 18.1, and 18.2."))`
+`r table_nums(name = "biomCI", caption = paste("Model estimates of Yellowfin Sole age 2+ total biomass (t) from the",thisyr-1," and ",thisyr," stock assessments, Model 18.2, Model 18.2a, and 18.2b."))`
 ```{r biomCI, message=FALSE,echo=FALSE}
-biom=data.frame(round(1000*YFS2$TotBiom[,c(2,4,5)]),round(1000*YFS1$TotBiom[,c(2,4,5)]),c(formatC(round(1000*YFS0$TotBiom[,2]),format="d",big.mark=",",digits=0),"-"))
-colnames(biom)=c("Biomass (t)","LCI","HCI","Biomass (t)","LCI","HCI","Biomass (t)")
-rownames(biom)=seq(1954,2020,1)
-kable(biom,"latex",booktabs=T,linesep="",format.args=list(format="d",big.mark=","),longtable=TRUE,align="r")%>%add_header_above(c(" "=1,"Model 18.2 (2020)"=3,"Model 18.1 (2020)"=3,"Model 18.1 (2019)"))
+biom=data.frame(round(1000*YFS18_2$TotBiom[,c(2,4,5)]),rbind(round(1000*YFS2020$TotBiom[,c(2,4,5)]),c("-","-","-")),round(1000*YFS18_2a$TotBiom[,c(2)]),round(1000*YFS18_2b$TotBiom[,c(2)]))
+colnames(biom)=c("Biomass (t)","LCI","HCI","Biomass (t)","LCI","HCI","Biomass (t)","Biomass (t)")
+rownames(biom)=seq(1954,2021,1)
+kable(biom,"latex",booktabs=T,linesep="",format.args=list(format="d",big.mark=","),longtable=TRUE,align="r")%>%add_header_above(c(" "=1,"Model 18.2 (2021)"=3,"Model 18.2 (2020)"=3,"Model 18.2a (2021)","MOdel 18.2b (2021"))
 ```
 
 \pagebreak
@@ -1152,16 +1172,17 @@ kable(biom,"latex",booktabs=T,linesep="",format.args=list(format="d",big.mark=",
 ```{r NBS_bio, message=FALSE,echo=FALSE}
 NBSbiomass2019=520028.93
 NBSvariance2019=3868517857.3
-NBS=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/NBS_YFS.csv",header=TRUE)
+NBS=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/NBS_YFS.csv",header=TRUE)
 colnames(NBS)=c("Year","Biomass (t)","LCI","HCI","Haul count","Hauls with catch","Number count","Length count")
 kable(NBS,"latex",booktabs=T,linesep="")
 ```
  
 \pagebreak
-`r table_nums(name = "natagesrv", caption = paste("Yellowfin Sole population numbers-at-age (millions) estimated from the annual EBS bottom trawl surveys, 1987-",thisyr-1," (Current year data is not yet available). Data come from the 'plusnw' extended survey area. Females are presented first, followed by males.",sep=""))`
+`r table_nums(name = "natagesrv", caption = paste("Yellowfin Sole population numbers-at-age (millions) estimated from the annual EBS bottom trawl surveys, 1987-",thisyr-2," (Current year data is not yet available and there was no survey in 2020). Data in years 1987 or later come from the 'plusnw' extended survey area. Females are presented first, followed by males.",sep=""))`
 ```{r natagesrv}
-catage_p=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/survey/yellowfin_sole_agecomp_ebs_plusNW.csv",header=TRUE)
-catage_s=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/yfs_agecomp_ebs_standard.csv",header=TRUE)
+catage_p=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/survey/yellowfin_sole_agecomp_ebs_plusNW.csv",header=TRUE)
+catage_p=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey/yellowfin_sole_agecomp_ebs_plusNW.csv",header=TRUE)#no new ages since last year.
+catage_s=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/yfs_agecomp_ebs_standard.csv",header=TRUE)
 
 age=seq(2,17,1)
 yrs=names(table(catage_p$YEAR))
@@ -1221,8 +1242,9 @@ kable(rescatch,"latex",booktabs=T,linesep="")
 
 `r table_nums(name="liketab",caption="Comparison of likelihood values for survey and fishery age, selectivity, survey biomass, recruitment, catchability, and total likelihood for Models 18.1 and 18.2.")`
 ```{r liketab, echo=FALSE}
-totallike2=sum(YFS2$wt_like,YFS2$age_likeihood_for_survey,YFS2$age_likelihood_for_fishery,YFS2$catch_likelihood,YFS2$selectivity_likelihood,YFS2$survey_likelihood,YFS2$recruitment_likelilhood) #recommended
-totallike1=sum(YFS1$wt_like,YFS1$age_likeihood_for_survey,YFS1$age_likelihood_for_fishery,YFS1$catch_likelihood,YFS1$selectivity_likelihood,YFS1$survey_likelihood,YFS1$recruitment_likelilhood)  
+#totallike2=sum(YFS2$wt_like,YFS2$age_likeihood_for_survey,YFS2$age_likelihood_for_fishery,YFS2$catch_likelihood,YFS2$selectivity_likelihood,YFS2$survey_likelihood,YFS2$recruitment_likelilhood) #recommended
+totallike2=sum(YFS18_2$wt_like,YFS18_2$age_likeihood_for_survey,YFS18_2$age_likelihood_for_fishery,YFS18_2$catch_likelihood,YFS18_2$selectivity_likelihood,YFS18_2$survey_likelihood,YFS18_2$recruitment_likelilhood) #recommended
+totallike1=sum(YFS18_2a$wt_like,YFS18_2a$age_likeihood_for_survey,YFS18_2a$age_likelihood_for_fishery,YFS18_2a$catch_likelihood,YFS18_2a$selectivity_likelihood,YFS18_2a$survey_likelihood,YFS18_2a$recruitment_likelilhood) 
 ```
 
 \begin{table}[h]
@@ -1250,10 +1272,10 @@ Total              &       `r round(totallike1,2)`      &`r round(totallike2,2)`
 `r table_nums(name = "pars", caption = "Parameter values and their 95% confidence intervals, estimated within the preferred stock assessment model, Model 18.2.")`
 ```{r pars, echo=FALSE,message=FALSE}
 
-pars=as.data.frame(read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/fm.std",header=TRUE))
-pars2=pars[c(1:6,113,181,182,317,385,453:458,712:716,727,728,729:795),]
+pars=as.data.frame(read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/fm.std",header=TRUE))
+pars2=pars[c(1:6,114,183,184,321,390,459:464,712:716,736,737,738:805),]
 
-pars3=cbind(pars2[1:45,2:4],c(rep("|",45)),pars2[46:90,2:4])
+pars3=cbind(pars2[1:46,2:4],c(rep("|",46)),(pars2[47:92,2:4]))
 pars3[,1]=as.character(pars3[,1])
 pars3[1:7,1]=c("male natural mortality","alpha (q-temp model)","beta (q-temp model)","beta (survey start date)","beta (start date/temp interaction)","mean log recruitment","log_avg_fmort")
 
@@ -1278,17 +1300,17 @@ kable(pars3,"latex",booktabs=T,linesep="",align=c("l","r","r","r","l","r","r"))%
   \hline
 $M$ (natural mortality rate)         &  `r round(YFS2$natmort_f,2)`, `r round(YFS2$natmort_m,3)`  & `r round(YFS2$natmort_f,2)`, `r round(YFS2$natmort_m,3)`  &  `r round(YFS1$natmort_f,2)`, `r round(YFS1$natmort_m,2)`   &  `r round(YFS1$natmort_f,2)`, `r round(YFS1$natmort_m,2)`   &  `r round(YFS1$natmort_f,2)`, `r round(YFS1$natmort_m,2)`   &  `r round(YFS1$natmort_f,2)`, `r round(YFS1$natmort_m,2)`  \\
 Tier                                  &  1a   &  1a   &  1a   & 1a &  1a   & 1a   \\
-Projected total (age 6+) biomass (t)  &  `r formatC(extra_sd2$GM_Biom[1]*1000,format="d",big.mark=",")`   &  `r formatC(extra_sd2$GM_Biom[2]*1000,format="d",big.mark=",")`  &  `r formatC(extra_sd1$GM_Biom[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd1$GM_Biom[2]*1000,format="d",big.mark=",")` &  `r formatC(extra_sd0$GM_Biom[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd0$GM_Biom[2]*1000,format="d",big.mark=",")` \\
-Projected female spawning biomass (t) &  `r formatC(extra_sd2$SSB[1]*1000,format="d",big.mark=",")`  &  `r formatC(extra_sd2$SSB[2]*1000,format="d",big.mark=",")`  &  `r formatC(extra_sd1$SSB[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd1$SSB[2]*1000,format="d",big.mark=",")` &  `r formatC(extra_sd0$SSB[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd0$SSB[2]*1000,format="d",big.mark=",")` \\
+Projected total (age 6+) biomass (t)  &  `r formatC(ABC_OFL$GM_Biom[1]*1000,format="d",big.mark=",")`   &  `r formatC(ABC_OFL$GM_Biom[2]*1000,format="d",big.mark=",")`  &  `r formatC(extra_sd1$GM_Biom[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd1$GM_Biom[2]*1000,format="d",big.mark=",")` &  `r formatC(extra_sd0$GM_Biom[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd0$GM_Biom[2]*1000,format="d",big.mark=",")` \\
+Projected female spawning biomass (t) &  `r formatC(ABC_OFL$SSB[1]*1000,format="d",big.mark=",")`  &  `r formatC(ABC_OFL$SSB[2]*1000,format="d",big.mark=",")`  &  `r formatC(extra_sd1$SSB[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd1$SSB[2]*1000,format="d",big.mark=",")` &  `r formatC(extra_sd0$SSB[1]*1000,format="d",big.mark=",")`  & `r formatC(extra_sd0$SSB[2]*1000,format="d",big.mark=",")` \\
 $\:\:\:\:\:\:B_{100\%}$                           &  `r B0_2`  &  `r B0_2`  &  `r B0_1`  & `r B0_1` & `r B0_0`  & `r B0_0`  \\
-$\:\:\:\:\:\:B_{MSY\%}$                            &  `r formatC(1000*extra_sd2$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd2$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd1$Bmsy[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd1$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd0$Bmsy[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd0$Bmsy[1],format="d",big.mark=",")` \\
-$F_{OFL}$                             &  `r round(extra_sd2$AM_Fmsyr[1],3)`   &  `r round(extra_sd2$AM_Fmsyr[2],3)`   &  `r round(extra_sd1$AM_Fmsyr[1],3)`  & `r round(extra_sd1$AM_Fmsyr[2],3)`  &  `r round(extra_sd0$AM_Fmsyr[1],3)`  & `r round(extra_sd0$AM_Fmsyr[2],3)` \\
-$maxF_{ABC}$                          &  `r round(extra_sd2$HM_Fmsyr[1],3)`   &   `r round(extra_sd2$HM_Fmsyr[2],3)`   &  `r round(extra_sd1$HM_Fmsyr[1],3)`    & `r round(extra_sd1$HM_Fmsyr[2],3)` &  `r round(extra_sd0$HM_Fmsyr[1],3)`    & `r round(extra_sd0$HM_Fmsyr[2],3)`    \\
-$F_{ABC}$                             &  `r round(extra_sd2$HM_Fmsyr[1],3)`   &  `r round(extra_sd2$HM_Fmsyr[2],3)`   &  `r round(extra_sd1$HM_Fmsyr[1],3)`   & `r round(extra_sd1$HM_Fmsyr[2],3)` &  `r round(extra_sd0$HM_Fmsyr[1],3)`   & `r round(extra_sd0$HM_Fmsyr[2],3)`   \\
-$OFL$                                 &  `r formatC(1000*extra_sd2$OFL_AM[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd2$OFL_AM[2],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd1$OFL_AM[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd1$OFL_AM[2],format="d",big.mark=",")` &  `r formatC(1000*extra_sd0$OFL_AM[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd0$OFL_AM[2],format="d",big.mark=",")`
+$\:\:\:\:\:\:B_{MSY\%}$                            &  `r formatC(1000*ABC_OFL$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*ABC_OFL$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd1$Bmsy[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd1$Bmsy[1],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd0$Bmsy[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd0$Bmsy[1],format="d",big.mark=",")` \\
+$F_{OFL}$                             &  `r round(ABC_OFL$AM_Fmsyr[1],3)`   &  `r round(ABC_OFL$AM_Fmsyr[2],3)`   &  `r round(extra_sd1$AM_Fmsyr[1],3)`  & `r round(extra_sd1$AM_Fmsyr[2],3)`  &  `r round(extra_sd0$AM_Fmsyr[1],3)`  & `r round(extra_sd0$AM_Fmsyr[2],3)` \\
+$maxF_{ABC}$                          &  `r round(ABC_OFL$HM_Fmsyr[1],3)`   &   `r round(ABC_OFL$HM_Fmsyr[2],3)`   &  `r round(extra_sd1$HM_Fmsyr[1],3)`    & `r round(extra_sd1$HM_Fmsyr[2],3)` &  `r round(extra_sd0$HM_Fmsyr[1],3)`    & `r round(extra_sd0$HM_Fmsyr[2],3)`    \\
+$F_{ABC}$                             &  `r round(ABC_OFL$HM_Fmsyr[1],3)`   &  `r round(ABC_OFL$HM_Fmsyr[2],3)`   &  `r round(extra_sd1$HM_Fmsyr[1],3)`   & `r round(extra_sd1$HM_Fmsyr[2],3)` &  `r round(extra_sd0$HM_Fmsyr[1],3)`   & `r round(extra_sd0$HM_Fmsyr[2],3)`   \\
+$OFL$                                 &  `r formatC(1000*ABC_OFL$OFL_AM[1],format="d",big.mark=",")`  &  `r formatC(1000*ABC_OFL$OFL_AM[2],format="d",big.mark=",")`  &  `r formatC(1000*extra_sd1$OFL_AM[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd1$OFL_AM[2],format="d",big.mark=",")` &  `r formatC(1000*extra_sd0$OFL_AM[1],format="d",big.mark=",")`  & `r formatC(1000*extra_sd0$OFL_AM[2],format="d",big.mark=",")`
 \\
-$maxABC$                              &  `r formatC(1000*extra_sd2$ABC_HM[1],format="d",big.mark=",") ` &  `r formatC(1000*extra_sd2$ABC_HM[2],format="d",big.mark=",") `  &  `r formatC(1000*extra_sd1$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd1$ABC_HM[2],format="d",big.mark=",") ` &  `r formatC(1000*extra_sd0$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd0$ABC_HM[2],format="d",big.mark=",") ` \\
-$ABC$                                 &  `r formatC(1000*extra_sd2$ABC_HM[1],format="d",big.mark=",") `  &  `r formatC(1000*extra_sd2$ABC_HM[2],format="d",big.mark=",") ` & `r formatC(1000*extra_sd1$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd1$ABC_HM[2],format="d",big.mark=",") ` &  `r formatC(1000*extra_sd0$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd0$ABC_HM[2],format="d",big.mark=",") ` \\
+$maxABC$                              &  `r formatC(1000*ABC_OFL$ABC_HM[1],format="d",big.mark=",") ` &  `r formatC(1000*ABC_OFL$ABC_HM[2],format="d",big.mark=",") `  &  `r formatC(1000*extra_sd1$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd1$ABC_HM[2],format="d",big.mark=",") ` &  `r formatC(1000*extra_sd0$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd0$ABC_HM[2],format="d",big.mark=",") ` \\
+$ABC$                                 &  `r formatC(1000*ABC_OFL$ABC_HM[1],format="d",big.mark=",") `  &  `r formatC(1000*ABC_OFL$ABC_HM[2],format="d",big.mark=",") ` & `r formatC(1000*extra_sd1$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd1$ABC_HM[2],format="d",big.mark=",") ` &  `r formatC(1000*extra_sd0$ABC_HM[1],format="d",big.mark=",") `  & `r formatC(1000*extra_sd0$ABC_HM[2],format="d",big.mark=",") ` \\
 \hline
 Status                               & `r thisyr-1`       & `r thisyr`      &  `r thisyr-1`             & `r thisyr`  &  `r thisyr-1`             & `r thisyr`          \\
 \hline
@@ -1337,17 +1359,17 @@ Approaching overfished               & n/a         & No       & n/a             
 
 `r table_nums(name="fmort",caption="Model estimates of Yellowfin Sole full selection fishing mortality (F) and exploitation rate (catch/total biomass).")`
 ```{r, echo = FALSE, results = 'asis', warning = F}
-fm=data.frame(cbind(YFS2$F_f[,18],YFS2$Obs_catch/YFS2$TotBiom[,2],cbind(YFS1$F_f[,18],YFS1$Obs_catch/YFS1$TotBiom[,2])))
+fm=data.frame(cbind(YFS18_2$F_f[,18],YFS18_2$Obs_catch/YFS18_2$TotBiom[,2],YFS18_2a$F_f[,18],YFS18_2a$Obs_catch/YFS18_2a$TotBiom[,2]))
 
 colnames(fm)=c("Full selection F","Catch/Total Biomass","Full selection F","Catch/Total Biomass")
-rownames(fm)=seq(1954,2020,1)
-kable(fm,"latex",booktabs=TRUE,linesep="",align="r",digits=3,longtable=TRUE)%>%add_header_above(c(" "=1,"Model 18.2"=2,"Model 18.1"=2))
+rownames(fm)=seq(1954,2021,1)
+kable(fm,"latex",booktabs=TRUE,linesep="",align="r",digits=3,longtable=TRUE)%>%add_header_above(c(" "=1,"Model 18.2"=2,"Model 18.2a"=2))
 ```
 
 \pagebreak
 `r table_nums(name = "FSBCI", caption = paste("Model estimates of Yellowfin Sole female spawning biomass (FSB) in metric tons (t) and upper (HCI) and lower (LCI) 95% confidence intervals from the",thisyr-1," and ",thisyr," stock assessments, including Model 18.1, 18.1 and 18.2."))`
 ```{r FSBCI, message=FALSE,echo=FALSE}
-biom=data.frame(1000*YFS2$SSB[,c(2,4,5)],1000*YFS1$SSB[,c(2,4,5)],c(formatC(1000*YFS0$SSB[,2],format="d",big.mark=",",digits=0),"-"))
+biom=data.frame(1000*YFS18_2$SSB[,c(2,4,5)],1000*YFS18_2a$SSB[,c(2,4,5)])
 colnames(biom)=c("FSB (t)","LCI","HCI","FSB (t)","LCI","HCI","Biomass (t)")
 rownames(biom)=seq(1954,2020,1)
 kable(biom,"latex",booktabs=T,linesep="",format.args=list(format="d",big.mark=","),digits=0,align="r",longtable=TRUE)%>%add_header_above(c(" "=1,"Model 18.2"=3,"Model 18.1 (2020)"=3,"Model 18.1 (2019)"))
@@ -2464,9 +2486,9 @@ p18_2+ggtitle("Model 18.2")
 #phase plane plot
 par(mar=c(5,5,3,2))
 par(mfrow=c(1,1))
-F40=extra_sd2$HM_Fmsyr[1]
-B40=extra_sd2$Bmsy[1]
-FOFL=extra_sd2$AM_Fmsyr[1]
+F40=ABC_OFL$HM_Fmsyr[1]
+B40=ABC_OFL$Bmsy[1]
+FOFL=ABC_OFL$AM_Fmsyr[1]
 plot(0,0,xlim=c(0,max(YFS2$SSB[,2])*1.1),ylim=c(0,FOFL*1.6),col=1,xlab="Estimated female spawning biomass (x 1,000 t)",ylab="Estimated fishing mortality rate",cex.axis=1.2,cex.lab=1.1,pch=-1,cex=.00001)
 segments(0,0,B40,F40,col="green",lwd=4)
 segments(B40,F40,max(YFS2$SSB[,2])*1.1,F40,col="green",lwd=4)
@@ -2483,11 +2505,11 @@ text(YFS2$SSB[67,2]-60,YFS2$F_f[67,19]+.005,"2020",cex=0.9)
 #for(i in 1: 59){
 #text(ATF2019$fspbio[i]  ,ATF2019$fishmort[i],labels=as.character(seq(1961,2019,1))[i],cex=0.9)}
 
-points(extra_sd2$SSB[1],extra_sd2$Catch_Assump[1]/extra_sd2$GM_Biom[1],pch=15,col="blue")
-text(extra_sd2$SSB[1],(extra_sd2$Catch_Assump[1]/extra_sd2$GM_Biom[1])+.005,"2021",cex=0.9)
+points(ABC_OFL$SSB[1],ABC_OFL$Catch_Assump[1]/ABC_OFL$GM_Biom[1],pch=15,col="blue")
+text(ABC_OFL$SSB[1],(ABC_OFL$Catch_Assump[1]/ABC_OFL$GM_Biom[1])+.005,"2021",cex=0.9)
 
-points(extra_sd2$SSB[2]+20,extra_sd2$Catch_Assump[2]/extra_sd2$GM_Biom[2],pch=15,col="black")
-text(extra_sd2$SSB[2]-60,(extra_sd2$Catch_Assump[2]/extra_sd2$GM_Biom[2])+.005,"2022",cex=0.9)
+points(ABC_OFL$SSB[2]+20,ABC_OFL$Catch_Assump[2]/ABC_OFL$GM_Biom[2],pch=15,col="black")
+text(ABC_OFL$SSB[2]-60,(ABC_OFL$Catch_Assump[2]/ABC_OFL$GM_Biom[2])+.005,"2022",cex=0.9)
 
 
 ```
