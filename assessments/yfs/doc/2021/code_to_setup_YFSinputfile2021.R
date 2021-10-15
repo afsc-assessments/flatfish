@@ -3,23 +3,42 @@
 #THis was the AKFIN age comps. It seems like AKFIN matched obsint exactly
 #except in some years 1991, 1993-1997 when obsint did not return anything.
 #AKFIN HERE
-#AKFIN observer age frequency norpac age report pecies Name is equal to YELLOWFIN SOLE and	Age FMP Area is equal to BSAI and	Age FMP Subarea is equal to BS
-oac=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/norpac_age_report_YFS_10_1_20.csv",header=TRUE)
-yrs=as.numeric(names(table(oac$Year)))
-oacmat_f=matrix(0,length(seq(1990,2020,1)),39)
-oacmat_m=matrix(0,length(seq(1990,2020,1)),39)
+#AKFIN observer age frequency norpac age report species Name is equal to YELLOWFIN SOLE and	Age FMP Area is equal to BSAI and	Age FMP Subarea is equal to BS
+oac=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2020 YFS/norpac_age_report_YFS_10_1_20.csv",header=TRUE)
+oac21=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/norpac_age_report_YFS_10_5_21.csv",header=TRUE)
+yrs=as.numeric(names(table(oac21$Year)))
+oacmat_f2020=matrix(0,length(seq(1990,2021,1)),40)
+oacmat_m2020=matrix(0,length(seq(1990,2021,1)),40)
+oacmat_f2021=matrix(0,length(seq(1990,2021,1)),40)
+oacmat_m2021=matrix(0,length(seq(1990,2021,1)),40)
 for(i in 1:length(yrs)){
- for(j in 1:39){
-  oacmat_f[i,j]=length(oac$Age[which(oac$Year==yrs[i]&oac$Age==j&oac$Sex=="F")])
-  oacmat_m[i,j]=length(oac$Age[which(oac$Year==yrs[i]&oac$Age==j&oac$Sex=="M")])
-  
+ for(j in 1:40){
+  oacmat_f2020[i,j]=length(oac$Age[which(oac$Year==yrs[i]&oac$Age==j&oac$Sex=="F")])
+  oacmat_m2020[i,j]=length(oac$Age[which(oac$Year==yrs[i]&oac$Age==j&oac$Sex=="M")])
+  oacmat_f2021[i,j]=length(oac21$Age[which(oac21$Year==yrs[i]&oac21$Age==j&oac21$Sex=="F")])
+  oacmat_m2021[i,j]=length(oac21$Age[which(oac21$Year==yrs[i]&oac21$Age==j&oac21$Sex=="M")])
   print(yrs[i])
  }
 }
+write.csv(oacmat_f2020,"/Users/ingridspies/Downloads/oacmat_f2020.csv")
+write.csv(oacmat_m2020,"/Users/ingridspies/Downloads/oacmat_m2020.csv")
+write.csv(oacmat_f2021,"/Users/ingridspies/Downloads/oacmat_f2020.csv")
+write.csv(oacmat_m2021,"/Users/ingridspies/Downloads/oacmat_m2021.csv")
+
+#How many fishery ages per year?
+nages=vector()
+for(i in 1:length(yrs)){
+ nages[i]=length(oac21$Age[which(oac21$Year==yrs[i]&oac21$Age>0)])
+}
+
+cbind(yrs,nages)
 
 #Get length distribution by NMFS area for figure obs_sizecomp
+#only from trawlers (gear=1 non pelagic trawl or 2 pelagic trawl)
 table(oac$NMFS.Area)
+table(oac21$NMFS.Area)
 table(oac$Length..cm.)#use 7-58cm
+table(oac21$Length..cm.)#use 7-58cm
 lens=seq(7,58,1)
 areas=c(509,513,514,516,517,521,524)
 lensM=matrix(0,length(lens),length(areas))
@@ -27,18 +46,29 @@ colnames(lensM)=areas;rownames(lensM)=lens
 lensF=lensM
 for(i in 1:length(lens)){
  for(j in 1:length(areas)){
-  lensM[i,j]=nrow(oac[which(oac$Length..cm.==lens[i]&oac$Sex=="M"&oac$NMFS.Area==areas[j]&oac$Gear<3),])
-  lensF[i,j]=nrow(oac[which(oac$Length..cm.==lens[i]&oac$Sex=="F"&oac$NMFS.Area==areas[j]&oac$Gear<3),])
+  lensM[i,j]=nrow(oac21[which(oac21$Length..cm.==lens[i]&oac21$Sex=="M"&oac21$NMFS.Area==areas[j]&oac21$Gear<3),])
+  lensF[i,j]=nrow(oac21[which(oac21$Length..cm.==lens[i]&oac21$Sex=="F"&oac21$NMFS.Area==areas[j]&oac21$Gear<3),])
   
    }
 }
 
-write.csv(lensM,"/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/lensM.csv")
-write.csv(lensF,"/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/lensF.csv")
+write.csv(lensM,"/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/lensM.csv")
+write.csv(lensF,"/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/lensF.csv")
 
+#Get proportion of males and females in the random fishery lengths to apply to the fishery age comp data.
+propF=vector()
+propM=vector()
+for(i in 1:length(yrs)){
+ propF[i]=length(oac21$Length..cm.[which(oac21$Year==yrs[i]&oac21$Length..cm.>0&oac21$Sex=="F")])/length(oac21$Length..cm.[which(oac21$Year==yrs[i]&oac21$Length..cm.>0)])
+ propM[i]=length(oac21$Length..cm.[which(oac21$Year==yrs[i]&oac21$Length..cm.>0&oac21$Sex=="M")])/length(oac21$Length..cm.[which(oac21$Year==yrs[i]&oac21$Length..cm.>0)])
+}
+
+#why different sex ratio in some years? Temperature? Timing?
+plot(yrs,propF,ylim=c(0,1))
+lines(yrs,propM)
 
 #OBSINT here
-oac1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/yfs_allyrs_obsint_age_wt_len.csv",header=TRUE)
+oac1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/yfs_allyrs_obsint_age_wt_len.csv",header=TRUE)
 yrs=seq(1990,2020,1)
 oacmat_f1=matrix(0,length(yrs),39)
 oacmat_m1=matrix(0,length(yrs),39)
@@ -81,99 +111,80 @@ colSums(rowSums(oacmat_m1)[17:27]*wtage_mf[17:27,],na.rm=TRUE)/sum(rowSums(oacma
 
 #he just took means from 2006-2016 and used them for all years after 2007.
 
-
 #To create oac_fsh_s you first need to get age data (above). Then you need to get fishery length comps.
-oac_lens=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/YFS_fisherylengths_2018_2019.csv",header=TRUE)
+#This data comes from AKFIN in the observer section on observer lengths.
+oac_lens21=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/norpac_length_report_YFS_10_6_21.csv",header=TRUE)
 
+#Create vectors of length frequencies from the fishery from the age file
 oac_lenmat_F=matrix(0,2,80)
 colnames(oac_lenmat_F)=seq(1,80,1)
 rownames(oac_lenmat_F)=c(2018,2019)
 oac_lenmat_M=oac_lenmat_F
 yrs=c(2018,2019)
 
-#Create vectors of length frequencies from the fishery
 for(i in 1:2){
  for(j in 1:80){
   oac_lenmat_F[i,j]=sum(oac_lens$Frequency[which(oac_lens$Year==yrs[i]&oac_lens$Length_cm==j&oac_lens$Sex=="F")])
   oac_lenmat_M[i,j]=sum(oac_lens$Frequency[which(oac_lens$Year==yrs[i]&oac_lens$Length_cm==j&oac_lens$Sex=="M")])
-  
    }
 }
+#Try creating the same data from the norpac dataset and it is exactly the same as last time.
+yrs=seq(2018,2021,1)
+oac_lenmat_F21=matrix(0,length(yrs),80)
+colnames(oac_lenmat_F21)=seq(1,80,1)
+rownames(oac_lenmat_F21)=yrs
+oac_lenmat_M21=oac_lenmat_F21
 
-#there are not as many lengths for 2018 as TomW had. 119242	females 94783 males
-#here I have 107638 females and 84865 males
-
-#AKFIN data is fine. so use it to do a length/age matrix for 2018 and compare with TomWs
-#1 set up matrix of length by age from read otoliths in 2019 
-#This is a sparse matrix but it has all ages and lenghts from 2019
-oac_LenAge_F=matrix(0,80,39)#80 lengths,39ages
-rownames(oac_LenAge_F)=seq(1,80,1)
-colnames(oac_LenAge_F)=seq(1,39,1)
-for(j in 1:39){
- for (i in 1:80){
-  oac_LenAge_F[i,j]=length(oac$Age[which(oac$Year==2018&oac$Length..cm.==i&oac$Age==j&oac$Sex=="F")])
+for(i in 1:length(yrs)){
+ for(j in 1:80){
+  oac_lenmat_F21[i,j]=sum(oac_lens21$Frequency[which(oac_lens21$Year==yrs[i]&oac_lens21$Length..cm.==j&oac_lens21$Sex=="F")])
+  oac_lenmat_M21[i,j]=sum(oac_lens21$Frequency[which(oac_lens21$Year==yrs[i]&oac_lens21$Length..cm.==j&oac_lens21$Sex=="M")])
  }
 }
-write.csv(oac_LenAge_F,"/Users/ingridspies/Downloads/oac_LenAge_F.csv")
 
-#Test TomWs female length comps with this 8-49
-#2 Make vector of length frequencies from fishery for the same lenghts as rows of matrix
-TW_LF_fem2018=c(0,0,0,0,0,0,0,4,	3,5	,12	,11	,23,	45,	73,	83,	127,	143,	211,	233,	331,	518,	916,	1562,	2367,	3282,	4032	,4306,	4738,	5414,	6640,	8786,	11158,	12849,	13295,	12079,	9793,	7085,	4550,	2468,	1181,	506,	239,	78	,45	,21,	13,	10,	7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-#Normalization step 1. Turn numbers at age into proportions of age at each length so ages at each length sum to 1.
-T1=oac_LenAge_F/rowSums(oac_LenAge_F)
-#apply length frequencies to the proportion of age at length matrix
-T2=TW_LF_fem2018*T1
-#sum over columns and normalize to 1
-T3=colSums(T2,na.rm=TRUE)/sum(T2,na.rm=TRUE)
-#create 20plus group
-T4=c(T3[1:19],sum(T3[20:39]))#Then you will multiply by the proportion of females lengthed in the entire fishery for that year, and enter it into data file as a single matrix that sums to 1 for males and females.
 
-#Set up fishery age comps for 2019 (will need to re-pull fishery lenghts with obsint)
+#Set up fishery age comps for 2019 (age data comes from the age data part lengths a separate dataset)
+
+yrs=c(2018,2019,2020,2021)#note no aged data from 2021 yet.
+Final_agematfishery=matrix(0,4,40)
+for(k in 1:length(yrs)){
 oac_LenAge_F=matrix(0,80,39)#80 lengths,39ages
 oac_LenAge_M=matrix(0,80,39)#80 lengths,39ages
 rownames(oac_LenAge_F)=seq(1,80,1);rownames(oac_LenAge_M)=seq(1,80,1)
 colnames(oac_LenAge_F)=seq(1,39,1);colnames(oac_LenAge_M)=seq(1,39,1)
 for(j in 1:39){
  for (i in 1:80){
-  oac_LenAge_F[i,j]=nrow(oac1[which(oac1$YEAR=="2019"&oac1$LENGTH_CM==i&oac1$SEX=="F"&oac1$AGE>0&oac1$AGE==j),])
-  oac_LenAge_M[i,j]=nrow(oac1[which(oac1$YEAR=="2019"&oac1$LENGTH_CM==i&oac1$SEX=="M"&oac1$AGE>0&oac1$AGE==j),])
+  oac_LenAge_F[i,j]=nrow(oac21[which(oac21$Year==yrs[k]&oac21$Length..cm.==i&oac21$Sex=="F"&oac21$Age>0&oac21$Age==j),])
+  oac_LenAge_M[i,j]=nrow(oac21[which(oac21$Year==yrs[k]&oac21$Length..cm.==i&oac21$Sex=="M"&oac21$Age>0&oac21$Age==j),])
    }
 }
 
-#Get vector of length freqs from fishery (need to redo from obsint)
-#proportion at age yrs_fsh_age_split  oac_fsh
-#Create vectors of length frequencies from the fishery
-oac_lenmat_F[2,]#fishery vector of lengths for 2019 there were 114,728
-oac_lenmat_M[2,]#fishery vector of lengths for 2019 there were 86,094
-
-#2019 Fishery Females
+#Fishery Females - normalize so that each age proportions at each length sum to 1.
 T1_f=oac_LenAge_F/rowSums(oac_LenAge_F)
 #apply length frequencies to the proportion of age at length matrix
-T2_f=oac_lenmat_F[2,]*T1_f
+T2_f=oac_lenmat_F21[k,]*T1_f
 #sum over columns and normalize to 1
 T3_f=colSums(T2_f,na.rm=TRUE)/sum(T2_f,na.rm=TRUE)
 #create 20plus group
 T4_f=c(T3_f[1:19],sum(T3_f[20:39]))#Then you will multiply by the proportion of females lengthed in the entire fishery for that year, and enter it into data file as a single matrix that sums to 1 for males and females.
-PF=sum(oac_lenmat_F[2,])/sum(oac_lenmat_F[2,]+oac_lenmat_M[2,])
+PF=sum(oac_lenmat_F21[k,])/sum(oac_lenmat_F21[k,]+oac_lenmat_M21[k,])
 T4_f_P=T4_f*PF
 
 #2019 Fishery Males
 T1_m=oac_LenAge_M/rowSums(oac_LenAge_M)
 #apply length frequencies to the proportion of age at length matrix
-T2_m=oac_lenmat_M[2,]*T1_m
+T2_m=oac_lenmat_M21[k,]*T1_m
 #sum over columns and normalize to 1
 T3_m=colSums(T2_m,na.rm=TRUE)/sum(T2_m,na.rm=TRUE)
 #create 20plus group
 T4_m=c(T3_m[1:19],sum(T3_m[20:39]))#Then you will multiply by the proportion of females lengthed in the entire fishery for that year, and enter it into data file as a single matrix that sums to 1 for males and females.
-PM=sum(oac_lenmat_M[2,])/sum(oac_lenmat_F[2,]+oac_lenmat_M[2,])
+PM=sum(oac_lenmat_M21[k,])/sum(oac_lenmat_F21[k,]+oac_lenmat_M21[k,])
 T4_m_P=T4_m*PM
 
-sum(T4_f_P   +T4_m_P)
-
-c(T4_f_P,T4_m_P)#add to oac_fish_s row for 2019
-
+Final_agematfishery[k,]=c(T4_f_P,T4_m_P)#add to oac_fish_s row for 2019
+}
 #Get survey age frequencies. These were normalized to the observed length frequencies in the population and These are just normalized so that males and females add to 1.
-srv_age=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/survey/yellowfin_sole_agecomp_ebs_plusNW.csv",header=TRUE)
+srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey/yellowfin_sole_agecomp_ebs_plusNW.csv",header=TRUE)
 
 yrs=names(table(srv_age$YEAR))
 agematF=matrix(0,length(yrs),20)
@@ -196,7 +207,7 @@ agematM_nn=agematM_n*(rowSums(agematM)/(rowSums(agematF)+rowSums(agematM)))
 srvage_2019=c(agematF_nn[38,],agematM_nn[38,])
 sum(srvage_2019)
 
-plot(YFS2$TotBiom,ylab="BiomassX1000t",xlab="Year")
+plot(YFS18_2$TotBiom,ylab="BiomassX1000t",xlab="Year")
 lines(YFS5$TotBiom)
 legend("topleft",c("2019 wt_fsh","2020 wt_fish"),pch=c(1,-1),lty=c(-1,1))
 

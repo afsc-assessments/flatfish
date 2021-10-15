@@ -682,28 +682,28 @@ _Retrospective Analysis_
 
 ```{r, echo=FALSE, message=FALSE}
 
-YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro0/fm.rep")
-YFS2019=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro1/fm.rep")
-YFS2018=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro2/fm.rep")
-YFS2017=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro3/fm.rep")
-YFS2016=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro4/fm.rep")
-YFS2015=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro5/fm.rep")
-YFS2014=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro6/fm.rep")
-YFS2013=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro7/fm.rep")
-YFS2012=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro8/fm.rep")
-YFS2011=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro9/fm.rep")
-YFS2010=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retrospectives/retro10/fm.rep")
-
-a=-1*(YFS2020$SSB[1:66,2]-YFS2019$SSB[,2])/YFS2020$SSB[1:66,2]
-b=-1*(YFS2020$SSB[1:65,2]-YFS2018$SSB[,2])/YFS2020$SSB[1:65,2]
-c=-1*(YFS2020$SSB[1:64,2]-YFS2017$SSB[,2])/YFS2020$SSB[1:64,2]
-d=-1*(YFS2020$SSB[1:63,2]-YFS2016$SSB[,2])/YFS2020$SSB[1:63,2]
-e=-1*(YFS2020$SSB[1:62,2]-YFS2015$SSB[,2])/YFS2020$SSB[1:62,2]
-f=-1*(YFS2020$SSB[1:61,2]-YFS2014$SSB[,2])/YFS2020$SSB[1:61,2]
-g=-1*(YFS2020$SSB[1:60,2]-YFS2013$SSB[,2])/YFS2020$SSB[1:60,2]
-h=-1*(YFS2020$SSB[1:59,2]-YFS2012$SSB[,2])/YFS2020$SSB[1:59,2]
-i=-1*(YFS2020$SSB[1:58,2]-YFS2011$SSB[,2])/YFS2020$SSB[1:58,2]
-j=-1*(YFS2020$SSB[1:57,2]-YFS2010$SSB[,2])/YFS2020$SSB[1:57,2]
+YFS2021=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_0/fm.rep")
+YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_1/fm.rep")
+YFS2019=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_2/fm.rep")
+YFS2018=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_3/fm.rep")
+YFS2017=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_4/fm.rep")
+YFS2016=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_5/fm.rep")
+YFS2015=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_6/fm.rep")
+YFS2014=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_7/fm.rep")
+YFS2013=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_8/fm.rep")
+YFS2012=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_9/fm.rep")
+YFS2011=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/retro18_2/retro_10/fm.rep")
+a=-1*(YFS2021$SSB[1:68,2]-YFS2020$SSB[,2])/YFS2021$SSB[1:68,2]  
+b=-1*(YFS2021$SSB[1:67,2]-YFS2019$SSB[,2])/YFS2021$SSB[1:67,2]
+c=-1*(YFS2021$SSB[1:66,2]-YFS2018$SSB[,2])/YFS2021$SSB[1:66,2]
+d=-1*(YFS2021$SSB[1:65,2]-YFS2017$SSB[,2])/YFS2021$SSB[1:65,2]
+e=-1*(YFS2021$SSB[1:64,2]-YFS2016$SSB[,2])/YFS2021$SSB[1:64,2]
+f=-1*(YFS2021$SSB[1:63,2]-YFS2015$SSB[,2])/YFS2021$SSB[1:63,2]
+g=-1*(YFS2021$SSB[1:62,2]-YFS2014$SSB[,2])/YFS2021$SSB[1:62,2]
+h=-1*(YFS2021$SSB[1:61,2]-YFS2013$SSB[,2])/YFS2021$SSB[1:61,2]
+i=-1*(YFS2021$SSB[1:60,2]-YFS2012$SSB[,2])/YFS2021$SSB[1:60,2]
+j=-1*(YFS2021$SSB[1:59,2]-YFS2011$SSB[,2])/YFS2021$SSB[1:59,2]
+k=-1*(YFS2021$SSB[1:58,2]-YFS2010$SSB[,2])/YFS2021$SSB[1:58,2]  
 
 Rho18_2=(a[length(a)]+b[length(b)]+c[length(c)]+d[length(d)]+e[length(e)]+
       f[length(f)]+g[length(g)]+h[length(h)]+i[length(i)]+j[length(j)])/10;
