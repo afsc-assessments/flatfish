@@ -2486,30 +2486,30 @@ p18_2+ggtitle("Model 18.2")
 #phase plane plot
 par(mar=c(5,5,3,2))
 par(mfrow=c(1,1))
-F40=ABC_OFL$HM_Fmsyr[1]
-B40=ABC_OFL$Bmsy[1]
-FOFL=ABC_OFL$AM_Fmsyr[1]
-plot(0,0,xlim=c(0,max(YFS2$SSB[,2])*1.1),ylim=c(0,FOFL*1.6),col=1,xlab="Estimated female spawning biomass (x 1,000 t)",ylab="Estimated fishing mortality rate",cex.axis=1.2,cex.lab=1.1,pch=-1,cex=.00001)
+F40=ABC_OFL18_2$HM_Fmsyr[1]
+B40=ABC_OFL18_2$Bmsy[1]
+FOFL=ABC_OFL18_2$AM_Fmsyr[1]
+plot(0,0,xlim=c(0,max(YFS18_2$SSB[,2])*1.1),ylim=c(0,FOFL*1.6),col=1,xlab="Estimated female spawning biomass (x 1,000 t)",ylab="Estimated fishing mortality rate",cex.axis=1.2,cex.lab=1.1,pch=-1,cex=.00001)
 segments(0,0,B40,F40,col="green",lwd=4)
-segments(B40,F40,max(YFS2$SSB[,2])*1.1,F40,col="green",lwd=4)
+segments(B40,F40,max(YFS18_2$SSB[,2])*1.1,F40,col="green",lwd=4)
 abline(h=FOFL,lty=1)
 abline(v=B40,lty=2)
 legend("topright",c(expression("F" ["OFL"]),expression("B" ["MSY"]),expression("F" ["MSY"])),lwd=c(1,1,4),lty=c(1,2,1), col=c("black","black","green"),cex=1.1,bty="n")
 
 #note: female and male fishing mortality rate is the same
-points(YFS2$SSB[21:67,2],YFS2$F_f[21:67,19],type="l",col="red",lwd=4)
+points(YFS18_2$SSB[21:68,2],YFS18_2$F_f[21:68,19],type="l",col="red",lwd=4)
 
-points(YFS2$SSB[67,2],YFS2$F_f[67,19],pch=15,col="red")
-text(YFS2$SSB[67,2]-60,YFS2$F_f[67,19]+.005,"2020",cex=0.9)
+points(YFS18_2$SSB[68,2],YFS18_2$F_f[68,19],pch=15,col="red")
+text(YFS18_2$SSB[68,2]-60,YFS18_2$F_f[68,19]+.005,"2021",cex=0.9)  
 
 #for(i in 1: 59){
 #text(ATF2019$fspbio[i]  ,ATF2019$fishmort[i],labels=as.character(seq(1961,2019,1))[i],cex=0.9)}
 
-points(ABC_OFL$SSB[1],ABC_OFL$Catch_Assump[1]/ABC_OFL$GM_Biom[1],pch=15,col="blue")
-text(ABC_OFL$SSB[1],(ABC_OFL$Catch_Assump[1]/ABC_OFL$GM_Biom[1])+.005,"2021",cex=0.9)
+points(ABC_OFL18_2$SSB[1],ABC_OFL18_2$Catch_Assump[1]/ABC_OFL18_2$GM_Biom[1],pch=15,col="blue")
+text(ABC_OFL18_2$SSB[1],(ABC_OFL18_2$Catch_Assump[1]/ABC_OFL18_2$GM_Biom[1])+.005,"2022",cex=0.9)
 
-points(ABC_OFL$SSB[2]+20,ABC_OFL$Catch_Assump[2]/ABC_OFL$GM_Biom[2],pch=15,col="black")
-text(ABC_OFL$SSB[2]-60,(ABC_OFL$Catch_Assump[2]/ABC_OFL$GM_Biom[2])+.005,"2022",cex=0.9)
+points(ABC_OFL18_2$SSB[2]+20,ABC_OFL18_2$Catch_Assump[2]/ABC_OFL18_2$GM_Biom[2],pch=15,col="black")
+text(ABC_OFL18_2$SSB[2]-60,(ABC_OFL18_2$Catch_Assump[2]/ABC_OFL18_2$GM_Biom[2])+.005,"2023",cex=0.9) 
 
 
 ```
@@ -2520,16 +2520,17 @@ text(ABC_OFL$SSB[2]-60,(ABC_OFL$Catch_Assump[2]/ABC_OFL$GM_Biom[2])+.005,"2022",
 
 ## Appendix A
 
-Table A1. Removals (kg) of Yellowfin Sole from the Bering Sea from sources other than those that are included in the Alaska Region’s official estimate of catch, 1990-`r thisyr`. Source NMFS Alaska Region: Sourced by the AKR.V_NONCOMMERCIAL_FISHERY_CATCH table, October 23, `r thisyr`. Abbreviations: IPHC (International Pacific Halibut Commission), ADFG (Alaska Department of Fish and Gam), NMFS (National Marine Fisheries Service).
+Table A1. Removals (kg) of Yellowfin Sole from the Bering Sea from sources other than those that are included in the Alaska Region’s official estimate of catch, 2006-2019. Source NMFS Alaska Region: Sourced by the AKR.V_NONCOMMERCIAL_FISHERY_CATCH table, October 23, `r thisyr`. Abbreviations: IPHC (International Pacific Halibut Commission), ADFG (Alaska Department of Fish and Game), NMFS (National Marine Fisheries Service).
 
 ```{r rescat2,message=FALSE,echo=FALSE}
 recatch2=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/NoncommercialFishery CatchYFS_10_23_20.csv",header=TRUE)
-yr=names(table(recatch2$Year))
-ag=names(table(recatch2$Agency))
+recatch2=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/NoncommercialFisheryCatch_YFS_10_14_21.csv",header=TRUE)
+yr=names(table(recatch2$Collection.Year))
+ag=names(table(recatch2$Collection.Agency))
 col=matrix(0,length(yr),length(ag))
 for (i in 1:length(yr)){
  for(j in 1:length(ag)){
-  col[i,j]=sum(recatch2$Weight[which(recatch2$Year==yr[i]&recatch2$Agency==ag[j])])
+  col[i,j]=sum(recatch2$Weight[which(recatch2$Collection.Year==yr[i]&recatch2$Collection.Agency==ag[j])])
 }}
 col1=formatC(round(col),format="d",big.mark=",")
 colnames(col1)=ag
@@ -2559,7 +2560,7 @@ Table 1. BSAI flatfish catch and first-wholesale market data. Total and retained
 
 
 ```{r, fisselT1,echo=FALSE}
-fisselT1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/Fissel_T1.csv")
+fisselT1=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/Fissel_T1.csv")
 
 colnames(fisselT1)=c("","2010-2014 Average","2015","2016","2017","2018","2019")
 kable(fisselT1,"latex",booktabs=T,linesep="",longtable=FALSE,align=c("l","r","r","r","r","r","r"))%>%kable_styling(latex_options="scale_down")
@@ -2574,7 +2575,7 @@ Source: NMFS Alaska Region Blend and Catch-accounting System estimates; NMFS Ala
 Table 2. Flatfish U.S. trade and global market data. Global production (thousand metric tons), U.S. share of global production, BSAI share of U.S. production. U.S. yellowfin sole and rock sole export volume (thousand metric tons), U.S. export value (million US \$), U.S. export price (US\$ per pound), the share of U.S. export value from China, and the Euro/U.S. Dollar exchange rate; 2010-2014 average and 2015-2019.
 
 ```{r, fisselT2,echo=FALSE}
-fisselT2=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/Fissel_T2.csv")
+fisselT2=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/Fissel_T2.csv")
 
 colnames(fisselT2)=c("","2010-2014 Average","2015","2016","2017","2018","2019")
 
