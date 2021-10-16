@@ -1,0 +1,28 @@
+# Introduction
+## General information
+`r executive[["stock"]]`
+Arrowtooth Flounder (_Atheresthes stomias_) range from central California to the Gulf of Alaska (GOA), Aleutian Islands, and northern Bering Sea. Arrowtooth Flounder (ATF) was considered the most abundant groundfish species in the Gulf of Alaska during the first decade of this century, but its biomass shifted to less than that of Pacific Ocean Perch, based on the 2017 Gulf of Alaska groundfish survey. Projections for 2016 from the 2015 GOA assessments estimated Pacific Ocean Perch at 457,768 t and ATF at 2,103,860 t. However, survey biomass estimates of Pacific Ocean Perch in the 2017 survey were higher than arrowtoooth (over 1.5 million t vs. 1,053,695 t).
+
+Arrowtooth Flounder occur in waters from about 20m to 800m, but catch per unit effort (CPUE) from survey data is highest between 100m and 300m. Migration patterns are not well known for Arrowtooth Flounder; however, there is some indication that Arrowtooth Flounder move into deeper water as they grow, similar to other flatfish (Zimmerman and Goddard 1996).  Fisheries data off Washington suggest that larger fish may migrate to deeper water in winter and shallower water in summer (Rickey 1995). Arrowtooth Flounder spawn in deep waters (>400m) along the continental shelf break in winter (Blood et al. 2007). They are batch spawners, spawning from fall to winter off Washington State at depths greater than 366m (Rickey 1995).   
+
+Trophic studies (Yang 1993, Hollowed, et al. 1995, Hollowed et al. 2000) suggest Arrowtooth Flounder are an important component in the dynamics of the Gulf of Alaska benthic ecosystem.  They are an apex predator in the Gulf of Alaska and are habitat and prey generalists (Doyle et al. 2018). The majority of the prey by weight of arrowtooth larger than 40 cm was pollock, the remainder consisting of herring, capelin, euphausids, shrimp and cephalopods (Yang 1993). The percent of pollock in the diet of Arrowtooth Flounder increases for sizes greater than 40 cm (`r #figure_nums("diet",display="cite")`, Doyle et al. 2018).  Arrowtooth Flounder 15 cm to 30 cm consume mostly shrimp, capelin, euphausiids and herring, with small amounts of pollock and other miscellaneous fish. Groundfish predators include Pacific cod and halibut (see Ecosystem Considerations section). 
+
+The age composition of the species shows fewer males relative to females as fish increase in age, which suggests higher natural mortality (M) for males (Wilderbuer and Turnock 2009).  To account for this process, natural mortality has typically been fixed at 0.2 for females and 0.35 for males in the model. Different options for natural mortality were considered in the 2017 assessment, which consider natural mortality as a function of the size of the fish (Charnov 1982, Gislason et al. 2010, Lorenzen 1996). The distribution of ages appears to vary by region and sex; male arrowtooth as old as 36 years have been observed in the Aleutian Islands, but are not commonly observed older than age 10 on the Bering Sea shelf. Males were not observed older than age 20 prior to 2005 in the Gulf of Alaska; however, males age 21 have been observed in every survey since that time. The sex ratio of Arrowtooth Flounder also varies by region. In the Gulf of Alaska, the observed ratio from fishery observer length frequency collections is 69% female, 31% male. Survey length compositions from the Bering Sea indicate that the proportion female is 70% on the Bering Sea shelf, 72% on the Bering Sea slope, and 62% in the Aleutian Islands. In British Columbia catches have been over 70% female since 1996 and the stock is assessed solely based on female numbers (DFO 2015). 
+
+Differences in distribution of Arrowtooth Flounder were compared between warm and cold years, where warm years included 1984, 1987, 1990, 1993, 2001, 2003, 2005, 2015 and cold years included 1996, 1999, 2007, 2009, 2011, and 2013 (Doyle et al. 2018). Results showed some effect of temperature on distribution (`r #figure_nums("fig_yellow",display="cite")`). Fish less than 300mm were found typically <400m in warm years but deeper in cold years. Younger fish <100m were found >200m only in colder years. ATF 300-600mm were found in the deepest stations >800m in warm years. High densities of fish were greater at 200-400m in cold years. Highest densities of larger, older fish >600mm were found over the slope in cold years (Doyle et al. 2018).
+
+Information concerning the genetic stock structure of ATF is not currently available, although efforts are underway to initiate research.
+
+## Review of life history
+Replace text.
+
+## Stock structure
+Replace text.
+
+## Fishery
+
+### Description of the directed fishery
+
+### Management measures
+
+### Economic conditions

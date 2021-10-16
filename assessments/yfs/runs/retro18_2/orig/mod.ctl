@@ -71,7 +71,7 @@
 #styr_sr         
 	1978
 #endyr_sr       
-	2014
+	2015
 #styr_wt       
 	1982
 #endyr_wt     
@@ -80,8 +80,8 @@
 	150
 #yr2_futcat      
 	150
-#n_retro
-0
+	# n_retro;
+	0
 #surv_dwnwt
 0
 #cv_inc

@@ -82,7 +82,7 @@ read_fit <- function(repfile)
 #' @return object of type "list" with ADMB outputs therein
 #' @export
 #' 
-read_rep <- function(fn)
+read.rep <- function(fn)
 {
     options(warn = -1) # Suppress the NA message in the coercion to double
     repfile <- scan(fn, what = "character", flush = TRUE, blank.lines.skip = FALSE, quiet = TRUE, na.strings = c("nan","-nan"))

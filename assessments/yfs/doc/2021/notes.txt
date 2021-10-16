@@ -1,0 +1,5 @@
+go into the m21 and then type
+"make"
+This uses the Makefile.
+mod.ctl is used.
+fm.dat is where the datafile is actually being referenced.

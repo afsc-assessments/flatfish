@@ -14,7 +14,7 @@ library(ggplot2)
 library(ggthemes)
 # Set your local directory--------
 	mydir <- "/Users/ingridspies/admbmodels/flatfish/assessments"  #change to mine.
-	mydir <- "~/_mymods/afsc-assessments/flatfish/assessments"  #change to mine.
+#	mydir <- "~/_mymods/afsc-assessments/flatfish/assessments"  #change to mine.
 # Get tools to read-write control file
 source(paste0(mydir,"/R/read-admb.R"))
 
@@ -23,7 +23,7 @@ source(paste0(mydir,"/R/read-admb.R"))
 # Directory with full assessment model results
 # NOTE: this master directory must exist already and contain a subdirectory with base model configurations 
 #       called "orig"
-	master=paste0(mydir,"/yfs/runs/surveyloss")
+	master=paste0(mydir,"/yfs/runs/retro18_1")
 	if(!dir.exists(file.path(mydir,master))) print(paste("NOTE: this master directory (",master,") must exist already and contain a subdirectory with base model configurations "))
 	setwd(master)
 

@@ -1,0 +1,12 @@
+# Analytic approach 
+
+## General model structure
+
+## Description of alternative models
+
+## Parameters estimated outside of the assessment model
+
+## Parameters estimated within the assessment model
+
+## Objective function components
+
