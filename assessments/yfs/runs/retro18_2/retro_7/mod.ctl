@@ -90,8 +90,8 @@
 150
 #yr2_futcat
 150
-#
-0
+#n_retro
+7
 #surv_dwnwt
 0
 #cv_inc
@@ -100,5 +100,3 @@
 1
 #eof_check
 123456
-#n_retro
-7
