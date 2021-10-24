@@ -1,0 +1,19 @@
+# Results
+## Model evaluation
+### Model Diagnostics
+Describe all diagnostics
+
+#### Convergence
+
+#### Sensitivity Analyses
+
+#### Retrospective Analysis
+
+#### Likelihood Profiles
+
+#### Unresolved Problems and Major Uncertainties
+
+## Time series results
+
+## Recruitment   
+

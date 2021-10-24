@@ -1,0 +1,13 @@
+---
+author:
+  - name: 'Kalei Shotwell '
+    code: 1
+    first: K
+    middle: ''
+    family: Shotwell
+author_list: Shotwell, K
+affiliation:
+  - code: 1
+    address: .na.character
+address: ^1^NA
+---
