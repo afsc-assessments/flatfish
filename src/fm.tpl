@@ -1049,9 +1049,9 @@ PROCEDURE_SECTION
 			mean_N_srv_age /= double(nyrs_srv_age_c(k) + nyrs_srv_age_s(k));
     }
     evalout << " " <<mean_N_srv_age;
+	// Alpha and beta of SRR
     evalout << " " <<R_alpha<<" "<<R_beta<<endl;
   } 
-	// Alpha and beta of SRR
 
 FUNCTION get_selectivity
   //Logistic selectivity is modeled for the fishery and survey, by age
