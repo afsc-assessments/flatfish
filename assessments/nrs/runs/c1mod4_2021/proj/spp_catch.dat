@@ -1,0 +1,25 @@
+  #_Number_of_years with specified catch (if begin-yr = 2004, and this number is "3", then subsequent values represent catches in 2004, 05, and 06 (to evaluate alts for 2007)                
+3
+  # Number of species                                         
+1 
+# OY Minimum                      
+  1.  # Note that this is for age-structured species    1330.148                
+  # OY Maximum                      
+  1943.248  # Note that this is for age-structured species    1930.148                
+# data files for each species                 
+  # 1               
+../fm.prj
+	#bsai_rocksoless.dat
+# ABC Multipliers                                           
+  1
+# scalars                   
+  1
+0.6
+  # Number of TAC model categories                
+1 
+  # TAC model indices (for aggregating)         (should be 1)
+1
+# Catch in each future year           
+2020 25.318
+2021 45.3
+2022 45.3
