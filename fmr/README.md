@@ -10,20 +10,13 @@ The most recent development release of the `fmr` package can be downloaded and i
 install.packages("devtools")
 install.packages("shiny")
 #to be updated
-devtools::install_github("seacode/", subdir = "/fmr", ref = "develop")
+devtools::install_github("afsc-assessments/flatfish", subdir = "/fmr" )
 ```
 
 Once the `fmr` package is installed, it can be loaded in the regular manner:
 
 ```S
 library(fmr)
-````
-
-To install previous release versions of `gmr`, version 1 for example, use:
-
-```S
-#to be updated
-devtools::install_github("seacode/gmacs/gmr", ref = "V1.0")
 ````
 
 
