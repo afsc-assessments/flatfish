@@ -29,3 +29,4 @@ cat(paste("    return(\"Version: ", VERSION, "\\n", "Compile date: ", DATE, "\\n
 cat("}\n", file = filename, append = TRUE)
 
 #===============================================================
+

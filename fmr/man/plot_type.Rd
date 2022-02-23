@@ -4,7 +4,7 @@
 \alias{plot_type}
 \title{Specify the type of plot you would like to create}
 \usage{
-plot_type(filename, width, height, gmr_options = .gmr_options)
+plot_type(filename, width, height, fmr_options = .fmr_options)
 }
 \arguments{
 \item{filename}{the directory and name of the file to save}
@@ -13,7 +13,7 @@ plot_type(filename, width, height, gmr_options = .gmr_options)
 
 \item{height}{the height of the plot in mm}
 
-\item{gmr_options}{a list of options for plotting}
+\item{fmr_options}{a list of options for plotting}
 }
 \value{
 a plot device

@@ -1,7 +1,7 @@
 Package: gmr
 Title: Plotting and analysis tools for the flatfish stock assessments
 Version: 1.00
-Date: 2022-02-02
+Date: 2022-02-23
     text-based ADMB output files and creating visual plots of both input data
     and fitted model results.
 Authors@R: c(person("Jim", "Ianelli", role = c("aut", "cre"),
