@@ -16,8 +16,6 @@
         colnames(df) <- c("model","year","seas","fleet","sex","obs","cv","type","units","mult","effort","discard.mortality")
         df$observed  <- na.omit(as.vector(t(A$obs_catch)))
         df$predicted <- na.omit(as.vector(t(A$pre_catch)))
-        df$residuals <- na.omit(as.vector(t(A$res_catch)))
-        df$sex       <- .SEX[df$sex+1]
         df$fleet     <- .FLEET[df$fleet]
         df$type      <- .TYPE[df$type+1]
         sd    <- sqrt(log(1+df$cv^2))
