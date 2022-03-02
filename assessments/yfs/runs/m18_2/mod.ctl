@@ -84,7 +84,7 @@
 	150
 #yr2_futcat      
 	150
-	# n_retro;
+#n_retro
 	0
 #surv_dwnwt
 0

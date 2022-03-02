@@ -1,0 +1,12 @@
+go into the m21 and then type
+"make"
+This uses the Makefile.
+mod.ctl is used.
+fm.dat is where the datafile is actually being referenced.
+
+for mcmc, go to the directory and type make mcmc.
+Then to complete it, ./fm -mceval in that directory.
+
+If you get large odd files like unbounded.rep or rwm_lp.txt, just delete them.
+
+Be sure to put large data download files in your /Documents directory.

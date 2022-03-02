@@ -11,7 +11,7 @@ source(paste0(mydir,"/../../R/read-admb.R"))
 master <-(paste0(mydir,"/retro"))
 
 assess_LY=2021					#assessment terminal year
-endyrvec <-1:10 		    #retrospective peels (Subtracted from endyr in tpl)
+endyrvec <-1:10		    #retrospective peels (Subtracted from endyr in tpl)
 
 # Values used to downweight survey data when invoked written to retro.dat
 #Specify values here
