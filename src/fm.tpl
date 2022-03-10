@@ -3088,57 +3088,48 @@ FUNCTION Write_R
   R_report.close();
 
 FUNCTION write_projfile
-    projmod <<"fm_projection_model_output  "<<endl;
-    projmod <<"0 # SSL Species???         " <<endl;                       
-    projmod <<"0 # Constant  buffer  of  Dorn? " <<endl;                          
-    projmod <<"1 # Number  of  fsheries    "<<endl;                          
-    projmod <<"2 # Number  of  sexes??     "<<endl;
+    projmod <<"#runname     \n fm_projection_model_output  "<<endl;
+    projmod <<"#ssl_spp     \n 0 " <<endl;                       
+    projmod <<"#Dorn_buffer \n 0 " <<endl;                          
+    projmod <<"#nfsh        \n   " <<nfsh <<endl;                          
+    projmod <<"#nsex        \n 2 " <<endl;
 		double mean5yrF=0.;
 		for (int iyr=endyr-5;iyr<=endyr;iyr++) 
 		  mean5yrF += max(value(F_f(1,iyr)));  mean5yrF/=5.;
-    projmod <<mean5yrF <<" # averagei 5yr f"<<endl;
-    projmod << "1.0 # author  f            "<<endl;
-    projmod << "0.4     # SPR ABC          "<<endl;               
-    projmod << "0.35    # SPR MSY          "<<endl;
-    projmod << "2 # Spawnmo                "<<endl;
-    projmod << "20  # Number  of  ages     "<<endl;
-    projmod << "1 # Fratio                 "<<endl;
-    projmod << "#females first             "<<endl;
+    projmod << "#avgF5yr \n "<< mean5yrF <<endl;
+    projmod << "#F40_mult \n 1.0  "<<endl;
+    projmod << "#spr_abc  \n 0.4  "<<endl;               
+    projmod << "#spr_abc  \n 0.35 "<<endl;
+    projmod << "#sp_mo \n " <<spawnmo <<endl;
+    projmod << "#nages \n " << nages  <<endl;
+  // Should calc case for number of fisheries >1 OjO
+    projmod << "#Frat \n " << 1 <<endl;
+    projmod << "#M       "      <<endl; 
     for (j=1;j<=nages;j++)  projmod << natmort_f <<" "; projmod<<endl;
-    projmod << "#male"<<endl;
     for (j=1;j<=nages;j++)  projmod << natmort_m <<" "; projmod<<endl;
-    projmod << "# Maturity Females"<<endl;                     
+    projmod << "#pmat "<<endl; // female and male maturity set to be the same...OjO
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Maturity Males same as females!!    "<<endl;
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Wt  spawn females                                 "<<endl;
+    projmod << "#wtage_sp "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_pop_f(endyr,j) <<" "; projmod<<endl;
-    // SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
-    // 3darray wt_fsh_f(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
-    projmod << "# WtAge Females,  by  fishery                               "<<endl;
+    projmod << "#wtage_fsh "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# WtAge Males,  by  fishery                               "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_m(1,endyr,j) <<" "; projmod<<endl;
     // 3darray sel_fsh_m(1,nfsh,styr,endyr,1,nages)
-    projmod << "# Selectivity Females,  by  fishery                               "<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# Selectivity males,  by  fishery"<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_m(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# N at  age in  endyr  Females,  Males                         "<<endl;
+    projmod << "#sel"<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_f(k,endyr,j) <<" "; projmod<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_m(k,endyr,j) <<" "; projmod<<endl;
+    projmod << "#N" <<endl;
     for (j=1;j<=nages;j++)  projmod << natage_f(endyr,j) <<" "; projmod<<endl;
     for (j=1;j<=nages;j++)  projmod << natage_m(endyr,j) <<" "; projmod<<endl;
     // matrix natage_f(styr,endyr,1,nages)
-    projmod << "# No  Recruitments "<<endl;                                   
+    projmod << "#nyrs"<<endl;
     int nrecs = endyr - 1977 - 5;                           
     projmod << nrecs <<endl;
-    projmod << "# Recruitment  1978-2004"<<endl;
+    projmod << "#R"<<endl;
     for (j=1978;j<(nrecs+1978);j++)  projmod << natage_f(j,1) <<" "; projmod<<endl;
-    projmod << "# SSB       "<<endl;                                          
-    projmod << "# used only for S/R analysis "<<endl;
+    projmod << "#SSB       "<<endl;                                          // projmod << "# used only for S/R analysis "<<endl;
     for (j=1977;j<(nrecs+1977);j++)  projmod << SSB(j) <<" "; projmod<<endl;
-    // projmod << "60634.2 74206.2 88603.3 99620.3 104246  107030  113149  124035  124795  140114  158678  182136  205398  248734  316385  349013  377421  399774  480785  578688  661617  701288  745334  773574  771844  753292  726387"<<endl;
-
-
 
 FINAL_SECTION
   if (!do_wt_only)
