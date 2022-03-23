@@ -1,14 +1,18 @@
 ---
-title: "YFS size analysis"
+title: "Eastern Bering Sea bottom temperature and growth of Yellowfin Sole"
 author: "Ingrid Spies"
 date: "3/4/2022"
-output: pdf_document
+output:
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(captioner)
 library(ggplot2)
+library(gridExtra)
 figure_nums <- captioner::captioner(prefix="Figure ",levels = 1, auto_space = FALSE)
 
 YFSage=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/survey/YFSage.csv",header=TRUE)
@@ -31,17 +35,15 @@ coldpool=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/20
 
 ## Background
 
-Year-class strength of flatfishes is thought to be determined during the first few years of life between the pelagic egg and benthic settlement (van der Veer et al., 2015). Temperature in the early life stages can affect egg size, larval duration, size at settlement, as well as the size of suitable nursery habitat (Yeung and Cooper 2019). It has been hypothesized that colder bottom temperatures delay migration and spawning in Yellowfin Sole. As a result, mature individuals may reside in nearshore nursery grounds during months in which the NMFS survey occurs, which likely decreases survey biomass estimates during cold years (Nichol et al., 2019; Yeung and Cooper 2019).
+Year-class strength of flatfishes is thought to be determined during the first few years of life between the pelagic egg and benthic settlement (van der Veer et al., 2015). Temperature in the early life stages can affect egg size, larval duration, size at settlement, as well as the size of suitable nursery habitat (Yeung and Cooper 2019). It has been hypothesized that colder bottom temperatures delay migration and spawning in Yellowfin Sole. As a result, mature individuals may reside in nearshore nursery grounds during months in which the NMFS survey occurs, which likely decreases survey biomass estimates during cold years (Nichol et al., 2019; Yeung and Cooper 2019). Survey timing may therefore also affect the size of the fish that are observed.
 
-YFS may be less sensitive to temperature due to their settlement timing, relative to Northern Rock Sole, which seems to be sensitive to temperature. YFS settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Yang, 2018). In contrast, YFS migrate across the shelf to spawn near their nursery habitat, rather than relying on currents for larval transport to nursery habitat (Nichol and Acuna, 2001); therefore, their larvae may be less susceptible to variable currents (Yeung and Cooper 2019).
+YFS may be less sensitive to temperature than Northern Rock Sole due to their settlement timing, relative to Northern Rock Sole. YFS settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Yang, 2018). In contrast, YFS migrate across the shelf to spawn near their nursery habitat, rather than relying on currents for larval transport to nursery habitat (Nichol and Acuna, 2001); therefore, their larvae may be less susceptible to variable currents (Yeung and Cooper 2019).
 
+Yellowfin Sole otolith growth increment chronologies have been shown to be strongly related to summertime eastern Bering Sea bottom temperatures (Matta et al. 2010). The R2 values of yellowfin sole, Alaska plaice, and northern rock sole wiht the EBS bottom temperatures were 0.81, 0.61, and 0.34, respectively (Matta et al. 2010). Thus, an analysis of Yellowfin Sole growth with respect to Bering Sea bottom temperatures was merited.
 
-There is some evidence of temperature-dependent growth by Yellowfin sole (Yeung et al. 2021). It appears that YFS remain in the shallow nearshore nursery areas through at least their first 2 years post-settlement. They begin to disperse offshore age 3-5 and by 5-8 years they follow adult migratory patterns. There is also evidence that Yellowfin Sole have been growing larger in part of a trend over the past 5 decades (`r figure_nums("Wtage8",display="cite")`, `r figure_nums("LenageYFS",display="cite")`). There is no strong evidence thus far that Yellowfin sole have shifted distribution in response to climate change. Research on this topic includes beam trawl studies to better sample YFS throughout their distribution. Some tolerance to temperatures may be explained by observations that Yellowfin sole settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Cooper 2019). Therefore, an investigation of temperature-mediated growth is warranted as a covariate in the model. Currently, weight at age is incorporated in the model based on survey weight at age data. 
+There is some evidence of temperature-dependent growth by Yellowfin sole (Yeung et al. 2021). It appears that YFS remain in the shallow nearshore nursery areas through at least their first 2 years post-settlement. They begin to disperse offshore age 3-5 and by 5-8 years they follow adult migratory patterns. There is also evidence that Yellowfin Sole may be growing larger over the past 5 decades (`r figure_nums("Wtage8",display="cite")`, `r figure_nums("LenageYFS",display="cite")`). There is no strong evidence thus far that Yellowfin sole have shifted distribution in response to climate change. Research on this topic includes beam trawl studies to better sample YFS throughout their distribution. Some tolerance to temperatures may be explained by observations that Yellowfin sole settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Cooper 2019). Therefore, an investigation of temperature-mediated growth is warranted as a covariate in the model. Currently, weight at age is incorporated in the model based on survey weight at age data. 
 
-Mean survey weight at age shown in `r figure_nums("agetmp",display="cite")` seems to correlate closely with temperature anomalies at some ages (4, 5) but not other ages (8 and others not shown) . Why is this? 
-
-Compare the size data in agetmp with what you used for cor.tmp
-
+Mean survey weight at age shown in `r figure_nums("agetmp",display="cite")` seems to correlate closely with temperature anomalies at some ages (4, 5) but not other ages (8 and others not shown). This is likely due to the fact that size is cumulative over several years in which conditions may differ.
 
 # Figures
 
@@ -76,6 +78,27 @@ ggplot(fm8)+geom_point(aes(x=Year,y=Length/10,color=Sex),na.rm=TRUE)+theme_bw()+
 
 
 ```{r agetmp, message=FALSE, echo=FALSE}
+#Try age 4
+fem4=vector();mal4=vector()
+yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
+for(i in 1:length(yrs)){
+ fem4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==2)])
+ mal4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==1)])
+} 
+
+Year=rep(c(seq(1982,2019,1)),3)
+Series=c(rep("Temperature",38),rep("Males",38),rep("Females",38))
+Data=c(10*YFS18_2$Bottom_temp[1,1:38],(mal4[9:46]-mean(mal4[9:46])),(fem4[9:46]-mean(fem4[9:46])))       
+env=data.frame(Year,Series,Data)
+
+ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,color=Series))+theme_bw()+
+ theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
+ ylab("Anomaly")+scale_x_continuous(breaks = seq(1982,2022, by = 2))+
+ geom_point(aes(x=2021,y=10*YFS18_2$Bottom_temp[1,39]),color="sky blue")+
+ theme(axis.text.x=element_text(angle=90,hjust=1))+
+ geom_hline(yintercept=0,linetype=1)+
+ ggtitle("Survey Bottom Temp and 4 Year old size anomaly")
+
 #Here is age 5
 fem5=vector();mal5=vector()
 yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
@@ -118,116 +141,89 @@ ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,colo
  geom_hline(yintercept=0,linetype=1)+
  ggtitle("Survey Bottom Temp and 8 Year old size anomaly")
 
-#Try age 4
-fem4=vector();mal4=vector()
-yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
-for(i in 1:length(yrs)){
- fem4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==2)])
- mal4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==1)])
-} 
 
-Year=rep(c(seq(1982,2019,1)),3)
-Series=c(rep("Temperature",38),rep("Males",38),rep("Females",38))
-Data=c(10*YFS18_2$Bottom_temp[1,1:38],(mal4[9:46]-mean(mal4[9:46])),(fem4[9:46]-mean(fem4[9:46])))       
-env=data.frame(Year,Series,Data)
-
-ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,color=Series))+theme_bw()+
- theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
- ylab("Anomaly")+scale_x_continuous(breaks = seq(1982,2022, by = 2))+
- geom_point(aes(x=2021,y=10*YFS18_2$Bottom_temp[1,39]),color="sky blue")+
- theme(axis.text.x=element_text(angle=90,hjust=1))+
- geom_hline(yintercept=0,linetype=1)+
- ggtitle("Survey Bottom Temp and 4 Year old size anomaly")
 ```
 
 `r figure_nums(name="agetmp",caption = "Raw survey weight at age anomalies and temperature anomalies, for ages 4, 5, and 8.")`
 
-Note that the age 4 trend seems to match the best. In some years the male and females have one growing bigger than the other. But age 4 matches all the years back to 1992 pretty well, and maybe even earlier. So what is going on?
 
-1. Idea 1. If all ages grow more slowly in cool years, 
-we just do not capture that with our data. So do we have different numbers of aged 1, 2, and 3 vs. 4 and 5?
-ANSWER: We really have more age 4 and 5 and very few 1-3s. But we also have lots of 6,7, and 8s (more than 4 and 5) and these are less correlated....
-So it seems that there is a big effect of temperature at the age 4 and 5 ages (or maybe younger but we just don't have that information). The strict relationship breaks down at older ages...but then the fact that the size overall goes up over time...might be intersting. So I should also look at whether the overall temperature is going up over time. 
-2. There is something going on biologically at age 4 or 5. Something to do with the environment makes their growth sensitive to temperature at this age. Test it by looking at life history and maybe also when do they mature. Also how can you correlate size and temperature? How about looking at correlation? then you could compare if males and females are differently correlated.
+## We used two sources to look at growth. The first was using years in which fish weight was recorded at the time of otolith collection. Age data was available for years 1999-2019 that included weights for aged fish. This is a new approach in which we are looking at incremental growth from one age tothe next and looking for trends based on the summer water temperature. The "Year" here is the year class of the fish `r figure_nums("wt_inc",display="cite")` .
+
+```{r survey_wtatage }
+#now plot survey
+srvF=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_F_blanksfilled.csv",header=TRUE)
+colnames(srvF)=c("Year",seq(2,20,1))
+srvF2=reshape2::melt(srvF,id=c("Year"))
+colnames(srvF2)=c("Year","Age","Weight")
+sF=ggplot(data=srvF2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvF2[which(srvF2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - females (red circles = 2019)")
+
+srvM=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_M_blanksfilled.csv",header=TRUE)
+colnames(srvM)=c("Year",seq(2,20,1))
+srvM2=reshape2::melt(srvM,id=c("Year"))
+colnames(srvM2)=c("Year","Age","Weight")
+sM=ggplot(data=srvM2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvM2[which(srvM2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - males (red circles = 2019)")
+
+grid.arrange(sF,sM)
+
+#JUst plot wt_pop_M for comparison - this is legacy weight at age
+wtM=read.csv("/Users/ingridspies/Downloads/YFS_wtpopM.csv",header=TRUE)
+colnames(wtM)=c("Year",seq(1,20,1))
+wtM2=reshape2::melt(wtM,id=c("Year"))
+colnames(wtM2)=c("Year","Age","Weight")
+wtM2$Weight=as.integer(wtM2$Weight)
 
 
-```{r howmany, message=FALSE, echo=FALSE}
+#ggplot(data=wtM2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=wtM2[which(wtM2$Year==2020),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Wt pop M in datafile - males (red circles = 2020)")
 
-#srv_wtage gives you a lot of information.
-plot(as.numeric(table(srv_wtage$AGE[which(srv_wtage$SEX==2)])),ylab="Frequency",xlab="Age",cex.axis=1.4,cex.lab=1.4)  #male
-lines(as.numeric(table(srv_wtage$AGE[which(srv_wtage$SEX==1)])))#female
-legend("topright",c("male","female"),lty=c(1,-1),pch=c(-1,1),cex=1.4)
-abline(v=3.5)
+```
+
+
+```{r wt_inc, message=FALSE, echo=FALSE}
+temps=cbind(seq(1982,2019),YFS18_2$Bottom_temp[1,1:38])
+
+#Growth is a vector
+Growthvec=vector()
+Tempvec=vector()
+Age1=vector()#first age
+Age2=vector()#second age - always one larger than first age
+
+#Years 1999, 2000, 2001 have a full 18 age records.
+#Each year 2002 and later have 1 fewer age records (starting with 17 for 2002)
+#I Think I got this right and that the temps match the years.
+N=c(18,18,18,rev(seq(2,17,1)))#This represents the 
+tempz=read.csv("/Users/ingridspies/Downloads/tempz.csv",header=TRUE)
+Year=seq(1999,2017,1)
+matM=matrix(0,length(Year),length(seq(2,19,1)))
+matF=matrix(0,length(Year),length(seq(2,19,1)))
+tempMAT=matrix(0,length(Year),length(seq(2,19,1)))
+
+for(j in 1:length(N)){
+for(i in 1:N[j]){
+matM[j,i]=srvM[(i+j+2),(i+2)]-srvM[(i+j+1),(i+1)]
+matF[j,i]=srvF[(i+j+2),(i+2)]-srvF[(i+j+1),(i+1)]
+tempMAT[j,i]=tempz[which(tempz$YEAR==1998+i+j-1),3]
+}}
+
+cbind(Year,tempMAT);cbind(Year,matM);cbind(Year,matF)
+rownames(tempMAT)=Year;rownames(matM)=Year;rownames(matF)=Year
+colnames(tempMAT)=seq(2,19,1);colnames(matM)=seq(2,19,1);colnames(matF)=seq(2,19,1)
+
+matM2=reshape2::melt(matM,id=c("Year"))
+matF2=reshape2::melt(matF,id=c("Year"))
+tempMAT2=reshape2::melt(tempMAT,id=c("Year"))
+colnames(tempMAT2)=c("Year","Age1","Temperature")
+colnames(matM2)=c("Year","Age1","Growth_Male")
+colnames(matF2)=c("Year","Age1","Growth_Female")
+OUT=cbind(tempMAT2,matM2$Growth_Male,matF2$Growth_Female)
+colnames(OUT)=c("Year","Age1","Temperature","Growth_Male","Growth_Female")
+
+OUT2=OUT[which(OUT$Growth_Male>0),]
+
+ggplot(data=OUT2[which(OUT2$Age1<10),])+geom_point(aes(x=Temperature,y=Growth_Male,color=Year))+theme_bw()+ggtitle("Male Growth by increment and Temperature") 
+
+ggplot(data=OUT2[which(OUT2$Age1<10),])+geom_point(aes(x=Temperature,y=Growth_Female,color=Year))+theme_bw()+ggtitle("Female Growth by increment and Temperature")
 
 
 ```
 
-`r figure_nums(name="howmany",caption = "Number of individuals aged from EBS survey.")`
-
-Is there a correlation between survey mean bottom temperature and weight at age?
-```{r corr, message=FALSE, echo=FALSE}
-
-
-cor.test(YFS18_2$Bottom_temp[1,c(6,13,18:38)],male_1987_2019$X6)#X6 is age 5 no correlation
-
-cor.test(YFS18_2$Bottom_temp[1,c(6,13,18:38)],male_1987_2019$X7)#X7 is age 6 close to significant
-
-#age 7 no
-
-cor.test(YFS18_2$Bottom_temp[1,c(6,13,18:38)],male_1987_2019$X9)#X9 is age 8 very significant
-
-
-
-```
-
-now look at whether temperature goes up over time
-You can see that temperature only sort of goes up. Maybe I need to look at a different stratum. 
-
-```{r tempz, message=FALSE, echo=FALSE}
-plot(seq(1982,2019,1),YFS18_2$Bottom_temp[1,1:38])
-tmplm=lm(YFS18_2$Bottom_temp[1,1:38]~seq(1982,2019,1))
-
-plot(seq(1982,2019,1),YFS18_2$Bottom_temp[1,1:38]-mean(YFS18_2$Bottom_temp[1:38]))
-tmplm=lm(YFS18_2$Bottom_temp[1,1:38]-mean(YFS18_2$Bottom_temp[1,1:38])~seq(1982,2019,1))
-
-```
-
-For temperature Nichols et al. 2019 used Annual bottom trawl survey estimates of yellowfin sole biomass
-were linearly regressed against previously known correlates such as
-mean annual survey bottom temperatures (stations<50m and<100
-m depth).
-
-How about coldpool? Still not really significant...?
-```{coldpool, echo=FALSE,message=FALSE}
- plot(coldpool$AREA_LTE2_KM2)
- 
-
-tmplm=lm(coldpool$AREA_LTE2_KM2~seq(1982,2020,1))
- 
-```
-
-To Do:
-1. Find out about temperature that Nichols used. stations<50m and<100m depth
-2. Talk with Cynthia about the patterns. Only ages 4-5 or at all ages? Or only 5 or younger?
-3. Why such a strong pattern?
-
-LW2FM8 has years 1971-2019,2021 - do we have temperature that far back?
-
-
-```{r temp_age8wt, message=FALSE, echo=FALSE}
-
-
-
-
-plot(YFS18_2$Bottom_temp[1,1:39],LW2MF8$Weight[c(12:49,51)],xlab="Bottom temperature",ylab="Male weight age 8",cex.lab=1.4,cex.axis=1.4)
-
-cor.test(LW2MF8$Weight[c(12:49,51)],YFS18_2$Bottom_temp[1,1:39])
-
-plot(YFS18_2$Bottom_temp[1,1:39],LW2MF8$Weight[c(62:99,101)],xlab="Bottom temperature",ylab="Female weight age 8",cex.lab=1.4,cex.axis=1.4)
-
-cor.test(LW2MF8$Weight[c(62:99,101)],YFS18_2$Bottom_temp[1,1:39])
-
-```
- 
-`r figure_nums(name="temp_age8wt",caption = "Bottom Temperature from EBS survey vs. YFS Age 8 female Weight")`
 
