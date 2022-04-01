@@ -13,217 +13,304 @@ knitr::opts_chunk$set(echo = TRUE)
 library(captioner)
 library(ggplot2)
 library(gridExtra)
+library(coldpool)
+library(kableExtra)
+library(car)#for leveneTest
+table_nums <- captioner::captioner(prefix = "Table ",levels=1,auto_space = FALSE)
 figure_nums <- captioner::captioner(prefix="Figure ",levels = 1, auto_space = FALSE)
 
-YFSage=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2020/survey/YFSage.csv",header=TRUE)
 
-age_file=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/norpac_age_report_flattened_YFS_10_20_21.csv")
-srv_wtage=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/yfs_survey_raw_age_weight.csv",header=TRUE)
+tempz=read.csv("/Users/ingridspies/Downloads/tempz.csv",header=TRUE)
+
 
 source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
 YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2020/fm.rep")#last years model 
 YFS18_2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/fm.rep")#this is the preferred model. Male M is estimated.
 
-male_1987_2019=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_M_blanksfilled.csv") #this is weight at age from survey
-female_1987_2019=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_F_blanksfilled.csv")
-
 coldpool=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/coldpoolindex.csv")
 
+require(dplyr)
+#count(srv_wtage_1971_2019,Year)
+
+srv_wtage=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/YFSageSurvey1954_2021.csv",header=TRUE)
+
+#The next exploration of growth is in the increments from one year to the next
+# I calculated growth increments for years 1982 to 2019 and then I compared them with the temperature in the first summer
+#Here are lengths
+
+
+
+#Here I compile all the length by age data
+age=seq(1,20,1)
+yrs=as.numeric(names(table(srv_wtage$Year)))
+mat_lenage_srv_F=matrix(0,length(yrs),20)
+colnames(mat_lenage_srv_F)=seq(1,20,1)
+rownames(mat_lenage_srv_F)=yrs
+mat_lenage_srv_M=mat_lenage_srv_F
+for (i in 1:length(yrs)){
+ for(j in 1:19){
+  mat_lenage_srv_F[i,j]=mean(srv_wtage$LENGTH[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='2'&srv_wtage$REGION=="BS")],na.rm=TRUE)
+  mat_lenage_srv_F[i,20]=mean(srv_wtage$LENGTH[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='2'&srv_wtage$REGION=="BS")],na.rm=TRUE)
+  mat_lenage_srv_M[i,j]=mean(srv_wtage$LENGTH[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='1'&srv_wtage$REGION=="BS")],na.rm=TRUE)
+  mat_lenage_srv_M[i,20]=mean(srv_wtage$LENGTH[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='1'&srv_wtage$REGION=="BS")],na.rm=TRUE)
+ }
+}
+write.csv(round(mat_lenage_srv_F),"/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/mat_lenage_srv_F.csv")
+write.csv(round(mat_lenage_srv_M),"/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/mat_lenage_srv_M.csv")
+
+mat_lenage_srv_F=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/mat_lenage_srv_F.csv",header=TRUE)
+mat_lenage_srv_M=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/mat_lenage_srv_M.csv",header=TRUE)
+
+
+lenF=mat_lenage_srv_F[1:49,]
+lenM=mat_lenage_srv_M[1:49,]
+
+N=c(rep(18,18),18,18,rev(seq(2,17,1)))#This represents the number of years a cohort is represented by the data  and removed 2020
+tempz=read.csv("/Users/ingridspies/Downloads/tempz.csv",header=TRUE)
+Year=seq(1982,2018,1)
+matM_len=matrix(0,length(Year),length(seq(2,19,1)))
+matF_len=matrix(0,length(Year),length(seq(2,19,1)))
+tempMAT_len=matrix(0,length(Year),length(seq(2,19,1)))
+colnames(matM_len)=seq(2,19,1);colnames(matF_len)=seq(2,19,1)
+rownames(matF_len)=Year;rownames(matM_len)=Year
+for(j in 1:length(N)){
+ for(i in 1:N[j]){
+  matM_len[j,i]=lenM[(9+i+j+2),(i+3)]-lenM[(9+i+j+1),(i+2)]
+  matF_len[j,i]=lenF[(9+i+j+2),(i+3)]-lenF[(9+i+j+1),(i+2)]
+  tempMAT_len[j,i]=tempz[which(tempz$YEAR==1982+i+j-1),3]
+ }}
+
+colnames(tempMAT_len)=seq(2,19,1);colnames(matM_len)=seq(2,19,1);colnames(matF_len)=seq(2,19,1)
+#cbind(Year,tempMAT_len);cbind(Year,matM_len);cbind(Year,matF_len)
+rownames(tempMAT_len)=Year;rownames(matM_len)=Year;rownames(matF_len)=Year
+
+matM2_len=reshape2::melt(matM_len,id=c("Year"))
+matF2_len=reshape2::melt(matF_len,id=c("Year"))
+tempMAT2_len=reshape2::melt(tempMAT_len,id=c("Year"))
+colnames(tempMAT2_len)=c("Year","Age1","Temperature")
+colnames(matM2_len)=c("Year","Age1","Growth_Male")
+colnames(matF2_len)=c("Year","Age1","Growth_Female")
+OUT_len=cbind(tempMAT2_len,matM2_len$Growth_Male,matF2_len$Growth_Female)
+colnames(OUT_len)=c("Year","Age1","Temperature","Growth_Male","Growth_Female")
+
+OUT_len2=OUT_len[which(OUT_len$Temperature!=0),]
+#Look at the data
+#Males and females grow in length more early in life
+OUT_len2$Age_factor=as.factor(OUT_len2$Age1)#set up age as a factor
 
 
 ```
 
-## Background
+## Introduction
 
-Year-class strength of flatfishes is thought to be determined during the first few years of life between the pelagic egg and benthic settlement (van der Veer et al., 2015). Temperature in the early life stages can affect egg size, larval duration, size at settlement, as well as the size of suitable nursery habitat (Yeung and Cooper 2019). It has been hypothesized that colder bottom temperatures delay migration and spawning in Yellowfin Sole. As a result, mature individuals may reside in nearshore nursery grounds during months in which the NMFS survey occurs, which likely decreases survey biomass estimates during cold years (Nichol et al., 2019; Yeung and Cooper 2019). Survey timing may therefore also affect the size of the fish that are observed.
+Year-class strength of flatfishes is thought to be determined during the first few years of life between the pelagic egg and benthic settlement (van der Veer et al., 2015). One contributing factor to early life history year-class strength is temperature. Temperature in the early life stages can affect egg size, larval duration, size at settlement, as well as the size of suitable nursery habitat (Yeung and Cooper 2019). 
 
-YFS may be less sensitive to temperature than Northern Rock Sole due to their settlement timing, relative to Northern Rock Sole. YFS settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Yang, 2018). In contrast, YFS migrate across the shelf to spawn near their nursery habitat, rather than relying on currents for larval transport to nursery habitat (Nichol and Acuna, 2001); therefore, their larvae may be less susceptible to variable currents (Yeung and Cooper 2019).
+Understanding how external forces affect growth in commercially targeted groundfish is key to optimizing biomass estimates and quota setting. Yellowfin Sole _Limanda aspera_, is the most valuable commercially targeted flatfish in the Eastern Bering Sea. The stock assessment for Yellowfin Sole includes growth as a parameter in calculations that provide acceptable biological catch for the Eastern Bering Sea (Spies et al. 2021). Therefore, an investigation of temperature-mediated growth as a covariate in the model is warranted. 
 
-Yellowfin Sole otolith growth increment chronologies have been shown to be strongly related to summertime eastern Bering Sea bottom temperatures (Matta et al. 2010). The R2 values of yellowfin sole, Alaska plaice, and northern rock sole wiht the EBS bottom temperatures were 0.81, 0.61, and 0.34, respectively (Matta et al. 2010). Thus, an analysis of Yellowfin Sole growth with respect to Bering Sea bottom temperatures was merited.
+Temperature may affect Yellowfin Sole in multiple aspects of their life history. It has been hypothesized that colder bottom temperatures delay migration from offshore overwintering areas to inshore spawning in summer (Nichol et al. 2019). As a result, mature individuals may reside in nearshore nursery grounds during months in which the NMFS survey occurs, which likely decreases survey biomass estimates during cold years (Nichol et al., 2019; Yeung and Cooper 2019). Survey timing may therefore also affect the size of the fish that are observed.
 
-There is some evidence of temperature-dependent growth by Yellowfin sole (Yeung et al. 2021). It appears that YFS remain in the shallow nearshore nursery areas through at least their first 2 years post-settlement. They begin to disperse offshore age 3-5 and by 5-8 years they follow adult migratory patterns. There is also evidence that Yellowfin Sole may be growing larger over the past 5 decades (`r figure_nums("Wtage8",display="cite")`, `r figure_nums("LenageYFS",display="cite")`). There is no strong evidence thus far that Yellowfin sole have shifted distribution in response to climate change. Research on this topic includes beam trawl studies to better sample YFS throughout their distribution. Some tolerance to temperatures may be explained by observations that Yellowfin sole settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Cooper 2019). Therefore, an investigation of temperature-mediated growth is warranted as a covariate in the model. Currently, weight at age is incorporated in the model based on survey weight at age data. 
+Yellowfin Sole may be less sensitive to temperature than a closely related flatfish, Northern Rock Sole _Lepidopsetta polyxystra_, due to differences in settlement timing. YFS settle later in summer, when the influence of the cold pool is weaker and nearshore bottom temperature is relatively stable and high (Yeung and Yang, 2018). In contrast, YFS migrate across the shelf to spawn near their nursery habitat, rather than relying on currents for larval transport to nursery habitat (Nichol and Acuna, 2001); therefore, their larvae may be less susceptible to variable currents (Yeung and Cooper 2019). Yellowfin Sole remain in the shallow nearshore nursery areas through at least their first 2 years post-settlement. They begin to disperse offshore age 3-5 and by 5-8 years they follow adult migratory patterns. There is no strong evidence thus far that Yellowfin sole have shifted distribution in response to climate change (Spies et al. 2021). 
 
-Mean survey weight at age shown in `r figure_nums("agetmp",display="cite")` seems to correlate closely with temperature anomalies at some ages (4, 5) but not other ages (8 and others not shown). This is likely due to the fact that size is cumulative over several years in which conditions may differ.
+There is some evidence of temperature-dependent growth by Yellowfin sole (Yeung et al. 2021). Yellowfin Sole otolith growth increment chronologies appear to be strongly correlated with summertime eastern Bering Sea bottom temperatures (Matta et al. 2010). The $R^2$ values of Yellowfin Sole, Alaska Plaice, and Northern Rock Sole with the EBS bottom temperatures and otolith growth increments were 0.81, 0.61, and 0.34, respectively (Matta et al. 2010). 
+
+We examined growth increments of Yellowfin Sole from 1982-2019 to determine whether there is a correlation between growth and summer ocean bottom temperatures. We applied our results to an age structured model to determine whether modeling temperature-mediated growth would improve model fit. 
+
+# Methods  
+
+Data consisted of `r formatC(nrow(srv_wtage[which(srv_wtage$Year>1981&srv_wtage$Year<2020&srv_wtage$LENGTH>0),]),big.mark=",")` lengthed Yellowfin Sole with otoliths
+collected from NMFS surveys between 1982 and 2019. Otoliths were aged using break and burn methodology in >90% of otoliths (Christensen et al. 1984), and alternatively surface reading if the age was obvious. Age interpretation was performed with two readers for quality control and precision-testing. Surveys were conducted during summer months: between May through September, with start dates from May 23 through June 11 and end dates from July 12 - September 11. Data was not incorporated from 2020 because there was no survey in that year.
+
+In addition, we examined several statistics associated with temperature for this analysis. Growth increments were associated with the AFSC interpolated bottom temperature for <100m, the depth preference for Yellowfin Sole. 
+
+Growth increments were calculated for ages 2 to 3, 3 to 4, ..., through 19 to 20 for years starting with the 1980 cohort (which was age 2 in 1982) through the 2016 cohort (age 2 in 2018, age 3 in 2019). Growth increments were compared with bottom temperature using several statistical tests. 
+
+First we plotted growth by age to visually assess how variability in growth changed by age `r figure_nums("agetmp",display="cite")`. Secondly, we used a Levene's test for relative variation (Schultz 1985) to examine whether there was a significant difference in variance of growth by age. We used the analysis of covariance (ANOVA) to test whether the temperature or age, or the interaction of the two, had a significant effect growth increments. 
+
+( --rule out that length-weight relationship has changed (it has not))
+
+
+# Results
+
+Female growth was on average `r round(mean((as.vector(tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,mean,na.rm=TRUE))-as.vector(tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,mean,na.rm=TRUE)))[1:12]),1)` cm higher in females than males from age 2 to 3 through age 13 to 14 (`r figure_nums("agetmp",display="cite")`). Variability measured by the coefficient of variance (CV) remained below 1 through the growth increment starting at age `r min(as.vector(which(sqrt(tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,mean,na.rm=TRUE)>1)))` for females and through the growth increment starting at age `r min(as.vector(which(sqrt(tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,mean,na.rm=TRUE)>1)))` for males, and exceeded 1 at older age increments. Levene's test indicated that growth was significantly correlated with age in females (p = 0.043) and males (p = 0.025) (`r table_nums("levene",display="cite")`). When the ages were limited to those with growth CV < 1, growth was still significantly correlated with age for females ages 2 to 3 through 12 to 13 (p < 0.024) and males ages 2 to 3 through 11 to 12 (p = 0.020).
+
+Analyses also considered whether a better index would be the area of the Bering Sea that was covered by ice, also known as the coldpool index. The coldpool index and the bottom temperature were very similar, so we used the Bering Sea bottom temperature (`r figure_nums("coldpooltmp",display="cite")`). The ANOVA and further analysis of how temperature may affect growth was limited to growth increments were limited to ages in which the CV was <1; for females ages 2 to 3 through 13 to 14 and males ages 2 to 3 through 12 to 13 (`r table_nums("anova",display="cite")`). The interaction between age and temperature was not significant for males or females, and therefore was omitted in the ANOVA. However, age and temperature were significant for males and females (`r table_nums("anova",display="cite")`). Age had a negative effect on growth while temperature had a positive effect (`r figure_nums("gtemp",display="cite")`).
+
+
+
+
+# Discussion
+
+Raw data from the survey and fishery are used to input 
+weight at age into the model. So modelling higher growth by temperature does not seem useful. There is some limited utility in predicted future weights given the estimated future temperatures. If temperature increases to 5 for the following 5 years, then we can predict that YFS will grow larger. 
+
+# References
+
+Christensen, J.M., 1964. Burning of otoliths, a technique for age determination of soles and other fish. ICES Journal of Marine Science, 29(1), pp.73-81.
+
+Essington, T.E., Matta, M.E., Black, B.A., Helser, T.E. and Spencer, P.D., 2022. Fitting growth models to otolith increments to reveal time-varying growth. Canadian Journal of Fisheries and Aquatic Sciences, 79(1), pp.159-167.
+
+Schultz, B.B., 1985. Levene's test for relative variation. Systematic Zoology, 34(4), pp.449-456.
+
+Spies, I., Haehn, R., Siddon, E., Conner, J., Markowitz, E., Yeung, C., Ianelli, J. 2021. Assessment of the Yellowfin Sole Stock in the Bering Sea and Aleutian Islands. In Stock Assessment and Fishery Evaluation Document for Groundfish Resources in the Bering Sea/Aleutian Islands Region as Projected for 2021, Chapter 4. North Pacific Fishery Management Council, P. O. Box 103136, Anchorage, AK 99510.
+
+Wakabayashi, K. 1989. Studies on the fishery biology of yellowfin sole in the eastern Bering Sea. [In Jpn., Engl. Summ.] Bull. Far Seas Fish. Res. Lab. 26:21-152.
+
+Yeung, C., and Yang, M.-S. 2018. Spatial variation in habitat quality for juvenile flatfish in the southeastern Bering Sea and its implications for productivity in a warming ecosystem. Journal of Sea Research, 139: 62–72.
+
+Yeung, C. and Cooper, D.W., 2019. Contrasting the variability in spatial distribution of two juvenile flatfishes in relation to thermal stanzas in the eastern Bering Sea. ICES Journal of Marine Science, 77(3), pp.953-963.
+
+Yeung, C., Copeman, L.A., Matta, M.E. and Yang, M.S., 2021. Latitudinal variation in the growth and condition of Juvenile flatfishes in the Bering Sea. Estuarine, Coastal and Shelf Science, 258, p.107416.
+
+\pagebreak
 
 # Figures
 
-```{r Wtage8, message=FALSE, echo=FALSE,warning=FALSE}
-LW2MF8=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/LW2MF8.csv",header=TRUE)
-ggplot(LW2MF8)+geom_point(aes(x=Year,y=Weight,color=Sex))+theme_bw()+ggtitle("Weight (g) of Male and Female YFS, age 8")+scale_x_continuous(breaks = seq(1971,2021, by =2))+theme(legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=14),axis.title.y = element_text(size=14),axis.text.x=element_text(angle=90))
+```{r agetmp, message=FALSE, echo=FALSE, warning=FALSE}
+
+OUT_len3=data.frame(cbind(rep(OUT_len2$Age1,2),c(OUT_len2$Growth_Male,OUT_len2$Growth_Female),c(rep("Male",nrow(OUT_len2)),rep("Female",nrow(OUT_len2)))))
+colnames(OUT_len3)=c("Age","Growth","Sex")
+OUT_len3$Age=as.numeric(OUT_len3$Age)
+OUT_len3$Sex=as.factor(OUT_len3$Sex)
+OUT_len3$Growth=as.numeric(OUT_len3$Growth)
+#offset the Age by .5 for males
+OUT_len3$Age[which(OUT_len3$Sex=="Male")]=OUT_len3$Age[which(OUT_len3$Sex=="Male")]+0.2
+colnames(OUT_len3)=c("Age","Growth","Sex")
+ggplot(OUT_len3)+geom_point(aes(x=Age,y=Growth,color=Sex),alpha=.9,size=2)+theme_bw()+ggtitle("YFS Growth by Age")+ylab("Growth (mm)")
+
+
+#ggplot(data=OUT_len2)+geom_point(aes(x=Age,y=Growth_Male))+theme_bw()+ggtitle("Male Growth by Age")#Year implies year of birth only
+
+#ggplot(data=OUT_len2)+geom_point(aes(x=Age1,y=Growth_Female))+theme_bw()+ggtitle("Female Growth by Age")#Year implies year of birth only
+
+
+#ggplot(data=OUT_len2)+geom_point(aes(x=Age1,y=Growth_Male,color=Temperature))+theme_bw()+ggtitle("Male Growth by Age")+xlab("First age of the growth increment")#Year implies year of birth only
+
+#ggplot(data=OUT_len2)+geom_point(aes(x=Age1,y=Growth_Female,color=Temperature))+theme_bw()+ggtitle("Female Growth by Age")+xlab("First age of the growth increment")#Year implies year of birth only
+
+#I do not think that we should look at variation in growth by year
+# Because Year implies year class rather than year of growth
+# and later year classes have fewer observations.
+# We could say Year<2005
+#ggplot(data=OUT_len2[which(OUT_len2$Year<2005),])+geom_point(aes(x=Year,y=Growth_Male,color=Year))+theme_bw()+ggtitle("Male Growth by Age")+xlab("Year class")#Year implies year of birth only
+
+#ggplot(data=OUT_len2)+geom_point(aes(x=Year,y=Growth_Female,color=Year))+theme_bw()+ggtitle("Female Growth by Age")+xlab("Year Class")#Year implies year of birth only
+
+#leveneTest(Growth_Female~Age_factor,OUT_len2)
+
+#leveneTest(Growth_Male~Age_factor,OUT_len2)
+
+#leveneTest(Growth_Female~Age_factor,OUT_len2[which(OUT_len2$Age1<13),])
+
+#leveneTest(Growth_Male~Age_factor,OUT_len2[which(OUT_len2$Age1<12),])
 
 ```
 
-`r figure_nums(name="Wtage8",caption = "Mean weight at age (g) for Yellowfin Sole Age 8 females and males from the Eastern Bering Sea survey, 1971-2019. High values early in the time series are likely outliers.")`
+`r figure_nums(name="agetmp",caption = "Male and female Yellowfin Sole growth by age, 1982-2019. Note that males and females are slightly offset.")`
 
-Does weight go up over time since 1971?
-Yes it is significant for males,
-```{r lm_8Mt, message=FALSE, echo=FALSE}
-summary(lm(LW2MF8$Weight[1:50]~seq(1,50,1)))
+\pagebreak
+
+```{r gtemp,echo=FALSE,message=FALSE,warning=FALSE}
+#Growth by length for all ages and temperature (year too but year corelates with temp)
+
+ggplot(data=OUT_len2[which(OUT_len2$Age1<12),])+geom_point(aes(x=Temperature,y=Growth_Male,color=Age1))+theme_bw()+
+ ggtitle("YFS male growth increment up to age 11 to 12, \nby increment and temperature")+
+ ylab("Growth (mm)")+
+ guides(col= guide_legend(title= "Growth\nincrement\nfirst age"))
+
+#Is it possible that more recent years grow faster at the same temperatures? It sort of looks like it here
+ggplot(data=OUT_len2[which(OUT_len2$Age1<13),])+geom_point(aes(x=Temperature,y=Growth_Female,color=Age1))+
+ guides(col= guide_legend(title= "Growth\nincrement\nfirst age"))+
+ ggtitle("YFS female growth increment up to age 12 to 13, \nby increment and temperature")+
+ ylab("Growth (mm)")+theme_bw()
 ```
-and significant for females
 
-```{r lm_8Ft, message=FALSE, echo=FALSE}
-summary(lm(LW2MF8$Weight[51:100]~seq(1,50,1)))
-```
+`r figure_nums(name="gtemp",caption = "Growth increments (mm) by male and female Yellowfin sole with respect to <100 m bottom temperature in the Bering Sea. Increments are shown from age 2 to 3 years through 12 to 13 for females and 11 to 12 for males. ")`
 
+\pagebreak
 
-```{r LenageYFS, message=FALSE, echo=FALSE}
-fm8=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/fm8.csv",header=TRUE)
-#fm8=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/fm8_outliersrem.csv",header=TRUE)
-ggplot(fm8)+geom_point(aes(x=Year,y=Length/10,color=Sex),na.rm=TRUE)+theme_bw()+ggtitle("Mean length of age 8 male and female YFS")+ylab("Length (g)")+scale_x_continuous(breaks = seq(1971,2021, by =2))+theme(legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=11),axis.title.y = element_text(size=10),axis.text.x=element_text(angle=90))
-```
+```{r coldpooltmp,echo=FALSE,message=FALSE}
+temCP=data.frame(rep(seq(1982,2019,1),2),c(tempz$AVGBSBT[1:38],(-.1*((cold_pool_index$AREA_LTE2_KM2[1:38]/15000)+10)+5)),c(rep("Bottom_Temp",38),rep("Cold_Pool_Index",38)))
+colnames(temCP)=c("Year","Measurement","Type")
+ggplot(data=temCP)+geom_line(aes(x=Year,y=Measurement,color=Type))+theme_bw()+ggtitle("Cold Pool and Bottom Temperature are very similar indices")
 
-`r figure_nums(name="LenageYFS",caption = "Mean length at age (cm) for Yellowfin Sole Age 8 females and males from the Eastern Bering Sea survey, 1971-2019.")`
-
-
-
-```{r agetmp, message=FALSE, echo=FALSE}
-#Try age 4
-fem4=vector();mal4=vector()
-yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
-for(i in 1:length(yrs)){
- fem4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==2)])
- mal4[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==4&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==1)])
-} 
-
-Year=rep(c(seq(1982,2019,1)),3)
-Series=c(rep("Temperature",38),rep("Males",38),rep("Females",38))
-Data=c(10*YFS18_2$Bottom_temp[1,1:38],(mal4[9:46]-mean(mal4[9:46])),(fem4[9:46]-mean(fem4[9:46])))       
-env=data.frame(Year,Series,Data)
-
-ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,color=Series))+theme_bw()+
- theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
- ylab("Anomaly")+scale_x_continuous(breaks = seq(1982,2022, by = 2))+
- geom_point(aes(x=2021,y=10*YFS18_2$Bottom_temp[1,39]),color="sky blue")+
- theme(axis.text.x=element_text(angle=90,hjust=1))+
- geom_hline(yintercept=0,linetype=1)+
- ggtitle("Survey Bottom Temp and 4 Year old size anomaly")
-
-#Here is age 5
-fem5=vector();mal5=vector()
-yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
-for(i in 1:length(yrs)){
- fem5[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==5&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==2)])
- mal5[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==5&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==1)])
-} 
-
-Year=rep(c(seq(1982,2019,1)),3)
-Series=c(rep("Temperature",38),rep("Males",38),rep("Females",38))
-Data=c(10*YFS18_2$Bottom_temp[1,1:38],(mal5[9:46]-mean(mal5[9:46])),(fem5[9:46]-mean(fem5[9:46])))       
-env=data.frame(Year,Series,Data)
-
-ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,color=Series))+theme_bw()+
- theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
- ylab("Anomaly")+scale_x_continuous(breaks = seq(1982,2022, by = 2))+
- geom_point(aes(x=2021,y=10*YFS18_2$Bottom_temp[1,39]),color="sky blue")+
- theme(axis.text.x=element_text(angle=90,hjust=1))+
- geom_hline(yintercept=0,linetype=1)+
- ggtitle("Survey Bottom Temp and 5 Year old size anomaly")
-
-#Try age 8 - not as notable
-fem8=vector();mal8=vector()
-yrs=names(table(substr(srv_wtage$CRUISE,1,4)))
-for(i in 1:length(yrs)){
- fem8[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==8&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==2)])
- mal8[i]=mean(srv_wtage$LENGTH[which(srv_wtage$AGE==8&substr(srv_wtage$CRUISE,1,4)==yrs[i]&srv_wtage$SEX==1)])
-} 
-
-Year=rep(c(seq(1982,2019,1)),3)
-Series=c(rep("Temperature",38),rep("Males",38),rep("Females",38))
-Data=c(10*YFS18_2$Bottom_temp[1,1:38],(mal8[9:46]-mean(mal8[9:46])),(fem8[9:46]-mean(fem8[9:46])))       
-env=data.frame(Year,Series,Data)
-
-ggplot(data=env,aes(x=Year,y=Data,type=Series))+geom_line(aes(x=Year,y=Data,color=Series))+theme_bw()+
- theme(legend.title=element_text(size=13),legend.text=element_text(size=11),axis.text=element_text(size=11),axis.title.x = element_text(size=13),axis.title.y = element_text(size=14))+
- ylab("Anomaly")+scale_x_continuous(breaks = seq(1982,2022, by = 2))+
- geom_point(aes(x=2021,y=10*YFS18_2$Bottom_temp[1,39]),color="sky blue")+
- theme(axis.text.x=element_text(angle=90,hjust=1))+
- geom_hline(yintercept=0,linetype=1)+
- ggtitle("Survey Bottom Temp and 8 Year old size anomaly")
-
+#plot(seq(1982,2019,1),tempz$AVGBSBT[1:38],type="l")
+#lines(seq(1982,2019,1),.1*((cold_pool_index$AREA_LTE2_KM2[1:38]/15000)+10),col="red")
 
 ```
 
-`r figure_nums(name="agetmp",caption = "Raw survey weight at age anomalies and temperature anomalies, for ages 4, 5, and 8.")`
+`r figure_nums(name="coldpooltmp",caption = "Comparison of the cold pool index (LTE2_KM2) and bottom temperature, 1982 - 2019. Note: cold pool index is multiplied by negative one for comparison.")`
+
+\pagebreak
+
+```{r nesseplot,echo=FALSE,message=FALSE}
+plot(OUT_len2[which(OUT_len2$Age1==4),]$Temperature,OUT_len2[which(OUT_len2$Age1==4),]$Growth_Male,pch=as.character(OUT_len2[which(OUT_len2$Age1==4),]$Age_factor),main="Male Growth",xlab="Temperature",ylab="Growth (mm)")
+temp=seq(0,5,1)
+lines(temp,Mal.lm$coefficients[1]+1*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+2*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+3*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+4*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+5*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+71*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+8*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+lines(temp,Mal.lm$coefficients[1]+9*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
 
 
-## We used two sources to look at growth. The first was using years in which fish weight was recorded at the time of otolith collection. Age data was available for years 1999-2019 that included weights for aged fish. This is a new approach in which we are looking at incremental growth from one age tothe next and looking for trends based on the summer water temperature. The "Year" here is the year class of the fish `r figure_nums("wt_inc",display="cite")` .
-
-```{r survey_wtatage }
-#now plot survey
-srvF=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_F_blanksfilled.csv",header=TRUE)
-colnames(srvF)=c("Year",seq(2,20,1))
-srvF2=reshape2::melt(srvF,id=c("Year"))
-colnames(srvF2)=c("Year","Age","Weight")
-sF=ggplot(data=srvF2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvF2[which(srvF2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - females (red circles = 2019)")
-
-srvM=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_M_blanksfilled.csv",header=TRUE)
-colnames(srvM)=c("Year",seq(2,20,1))
-srvM2=reshape2::melt(srvM,id=c("Year"))
-colnames(srvM2)=c("Year","Age","Weight")
-sM=ggplot(data=srvM2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvM2[which(srvM2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - males (red circles = 2019)")
-
-grid.arrange(sF,sM)
-
-#JUst plot wt_pop_M for comparison - this is legacy weight at age
-wtM=read.csv("/Users/ingridspies/Downloads/YFS_wtpopM.csv",header=TRUE)
-colnames(wtM)=c("Year",seq(1,20,1))
-wtM2=reshape2::melt(wtM,id=c("Year"))
-colnames(wtM2)=c("Year","Age","Weight")
-wtM2$Weight=as.integer(wtM2$Weight)
-
-
-#ggplot(data=wtM2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=wtM2[which(wtM2$Year==2020),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Wt pop M in datafile - males (red circles = 2020)")
-
-```
-
-
-```{r wt_inc, message=FALSE, echo=FALSE}
-temps=cbind(seq(1982,2019),YFS18_2$Bottom_temp[1,1:38])
-
-#Growth is a vector
-Growthvec=vector()
-Tempvec=vector()
-Age1=vector()#first age
-Age2=vector()#second age - always one larger than first age
-
-#Years 1999, 2000, 2001 have a full 18 age records.
-#Each year 2002 and later have 1 fewer age records (starting with 17 for 2002)
-#I Think I got this right and that the temps match the years.
-N=c(18,18,18,rev(seq(2,17,1)))#This represents the 
-tempz=read.csv("/Users/ingridspies/Downloads/tempz.csv",header=TRUE)
-Year=seq(1999,2017,1)
-matM=matrix(0,length(Year),length(seq(2,19,1)))
-matF=matrix(0,length(Year),length(seq(2,19,1)))
-tempMAT=matrix(0,length(Year),length(seq(2,19,1)))
-
-for(j in 1:length(N)){
-for(i in 1:N[j]){
-matM[j,i]=srvM[(i+j+2),(i+2)]-srvM[(i+j+1),(i+1)]
-matF[j,i]=srvF[(i+j+2),(i+2)]-srvF[(i+j+1),(i+1)]
-tempMAT[j,i]=tempz[which(tempz$YEAR==1998+i+j-1),3]
-}}
-
-cbind(Year,tempMAT);cbind(Year,matM);cbind(Year,matF)
-rownames(tempMAT)=Year;rownames(matM)=Year;rownames(matF)=Year
-colnames(tempMAT)=seq(2,19,1);colnames(matM)=seq(2,19,1);colnames(matF)=seq(2,19,1)
-
-matM2=reshape2::melt(matM,id=c("Year"))
-matF2=reshape2::melt(matF,id=c("Year"))
-tempMAT2=reshape2::melt(tempMAT,id=c("Year"))
-colnames(tempMAT2)=c("Year","Age1","Temperature")
-colnames(matM2)=c("Year","Age1","Growth_Male")
-colnames(matF2)=c("Year","Age1","Growth_Female")
-OUT=cbind(tempMAT2,matM2$Growth_Male,matF2$Growth_Female)
-colnames(OUT)=c("Year","Age1","Temperature","Growth_Male","Growth_Female")
-
-OUT2=OUT[which(OUT$Growth_Male>0),]
-
-ggplot(data=OUT2[which(OUT2$Age1<10),])+geom_point(aes(x=Temperature,y=Growth_Male,color=Year))+theme_bw()+ggtitle("Male Growth by increment and Temperature") 
-
-ggplot(data=OUT2[which(OUT2$Age1<10),])+geom_point(aes(x=Temperature,y=Growth_Female,color=Year))+theme_bw()+ggtitle("Female Growth by increment and Temperature")
+lines(temp,Mal.lm$coefficients[1]+1*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+OUT_len2[which(OUT_len2$Age1<12),]$Temperature
+OUT_len2[which(OUT_len2$Age1<12),]$Growth_male
 
 
 ```
 
+#try plotting another way
 
+# Tables
+
+
+```{r levene,echo=FALSE,message=FALSE }
+
+leveneTest(Growth_Female~Age_factor,OUT_len2)
+
+leveneTest(Growth_Male~Age_factor,OUT_len2)
+
+```
+`r table_nums(name="levene",caption = "Levene's test for homogeneity of growth variance by age.")`
+
+\pagebreak
+
+```{r ANOVA,echo=FALSE,message=FALSE,warning=FALSE}
+
+Fem.lm<-lm(Growth_Female~Age1+Temperature,data=OUT_len2[which(OUT_len2$Age1<13),])
+#summary(Fem.lm)
+fem1=data.frame(summary(Fem.lm)$coefficients)
+fem1[,1:3]=round(fem1[,1:3],3)
+fem1[,4]=signif(fem1[,4],digits=4)
+colnames(fem1)[2]="Std.Error"
+colnames(fem1)[4]="Pr(t)"
+
+#fit2=aov(Growth_Female~Temperature+Age1,OUT_len2[which(OUT_len2$Age1<13),])
+#Anova(fit2, type="III")
+
+Mal.lm<-lm(Growth_Male~Age1+Temperature,data=OUT_len2[which(OUT_len2$Age1<12),])
+mal1=data.frame(summary(Mal.lm)$coefficients)
+mal1[,1:3]=round(mal1[,1:3],3)
+mal1[,4]=signif(mal1[,4],digits=4)
+colnames(mal1)[2]="Std.Error"
+colnames(mal1)[4]="Pr(t)"
+
+
+
+kable(mal1,"latex",booktabs=T,linesep="",longtable=FALSE,align='r',digits=35)%>%
+  add_header_above(c("Male"=5))
+
+kable(fem1,"latex",booktabs=T,linesep="",longtable=FALSE,align='r',digits=35)%>%
+  add_header_above(c("Female"=5))
+
+
+#In code we have Growth_Option =1 is just no temperature effect.
+#Growth_Option>1 is 
+
+```
+
+`r table_nums(name="anova",caption = "Anova results for male and female Yellowfin Sole, comparing the effect of bottom temperature and age on growth increment. Age and temperature interactions were not significant and were not included in the final anova.")`
