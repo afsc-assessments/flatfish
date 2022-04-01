@@ -48,8 +48,9 @@
 #' @return Plot of model estimates of spawning stock biomass 
 #' @export
 #' 
-plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass index", ylim = NULL, alpha = 0.1,biomass=TRUE)
+plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass index", ylim = NULL, alpha = 0.1,biomass=TRUE,overlay=FALSE)
 {
+  #M<-modlst; xlab = "Year"; ylab = "Bottom trawl survey biomass index"; ylim = NULL; alpha = 0.1;biomass=TRUE;overlay=TRUE;
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
     
@@ -67,15 +68,15 @@ plot_bts <- function(M, xlab = "Year", ylab = "Bottom trawl survey biomass index
     if (length(M) == 1)
     {
         p <- p + geom_line(aes(x = year, y = pre)) +geom_point(aes(x=year, y=obs)) + 
-            geom_errorbar(aes(x = year, ymax = ub, ymin = lb))
+            geom_errorbar(aes(x = year, ymax = ub, ymin = lb)) 
             #geom_ribbon(aes(x = year, ymax = ub, ymin = lb), alpha = alpha)
     } else {
         p <- p + geom_line(aes(x = year, y = pre, col = Model),size=1.2) + geom_point(aes(x=year, y=obs)) + 
             geom_errorbar(aes(x = year, ymax = ub, ymin = lb))
     }
     
-    #if(!.OVERLAY) 
+    if(!overlay) 
+        p <- p + facet_grid( Model~.) + guides(colour="none")
         #p <- p + facet_wrap(~Model) + guides(colour=FALSE)
-        p <- p + facet_grid( Model~.) + guides(colour=FALSE)
     print(p + .THEME)
 }
