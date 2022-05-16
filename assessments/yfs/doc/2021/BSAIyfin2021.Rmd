@@ -2018,13 +2018,13 @@ YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2
 #now plot survey
 srvF=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_F_blanksfilled.csv",header=TRUE)
 colnames(srvF)=c("Year",seq(2,20,1))
-srvF2=melt(srvF,id=c("Year"))
+srvF2=reshape2::melt(srvF,id=c("Year"))
 colnames(srvF2)=c("Year","Age","Weight")
 sF=ggplot(data=srvF2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvF2[which(srvF2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - females (red circles = 2019)")
 
 srvM=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/mat_wtage_srv_M_blanksfilled.csv",header=TRUE)
 colnames(srvM)=c("Year",seq(2,20,1))
-srvM2=melt(srvM,id=c("Year"))
+srvM2=reshape2::melt(srvM,id=c("Year"))
 colnames(srvM2)=c("Year","Age","Weight")
 sM=ggplot(data=srvM2)+geom_point(aes(x=Age,y=Weight,color=Year))+geom_point(data=srvM2[which(srvM2$Year==2019),],aes(x=Age,y=Weight),color="red",size=6)+theme_bw()+ggtitle("Survey weight at age - males (red circles = 2019)")
 

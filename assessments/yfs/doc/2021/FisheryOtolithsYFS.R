@@ -1,8 +1,7 @@
 oto=read.csv("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/doc/2021/YFS_oto_fishery.csv",header=TRUE)
 
-
+oto=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS2021_age_report_flattened.csv")
 library(tidyverse)
-library(maps)
 library(maptools)
 library(ggrepel)
 library(viridis)
@@ -57,4 +56,8 @@ ggplot() +
        legend.title=element_text(size=12),
        legend.text=element_text(size=12),axis.text.x=element_text(angle=45,hjust=1))+
  coord_map(xlim= c(185, 205),  ylim = c(54, 61))+
- labs(x = "Longitude", y = "Latitude")+geom_point(data=oto,aes(x= LONDD_END, y=LATDD_END), alpha=0.5,size=0.5,colour="red")+facet_wrap(~Month)+ggtitle("Yellowfin sole otolith collections by month, 2020")
+ labs(x = "Longitude", y = "Latitude")+geom_point(data=oto,aes(x= LonDD_End, y=LatDD_End), alpha=0.5,size=0.5,colour="red")+facet_wrap(~Month)+ggtitle("Yellowfin sole otolith collections by month, 2021")
+
+
+#select 700 to be read in 2022 by barcode.
+write.csv(sample(oto$Barcode,700,replace=FALSE),"/Users/ingridspies/Downloads/YFS_fishery_otos_2021.csv")
