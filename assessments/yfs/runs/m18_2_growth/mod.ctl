@@ -2,8 +2,8 @@
 #Base
 #datafile 
 #../data/yfs_2021_catwt.dat
-#Growth_Option 2 is start out w\ base growth values, deviations decomposed by year & age   
-	2
+#Growth_Option
+	3
 #ABC_age_lb
 	6
 #phase_age_incr

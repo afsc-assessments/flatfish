@@ -1,22 +1,25 @@
 rm(list=ls())
-radian
 # For some reason I can't get this to work anymore so
 # best to redo: source("../../R/prelims.R")
 # 
 getwd()
-source(("../../R/read-admb.R"))
-source(("../../R/plot_bts.R"))
-system("ls ../../R/")
+source(("../../R/prelims.R"))
+library(doParallel)
+library(patchwork)
 mytheme = theme_few()
 # Run model from last year
-setwd("mj")
-system("make ")
-setwd("..")
-ls()
-m0 <- read.rep("m18_2/fm.rep")
-m1 <- read.rep("max/fm.rep")
-m2 <- read.rep("max2/fm.rep")
-m3 <- read.rep("max3/fm.rep")
+mod_dir <- c("max0", "max1","max2","max3")
+fn        <- paste0(mod_dir, "/fm");fn
+mod_names <- c("max0", "max1","max2","max3")
+nmods <- length(mod_names)
+
+registerDoParallel(nmods)
+system.time( modlst <- mclapply(fn, read_admb,mc.cores=nmods) )
+names(modlst) <- mod_names
+names(modlst)
+plot_bts(modlst[c(1,4)],overlay=TRUE)
+
+
 #--Now make the projection files
 setup<-list(
   Run_name     = noquote("YFS"),
@@ -108,7 +111,6 @@ for (i in c(0:3)){
   rn=paste0("max",i,"/fm.rep")
   mn=paste0("model_",i)
   A[[i+1]] <-  read.rep(rn)
-  names(A[[i+1]]) <-  mn
   sr <- read.table(paste0("max",i,"/sex_ratio.rep"))
   names(sr) <- c("Year","source","sex_ratio")
   A[[i+1]]$sex_ratio <- sr %>% arrange(source,Year)
