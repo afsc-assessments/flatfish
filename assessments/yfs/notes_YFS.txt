@@ -1,0 +1,28 @@
+retrospectives: use code retro.R
+
+go into the m21 and then type
+"make"
+This uses the Makefile.
+mod.ctl is used.
+fm.dat is where the datafile is actually being referenced.
+
+for mcmc, go to the directory and type make mcmc.
+Then to complete it, ./fm -mceval in that directory.
+
+If you get large odd files like unbounded.rep or rwm_lp.txt, just delete them.
+
+Be sure to put large data download files in your /Documents directory.
+MCMC results are in evalout.rep and should be 50000*around 221 in 2022.
+May need to update hdr.dat with current years. Total Biomass, q, and SSB all are indexed by year and may need current year added. 
+
+once you run the mcmc and mceval, save the mceval with the model name as a .csv and add the headers from hdr.rep. I just read it in as a .csv. Then rerun the model (not an mcmc model) (just make in that folder).
+
+Line 1264:        & \multicolumn{2}{c|}{Model 18.2 (2021)}  & \multicolumn{2}{c}{Model 18.2 (2020)}}               \\
+
+A big part of this year was thinking about how fishery and survey weights were added to model. Old survey data and fishery data had some algorithm applied. I used 2008-2020 Jims sampler protocol for fishery weights. I also tried pure survey weights for the survey weights part....
+
+For the survey we have weights and ages for 1987, 1994, 1999-2019.
+
+It appears weight at age is increasing (see age 8 plot, which had the most ages.
+
+We calculated two age weight relationships. One for pre-2010 and one for 2010-2019. Gaps prior to 2010 were filled with the mean weight at age for the pre 2010 time period. Gaps after and including 2010 were filled with the mean weight at age for the 2010-2019 time period.

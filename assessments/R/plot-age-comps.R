@@ -78,7 +78,7 @@
 #' @export
 #'
 plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion", 
-                           nages=20,type="fishery",sex="split",title="Fishery age compositions") {
+                           nages=20,type="fishery",sex="split",title="Fishery age compositions",styr,endyr) {
  #xlab = "Age (yrs)"; ylab = "Proportion"; nages=20;type="fishery";sex="split";title="Fishery age compositions"
     xlab <- paste0("\n", xlab)
     ylab <- paste0(ylab, "\n")
@@ -86,7 +86,7 @@ plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion",
     mdf <- .get_ageComps_df(M,nages,type,sex)
    head(mdf) 
     ix <- pretty(1:nages)
-    tdf <- mdf %>% mutate(pred=if_else(sex=="Males",-pred,pred),value=if_else(sex=="Males",-value,value))
+    tdf <- mdf %>% mutate(pred=if_else(sex=="Males",-pred,pred),value=if_else(sex=="Males",-value,value)) %>% filter(year>=styr & year<=endyr)
     p <- ggplot(tdf,aes(variable,value,fill=sex)) +
          geom_bar(stat="identity",alpha=0.5)
     p <- p + geom_line(aes(as.numeric(variable),pred,col=sex),alpha=0.85)
@@ -94,9 +94,12 @@ plot_age_comps <- function(M, xlab = "Age (yrs)", ylab = "Proportion",
     p <- p + labs(x = xlab, y = ylab)
     p <- p + ggtitle(title)
     p <- p + facet_wrap(~year) + .THEME
-    #p <- p + facet_grid(irow~icol,labeller=label_both) + .THEME
-    p <- p + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+  #  p <- p + facet_grid(irow~icol,labeller=label_both)  + .THEME
+   # p <- p + facet_grid(~year,rows = 3, cols = 3) + .THEME
+        p <- p + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
     print(p)
+    
+    
 }
 
 

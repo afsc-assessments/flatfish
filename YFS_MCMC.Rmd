@@ -12,7 +12,7 @@ mytheme = .THEME
 #---------------------------------------------------------------
 # Read in MCMC header and results
 hdr <- read.table("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/data/hdr.dat",as.is=T,header=F)
-mctmp2.df <-read_table2("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2/evalout.rep",col_names=FALSE)
+mctmp2.df <-read_table2("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/evalout.rep",col_names=FALSE)
 mctmp1.df <-read_table2("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m1/evalout.rep",col_names=FALSE)
 names(mctmp1.df) <- hdr
 names(mctmp2.df) <- hdr

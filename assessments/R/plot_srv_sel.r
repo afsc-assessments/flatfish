@@ -1,8 +1,8 @@
-plot_srv_sel <- function(M,themod, title="Survey selectivity",bysex=TRUE,maxage = 20){
+plot_srv_sel <- function(theM,themod, title="Survey selectivity",bysex=TRUE,maxage = 20){
 
-  M <- modlst[[themod]]; names(M[]) #to see the names of what's in an object
+  M <- theM[[themod]]; names(M[]) #to see the names of what's in an object
   df <- rbind(data.frame(Age=1:maxage,sel=M$sel_srv_m,sex="Male"),data.frame(Age=1:maxage,sel=M$sel_srv_f,sex="Female"))
-  ggplot(df,aes(x=Age,y=sel,color=sex)) + geom_line(size=2) + theme_few() + ylab("Selectivity") + ggtitle(paste0("Survey selectivity; (Model ",names(M),")")) ;p1
+  ggplot(df,aes(x=Age,y=sel,color=sex)) + geom_line(size=2) + theme_few() + ylab("Selectivity") + ggtitle(paste0("Survey selectivity; (Model ",names(theM[themod]),")"))
   
 #  n <- length(M)
 #    mdf <- NULL

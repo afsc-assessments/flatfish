@@ -1,0 +1,5 @@
+#model_name 
+Male_M_estimated
+#datafile 
+../data/yfs_2021_EBS_VAST_catwt.dat
+#

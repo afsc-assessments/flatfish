@@ -203,6 +203,8 @@ private:
   param_vector base_incr_f;
   param_vector base_incr_m;
   param_matrix incr_dev;
+  param_3array Mal_gr;
+  param_3array Fem_gr;
   param_init_bounded_dev_vector age_incr;
   param_init_bounded_dev_vector yr_incr;
   param_init_number growth_alpha;
@@ -401,6 +403,7 @@ public:
   void Get_Pred_wt(void);
   void Write_R_wts(void);
   void Write_R(void);
+  void write_projfile(void);
 
 };
 #endif

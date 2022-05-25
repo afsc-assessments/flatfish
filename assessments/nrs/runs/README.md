@@ -1,5 +1,7 @@
 # Northern rocksole sole runs directory
 
+In 2020, c1mod4 was selected as the preferred model used for advice.
+
 fm.dat in subdirectory gives "model_name" as one word (no spaces) and datafile locale and name. This was previously in mod.ctl files.
 
 Structure set up to parse mods.dat (taken from [flatfish models](https://docs.google.com/spreadsheets/d/1Jw--X8M61LFjPUFNv5vFXozBwmQCpf7FwIDhQFs38lM/edit#gid=1701376339) for a description)

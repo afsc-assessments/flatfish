@@ -1,6 +1,6 @@
 rm(list=ls())
 source("../R/prelims.R")
-
+setwd("/Users/ingridspies/admbmodels/flatfish/src/")
 # Read in the output of the assessment
 owd<-getwd()
 #Test if model needs compiling
