@@ -267,6 +267,8 @@ private:
   param_init_vector wt_fsh_fut_m;
   param_init_vector wt_pop_fut_f;
   param_init_vector wt_pop_fut_m;
+  param_matrix wt_pop_fut_f_mat;
+  param_matrix wt_pop_fut_m_mat;
   param_number R_beta;
   param_number phizero;
   param_3array log_sel_fsh_f;

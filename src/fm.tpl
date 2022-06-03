@@ -370,7 +370,6 @@ DATA_SECTION
   !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
 	// env_cov(j,k) /= stdev(env_cov(j,k)); }
   !!log_input(env_cov);  
-  !!cout<<"env_cov"<<env_cov<<endl; 
 
    number    adj_1;
    number    adj_2
@@ -652,6 +651,8 @@ PARAMETER_SECTION
   init_vector wt_fsh_fut_m(1,nages,phase_wtfmsy)
   init_vector wt_pop_fut_f(1,nages,phase_wtfmsy)
   init_vector wt_pop_fut_m(1,nages,phase_wtfmsy)
+  matrix wt_pop_fut_f_mat(styr_fut,endyr_fut,1,nages)
+  matrix wt_pop_fut_m_mat(styr_fut,endyr_fut,1,nages)
   number R_beta                             // Ricker beta 
   number phizero                            // SPR at F=0
 
@@ -782,6 +783,7 @@ PARAMETER_SECTION
   sdreport_vector future_Fs(styr_fut,endyr_fut)
   sdreport_matrix future_SSB(1,num_proj_Fs,styr_fut,endyr_fut)
   sdreport_matrix future_TotBiom(1,num_proj_Fs,styr_fut,endyr_fut)
+  //sdreport_matrix msy_fut(1,num_proj_Fs,styr_fut,endyr_fut)
 
 PRELIMINARY_CALCS_SECTION
   // Initialize matrices used in the model
@@ -1008,20 +1010,6 @@ PRELIMINARY_CALCS_SECTION
     }
 
  
-  //cout<<"env_cov(1,1,1)"<<env_cov(1,1,1)<<endl;
-  //cout<<"base_incr_f"<<base_incr_f<<endl;
-  //cout<<"nyrs_srv"<<nyrs_srv<<endl; 
-  //cout<<"wt_srv_f"<<wt_srv_f<<endl;  
-  //cout<<"wt_srv_m"<<wt_srv_m<<endl; 
-  //cout<<"wt_pop_f"<<wt_pop_f<<endl;  
-  //cout<<"wt_pop_m"<<wt_pop_m<<endl;
-  //cout<<"wt_fsh_f"<<wt_fsh_f<<endl;  
-  //cout<<"wt_fsh_m"<<wt_fsh_m<<endl;
-  //cout<<"Mal_gr"<<Mal_gr<<endl;
-  //cout<<"Mal_gr(2020,3)"<<Mal_gr(2020,3)<<endl;
-  //cout<<"Mal_gr(2021,3)"<<Mal_gr(2021,3)<<endl; 
-  //cout<<"base_incr_m"<<base_incr_m<<endl; 
-  //cout<<"wt_vbg_m"<<wt_vbg_m<<endl;   
     }   
 
 
@@ -1830,6 +1818,7 @@ FUNCTION Future_projections
   future_SSB.initialize();
   future_Fs.initialize();
   future_catch.initialize();
+  //msy_fut.initialize();
   
 //Loop to cycle different fishing mortality values through the projections
   for (int m=1;m<=num_proj_Fs;m++)
@@ -1866,7 +1855,10 @@ FUNCTION Future_projections
        }
        // Set growth if temperature related
        if (Growth_Option==3)
-       {  //females
+       {  
+		 if (i==1)
+		 {  
+		 //females
          dvar_vector incr_dev_tmp_f(2,nages);
   		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8) + .24*fut_temp(i-endyr) ;
   		 incr_dev_tmp_f(nages-7,nages) = base_incr_f(nages-7,nages) ;
@@ -1874,9 +1866,8 @@ FUNCTION Future_projections
   		 for (j=1;j<=nages-1;j++)
   		 {
   		 wt_tmp_f(j+1)  = Fem_gr(1,endyr,j)+incr_dev_tmp_f(j+1);
-  		 }  //males
-		 
-		 
+  		 }  
+		 //males
            dvar_vector incr_dev_tmp_m(2,nages);
   		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + .62*fut_temp(i-endyr)-.069*fut_temp(i-endyr)*fut_temp(i-endyr) ;
   		 incr_dev_tmp_m(nages-6,nages) = base_incr_m(nages-6,nages) ;
@@ -1885,22 +1876,40 @@ FUNCTION Future_projections
   		 {
   		 wt_tmp_m(j+1)  = Mal_gr(1,endyr,j)+incr_dev_tmp_m(j+1);
   		 }
-		 
          wt_pop_fut_f           = wt_tmp_f;
          wt_pop_fut_m           = wt_tmp_m;
          wt_fsh_fut_f           = wt_tmp_f;
-         wt_fsh_fut_m           = wt_tmp_m;
-		 cout<<"base_incr_f"<<base_incr_f<<endl;
-		 cout<<"wt_srv_f(1,endyr)"<<wt_srv_f(1,endyr)<<endl;
-         cout<<"fut_temp(i-endyr)"<<fut_temp(i-endyr)<<endl;
-		 cout<<"incr_dev_tmp_f"<<incr_dev_tmp_f<<endl;
-		 cout<<"Fem_gr(1,endyr)"<<Fem_gr(1,endyr)<<endl;
-		 cout<<"Mal_gr(1,endyr)"<<Mal_gr(1,endyr)<<endl;
-		 cout<<"wt_srv_f(1,endyr)"<<wt_srv_f(1,endyr)<<endl;
-		 cout<<"base_incr_f(2)"<<base_incr_f(2)<<endl;
-		 cout<<"wt_tmp_f"<<wt_tmp_f<<endl;
-		 cout<<"wt_tmp_m"<<wt_tmp_m<<endl;
-		 exit(1);
+         wt_fsh_fut_m           = wt_tmp_m; 
+		 wt_pop_fut_f_mat(i)           = wt_tmp_f;
+		 wt_pop_fut_m_mat(i)           = wt_tmp_m;
+		 }
+		 if (i>1)
+         {
+			 //females
+           dvar_vector incr_dev_tmp_f(2,nages);
+	  		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8) + .24*fut_temp(i-endyr) ;
+	  		 incr_dev_tmp_f(nages-7,nages) = base_incr_f(nages-7,nages) ;
+	           wt_tmp_f(1)        = wt_vbg_f(1);
+	  		 for (j=1;j<=nages-1;j++)
+	  		 {
+	  		 wt_tmp_f(j+1)  = wt_pop_fut_f_mat(i,j)+incr_dev_tmp_f(j+1);
+	  		 }  
+			 //males
+           dvar_vector incr_dev_tmp_m(2,nages);
+	  		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + .62*fut_temp(i-endyr)-.069*fut_temp(i-endyr)*fut_temp(i-endyr) ;
+	  		 incr_dev_tmp_m(nages-6,nages) = base_incr_m(nages-6,nages) ;
+	           wt_tmp_m(1)        = wt_vbg_m(1);
+	  		 for (j=1;j<=nages-1;j++)
+	  		 {
+	  		 wt_tmp_m(j+1)  = wt_pop_fut_m_mat(i,j)+incr_dev_tmp_m(j+1);
+	  		 }
+	         wt_pop_fut_f           = wt_tmp_f;
+	         wt_pop_fut_m           = wt_tmp_m;
+	         wt_fsh_fut_f           = wt_tmp_f;
+	         wt_fsh_fut_m           = wt_tmp_m; 
+			 wt_pop_fut_f_mat(i)           = wt_tmp_f;
+			 wt_pop_fut_m_mat(i)           = wt_tmp_m;
+		 }	//end of calculate future weight at age age>endyr.	 
        } 
 
        for (k=1;k<=nfsh;k++)
@@ -1912,7 +1921,7 @@ FUNCTION Future_projections
        }
        S_future_f(i) = exp(-Z_future_f(i));
        S_future_m(i) = exp(-Z_future_m(i));
-     }
+     } //end of line 1861
      
   //Future recruitment and SSB
   //Mean average recruitment of the time-series is used for the projection
@@ -1939,13 +1948,13 @@ FUNCTION Future_projections
       }
       S_future_f(i) = exp(-Z_future_f(i));
       S_future_m(i) = exp(-Z_future_m(i));
-      ABC_biom(i)      = nage_future_f(i)(ABC_age_lb,nages) * wt_pop_fut_f(ABC_age_lb,nages); 
-      ABC_biom(i)     += nage_future_m(i)(ABC_age_lb,nages) * wt_pop_fut_m(ABC_age_lb,nages); 
+      ABC_biom(i)      = nage_future_f(i)(ABC_age_lb,nages) * wt_pop_fut_f_mat(i)(ABC_age_lb,nages); 
+      ABC_biom(i)     += nage_future_m(i)(ABC_age_lb,nages) * wt_pop_fut_m_mat(i)(ABC_age_lb,nages); 
     }
-    SSB_future(i)      = elem_prod(nage_future_f(i),pow(S_future_f(i),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
+    SSB_future(i)      = elem_prod(nage_future_f(i),pow(S_future_f(i),spmo_frac)) * elem_prod(wt_pop_fut_f_mat(i),maturity(endyr));  //need to add recruitment lag
     Rectmp             = R_alpha*SSB_future(i)*(mfexp(-R_beta*SSB_future(i)));
-    TotBiom_future(i)  = nage_future_f(i)*wt_pop_fut_f; 
-    TotBiom_future(i) += nage_future_m(i)*wt_pop_fut_m; 
+    TotBiom_future(i)  = nage_future_f(i)*wt_pop_fut_f_mat(i); 
+    TotBiom_future(i) += nage_future_m(i)*wt_pop_fut_m_mat(i); 
   //Now graduate for the next year.....
 	  if (i!=endyr_fut)
 	  {
@@ -1957,10 +1966,10 @@ FUNCTION Future_projections
     nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
     nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   }
-
-  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
-  TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
-  TotBiom_future(endyr_fut) += nage_future_m(endyr_fut)*wt_pop_fut_m;
+  
+  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f_mat(endyr_fut),maturity(endyr));  //need to add recruitment lag
+  TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f_mat(endyr_fut);
+  TotBiom_future(endyr_fut) += nage_future_m(endyr_fut)*wt_pop_fut_m_mat(endyr_fut);
 
   //Calculations of catch at predicted future age composition
   for (i=styr_fut;i<=endyr_fut;i++)
@@ -1975,13 +1984,16 @@ FUNCTION Future_projections
     }
 
     if (m<=npfs)  // catch biomass in future
-      future_catch(m,i)  += catage_future_f(i)*wt_fsh_fut_f + catage_future_m(i)*wt_fsh_fut_m      ;
+      future_catch(m,i)  += catage_future_f(i)*wt_pop_fut_f_mat(i) + catage_future_m(i)*wt_pop_fut_m_mat(i)      ;
 
     future_SSB(m,i) = SSB_future(i);
     future_TotBiom(m,i) = TotBiom_future(i);
+	//get_msy();
+	//msy_fut(m,i)=msy;
    }
-  }   //End of loop over F's
-
+  }   //End of loop over F's Future projections
+  //get_msy, get_spr
+  
 FUNCTION write_srec
   dvariable phi;  
   phizero=get_spr(0.0);
@@ -3159,6 +3171,15 @@ FUNCTION Write_R
   R_report <<"fut_temp" <<endl <<fut_temp<< endl;
   R_report <<"wt_pop_fut_f"<<endl<<wt_pop_fut_f<<endl;
   R_report <<"wt_pop_fut_m"<<endl<<wt_pop_fut_m<<endl;
+  R_report <<"styr_fut"<<endl<<styr_fut<<endl;
+  R_report <<"endyr_fut"<<endl<<endyr_fut<<endl;
+  R_report <<"wt_pop_fut_f_mat"<<endl<<wt_pop_fut_f_mat<<endl;
+  R_report <<"wt_pop_fut_m_mat"<<endl<<wt_pop_fut_m_mat<<endl;  
+  R_report <<"nage_future_f"<<nage_future_f<<endl;
+  R_report <<"nage_future_m"<<nage_future_m<<endl;
+  R_report <<"env_cov"<<env_cov<<endl;
+  //R_report <<"msy_fut"<<msy_fut<<endl;
+
    
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 

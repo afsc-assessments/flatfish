@@ -3,7 +3,7 @@
 #datafile 
 #../data/yfs_2021_catwt.dat
 #Growth_Option
-1
+	1
 #ABC_age_lb
 	6
 #phase_age_incr
