@@ -29,7 +29,159 @@ source("/Users/ingridspies/admbmodels/Katch/assessments/R/read-rep.R")
 YFS2020=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m2020/fm.rep")#last years model 
 YFS18_2=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2/fm.rep")#this is the preferred model. Male M is estimated.
 
-YFS18_2growth=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2_growth/fm.rep")#this is the preferred model. 
+YFS18_2growth_SSP585=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2_growth/fm_SSP585.rep")#this is the preferred model with SSP585 future
+
+YFS18_2growth_SSP126=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2_growth/fm_SSP126.rep")#this is the preferred model with SSP585 future
+
+YFS18_2growth_mnhind=read.rep("/Users/ingridspies/admbmodels/flatfish/assessments/yfs/runs/m18_2_growth/fm_mnhind.rep")#this is the preferred model with SSP585 future
+
+
+F40=  0.12
+F35=  0.16
+F30=  0.21
+
+#Line 1826
+
+#Plot total biomass SS126
+futureSSP126=t(YFS18_2growth_SSP126$future_TotBiom)
+colnames(futureSSP126)=rev(c("Fixed_F","F=0","meanF","F35","F40"))
+rownames(futureSSP126)=c(2021:2099)
+futureSSP126_2=reshape2::melt(futureSSP126)
+colnames(futureSSP126_2)=c("Year","Fishing_Mortality_Rate","TotalBiomass")
+futureSSP126_2$Scenario="SSP126"
+
+#Plot total biomass SS585
+futureSSP585=t(YFS18_2growth_SSP585$future_TotBiom)
+colnames(futureSSP585)=rev(c("Fixed_F","F=0","meanF","F35","F40"))
+rownames(futureSSP585)=c(2021:2099)
+futureSSP585_2=reshape2::melt(futureSSP585)
+colnames(futureSSP585_2)=c("Year","Fishing_Mortality_Rate","TotalBiomass")
+futureSSP585_2$Scenario="SSP585"
+
+#Plot total biomass mnhind
+futuremnhind=t(YFS18_2growth_mnhind$future_TotBiom)
+colnames(futuremnhind)=rev(c("Fixed_F","F=0","meanF","F35","F40"))
+rownames(futuremnhind)=c(2021:2099)
+futuremnhind_2=reshape2::melt(futuremnhind)
+colnames(futuremnhind_2)=c("Year","Fishing_Mortality_Rate","TotalBiomass")
+futuremnhind_2$Scenario="mnhind"
+
+#all 3 scenarios
+All_TotBiom=rbind(futureSSP126_2,futureSSP585_2,futuremnhind_2)
+
+ggplot(data=All_TotBiom)+geom_line(aes(x=Year,y=TotalBiomass,col=Fishing_Mortality_Rate,lty=Scenario))
+
+#try just meanF
+#Figure 6
+ggplot(data=All_TotBiom[which(All_TotBiom$Fishing_Mortality_Rate=="meanF"),])+geom_line(aes(x=Year,y=TotalBiomass,col=Scenario),lwd=1.05)+theme_bw()+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))+ylab("Total Biomass (t)")+ylim(0,2800)
+
+#Plot number at age
+futureSSP126=rowSums(YFS18_2growth_SSP126$nage_future_f)
+futureSSP585=rowSums(YFS18_2growth_SSP585$nage_future_f)
+futuremnhind=rowSums(YFS18_2growth_mnhind$nage_future_f)
+n_fut=cbind(seq(2022,2099,1),futureSSP126,futureSSP585,futuremnhind)
+colnames(n_fut)=c("Year","Females_126","Females585","mnhind")
+n_fut_2=reshape2::melt(n_fut)[79:312,]
+n_fut_2$Year=rep(seq(2022,2099),3)
+colnames(n_fut_2)=c("X","Scenario","Numbers","Year")
+n_fut_2=n_fut_2[,2:4]
+
+ggplot(n_fut_2)+geom_line(aes(x=Year,y=Numbers,col=Scenario))+theme_bw()
+
+#Try to plot the difference between 1982-2021 in the regular code and the growth code TotalBiomass
+compare_TotBio=cbind(YFS18_2$TotBiom[,2],
+YFS18_2growth_mnhind$TotBiom[,2])
+colnames(compare_TotBio)=c("Standard","Growth")
+compare_TotBio2=reshape2::melt(compare_TotBio)
+compare_TotBio2$Year=rep(seq(1954,2021,1),2)
+colnames(compare_TotBio2)=c("X","Scenario","TotalBiomass","Year")
+ggplot(compare_TotBio2)+geom_line(aes(x=Year,y=TotalBiomass,col=Scenario))
+
+#Figure 6a
+ggplot(compare_TotBio2[which(compare_TotBio2$Year>1981),])+geom_line(aes(x=Year,y=TotalBiomass,col=Scenario),lwd=1.1)+theme_bw()+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))+ylab("Total Biomass (t)")+ylim(0,4000)
+
+#Try to plot the difference between 1982-2021 in the regular code and the growth code numbers at age (females)
+compare_natage_f=data.frame(cbind(YFS18_2$natage_f[,2],YFS18_2growth_mnhind$natage_f[,2]))
+compare_natage_f$Year=seq(1954,2021,1)
+colnames(compare_natage_f)=c("Standard","Growth","Year")
+compare_natage_f2=reshape2::melt(compare_natage_f,id="Year")
+
+colnames(compare_natage_f2)=c("Year","Scenario","Numbers")
+ggplot(compare_natage_f2)+geom_line(aes(x=Year,y=Numbers,col=Scenario))+theme_bw()+ggtitle("Females")
+
+colnames(compare_natage_f2)=c("Year","Scenario","Numbers")
+
+#Figure 7
+ggplot(compare_natage_f2[which(compare_natage_f2$Year>1981),])+geom_line(aes(x=Year,y=Numbers,col=Scenario),lwd=1.1)+theme_bw()+ggtitle("Females")+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))+ylab("Number of fish (billions)")+ylim(0,4)
+
+compare_natage_m=data.frame(cbind(YFS18_2$natage_m[,2],YFS18_2growth_mnhind$natage_m[,2]))
+compare_natage_m$Year=seq(1954,2021,1)
+colnames(compare_natage_m)=c("Standard","Growth","Year")
+compare_natage_m2=reshape2::melt(compare_natage_m,id="Year")
+
+colnames(compare_natage_m2)=c("Year","Scenario","Numbers")
+ggplot(compare_natage_m2)+geom_line(aes(x=Year,y=Numbers,col=Scenario))+theme_bw()+ggtitle("Males")
+
+ggplot(compare_natage_m2[which(compare_natage_m2$Year>1981),])+geom_line(aes(x=Year,y=Numbers,col=Scenario))+theme_bw()+ggtitle("Males")
+
+#compare weightat age
+
+plot(seq(1954,2021,1),YFS18_2growth_SSP126$wt_pop_f[,8],ylim=c(0,350))#This changes
+lines(seq(1954,2021,1),YFS18_2$wt_srv_f[,8])#This changes
+
+plot(seq(1954,2021,1),YFS18_2$wt_srv_f[,9],type="l")
+lines(seq(1954,2021,1),YFS18_2growth_SSP585$wt_srv_f[,9],col="red",lwd=2)
+
+#Try the mean over 1982-2021 
+#how do you do the mean? Weighted?
+
+#Maybe try calculating the weight of the whole population by numbers*weight so total weight at age Females age 2-13 only 
+
+Standard=rowSums(YFS18_2$wt_srv_f[29:68,2:13]*YFS18_2$natage_f[29:68,2:13])
+
+Growth=rowSums(YFS18_2growth_SSP585$wt_srv_f[29:68,2:13]*YFS18_2growth_SSP585$natage_f[29:68,2:13])
+Year=seq(1982,2021,1)
+Comp_WtBio=data.frame(rep(Year,2),c(Growth,Standard),c(rep("Growth",40),rep("Standard",40)))
+colnames(Comp_WtBio)[1]="Year";colnames(Comp_WtBio)[2]="Biomass";colnames(Comp_WtBio)[3]="Scenario"
+ggplot(data=Comp_WtBio)+geom_line(aes(x=Year,y=Biomass,col=Scenario),lwd=1.1)+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))+ylab("Female biomass age 2-13")+theme_bw()+ylim(0,1800)
+
+#Here try just total weight
+
+Standard=rowSums(YFS18_2$wt_srv_f[29:68,8:13])
+Growth=rowSums(YFS18_2growth_SSP585$wt_srv_f[29:68,8:13])
+Year=seq(1982,2021,1)
+Comp_WtBio=data.frame(rep(Year,2),c(Growth,Standard),c(rep("Growth",40),rep("Standard",40)))
+colnames(Comp_WtBio)[1]="Year";colnames(Comp_WtBio)[2]="Biomass";colnames(Comp_WtBio)[3]="Scenario"
+ggplot(data=Comp_WtBio)+geom_line(aes(x=Year,y=Biomass,col=Scenario),lwd=1.1)+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))+ylab("Sum of female numbers age 2-13")+theme_bw()
+
+#in the growth model, wt_fsh_f looks good but not wt_pop_f or wt_srv_f
+
+
+#which age class is the heavisest over time? Females
+ageclassF=YFS18_2$wt_srv_f[29:68,2:19]*YFS18_2$natage_f[29:68,2:19]
+ageclassM=YFS18_2$wt_srv_m[29:68,2:19]*YFS18_2$natage_m[29:68,2:19]
+maxage_f=vector();maxage_m=vector()
+for(i in 1:40)
+{maxage_f[i]=which(ageclassF[i,]==max(ageclassF[i,]))+1
+maxage_m[i]=which(ageclassM[i,]==max(ageclassM[i,]))+1
+}
+
+maxage2=data.frame(cbind(seq(1982,2021),maxage_f,maxage_m))
+colnames(maxage2)=c("Year","Females","Males")
+maxage3=reshape2::melt(maxage2,id="Year")
+colnames(maxage3)=c("Year","Sex","Age")
+ggplot(maxage3)+geom_point(aes(x=Year,y=Age,col=Sex))+theme_bw()
+#This represents the heaviest age class by yaer for females.
+#You can see that the age with the heaviest hear class has become younger since the year 2000. This actually means that the total biomass would become less over time. It might also mean that the natural mortality of YFS is increasing over time and that this is not being incororated in the model Other explanations could also be that fishing selectiivty is getting higher at higher ages. It can also mean that maybe the older fish are not moving into the survey area as much during teh survey season.
+
+
+
+#This changes
++ )
+
+ #Future output
+#future_TotBiom
+#nage_future_f
 
 coldpool=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/coldpoolindex.csv")
 
@@ -37,6 +189,12 @@ require(dplyr)
 #count(srv_wtage_1971_2019,Year)
 
 srv_wtage=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2021/survey_wtage/YFSageSurvey1954_2021.csv",header=TRUE)
+
+min(as.numeric(table(srv_wtage$Year)[12:49]))
+max(as.numeric(table(srv_wtage$Year)[12:49]))
+mean(as.numeric(table(srv_wtage$Year)[12:49]))
+sqrt(var(as.numeric(table(srv_wtage$Year)[12:49])))
+sum(as.numeric(table(srv_wtage$Year)[12:49]))
 
 #The next exploration of growth is in the increments from one year to the next
 # I calculated growth increments for years 1982 to 2019 and then I compared them with the temperature in the first summer
@@ -123,7 +281,7 @@ We examined growth increments of Yellowfin Sole from 1982-2019 to determine whet
 
 # Methods  
 
-Data consisted of `r formatC(nrow(srv_wtage[which(srv_wtage$Year>1981&srv_wtage$Year<2020&srv_wtage$LENGTH>0),]),big.mark=",")` lengthed Yellowfin Sole with otoliths
+Data consisted of `r formatC(nrow(srv_wtage[which(srv_wtage$Year>1981&srv_wtage$Year<2020&srv_wtage$LENGTH>0&srv_wtage$AGE>0),]),big.mark=",")` lengthed Yellowfin Sole with otoliths
 collected from NMFS surveys between 1982 and 2019. Otoliths were aged using break and burn methodology in >90% of otoliths (Christensen et al. 1984), and alternatively surface reading if the age was obvious. Age interpretation was performed with two readers for quality control and precision-testing. Surveys were conducted during summer months: between May through September, with start dates from May 23 through June 11 and end dates from July 12 - September 11. Data was not incorporated from 2020 because there was no survey in that year.
 
 In addition, we examined several statistics associated with temperature for this analysis. Growth increments were associated with the AFSC interpolated bottom temperature for <100m, the depth preference for Yellowfin Sole. 
@@ -138,6 +296,11 @@ First we plotted growth by age to visually assess how variability in growth chan
 # Results
 
 Female growth was on average `r round(mean((as.vector(tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,mean,na.rm=TRUE))-as.vector(tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,mean,na.rm=TRUE)))[1:12]),1)` cm higher in females than males from age 2 to 3 through age 13 to 14 (`r figure_nums("agetmp",display="cite")`). Variability measured by the coefficient of variance (CV) remained below 1 through the growth increment starting at age `r min(as.vector(which(sqrt(tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,mean,na.rm=TRUE)>1)))` for females and through the growth increment starting at age `r min(as.vector(which(sqrt(tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,mean,na.rm=TRUE)>1)))` for males, and exceeded 1 at older age increments. Levene's test indicated that growth was significantly correlated with age in females (p = 0.043) and males (p = 0.025) (`r table_nums("levene",display="cite")`). When the ages were limited to those with growth CV < 1, growth was still significantly correlated with age for females ages 2 to 3 through 12 to 13 (p < 0.024) and males ages 2 to 3 through 11 to 12 (p = 0.020).
+
+CV females
+round(sqrt(tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Female,OUT_len2$Age_factor,mean,na.rm=TRUE),2)
+
+round(sqrt(tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,var,na.rm=TRUE))/tapply(OUT_len2$Growth_Male,OUT_len2$Age_factor,mean,na.rm=TRUE),2)
 
 Analyses also considered whether a better index would be the area of the Bering Sea that was covered by ice, also known as the coldpool index. The coldpool index and the bottom temperature were very similar, so we used the Bering Sea bottom temperature (`r figure_nums("coldpooltmp",display="cite")`). The ANOVA and further analysis of how temperature may affect growth was limited to growth increments were limited to ages in which the CV was <1; for females ages 2 to 3 through 13 to 14 and males ages 2 to 3 through 12 to 13 (`r table_nums("anova",display="cite")`). The interaction between age and temperature was not significant for males or females, and therefore was omitted in the ANOVA. However, age and temperature were significant for males and females (`r table_nums("anova",display="cite")`). Age had a negative effect on growth while temperature had a positive effect (`r figure_nums("gtemp",display="cite")`).
 
@@ -181,8 +344,8 @@ OUT_len3$Growth=as.numeric(OUT_len3$Growth)
 #offset the Age by .5 for males
 OUT_len3$Age[which(OUT_len3$Sex=="Male")]=OUT_len3$Age[which(OUT_len3$Sex=="Male")]+0.2
 colnames(OUT_len3)=c("Age","Growth","Sex")
-ggplot(OUT_len3)+geom_point(aes(x=Age,y=Growth,color=Sex),alpha=.9,size=2)+theme_bw()+ggtitle("YFS Growth by Age")+ylab("Growth (cm)")
-
+ggplot(OUT_len3)+geom_point(aes(x=Age,y=Growth,color=Sex),alpha=.9,size=2)+theme_bw()+ggtitle("YFS Growth by Age")+ylab("Growth (cm)")+xlab("First age of growth increment")+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14))+theme(axis.title=element_text(size=14))
 
 #ggplot(data=OUT_len2)+geom_point(aes(x=Age,y=Growth_Male))+theme_bw()+ggtitle("Male Growth by Age")#Year implies year of birth only
 
@@ -219,15 +382,22 @@ ggplot(OUT_len3)+geom_point(aes(x=Age,y=Growth,color=Sex),alpha=.9,size=2)+theme
 #Growth by length for all ages and temperature (year too but year corelates with temp)
 
 gt_M=ggplot(data=OUT_len2[which(OUT_len2$Age1<12),])+geom_point(aes(x=Temperature,y=Growth_Male,color=Age1))+theme_bw()+
- ggtitle("YFS male growth increment up to age 11 to 12, \nby increment and temperature")+
+ ggtitle("YFS male growth increment up to age 11 to 12, \nby increment and temperature")+ylim(-3,9)+
  ylab("Growth (cm)")+
  guides(col= guide_legend(title= "Growth\nincrement\nfirst age"))
 
 
 gt_F=ggplot(data=OUT_len2[which(OUT_len2$Age1<13),])+geom_point(aes(x=Temperature,y=Growth_Female,color=Age1))+
- guides(col= guide_legend(title= "Growth\nincrement\nfirst age"))+
- ggtitle("YFS female growth increment up to age 12 to 13, \nby increment and temperature")+
- ylab("Growth (cm)")+theme_bw()
+ guides(col= guide_legend(title= "First age\nof growth\nincrement"))+ylim(-3,9)+xlab("Temperature (°C)")+
+ ggtitle("YFS female growth increment up to age 12-13, \nby increment and temperature")+
+ ylab("Growth (cm)")+theme_bw()+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=14))+theme(axis.title=element_text(size=15))
+
+gt_M=ggplot(data=OUT_len2[which(OUT_len2$Age1<13),])+geom_point(aes(x=Temperature,y=Growth_Male,color=Age1))+
+ guides(col= guide_legend(title= "First age\nof growth\nincrement"))+ylim(-3,9)+xlab("Temperature (°C)")+
+ ggtitle("YFS male growth increment up to age 11-12, \nby increment and temperature")+
+ ylab("Growth (cm)")+theme_bw()+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=14))+theme(axis.title=element_text(size=15))
 
 grid.arrange(gt_M,gt_F)
 ```
@@ -258,6 +428,18 @@ Fem.lm<-lm(Growth_Female~Age1+Temperature,data=OUT_len2[which(OUT_len2$Age1<13),
 plot(OUT_len2[which(OUT_len2$Age1==4),]$Temperature,OUT_len2[which(OUT_len2$Age1==4),]$Growth_Male,pch=as.character(OUT_len2[which(OUT_len2$Age1==4),]$Age_factor),main="Male Growth",xlab="Temperature",ylab="Growth (mm)")
 temp=seq(0,5,1)
 lines(temp,Mal.lm$coefficients[1]+1*Mal.lm$coefficients[2]+temp*Mal.lm$coefficients[3])
+
+#now do same with Temperature anomalies because that is what is used in the data
+
+OUT_len2$Tempanom=OUT_len2$Temperature-mean(OUT_len2$Temperature)
+
+Mal_anom.lm<-lm(Growth_Male~Age1+Tempanom,data=OUT_len2[which(OUT_len2$Age1<12),])
+
+Fem_anom.lm<-lm(Growth_Female~Age1+Tempanom,data=OUT_len2[which(OUT_len2$Age1<13),])
+
+plot(OUT_len2[which(OUT_len2$Age1==4),]$Tempanom,OUT_len2[which(OUT_len2$Age1==4),]$Growth_Male,pch=as.character(OUT_len2[which(OUT_len2$Age1==4),]$Age_factor),main="Male Growth",xlab="Temperature Anomaly (1982-201?",ylab="Growth (mm)")
+temp=seq(0,5,1)
+lines(seq(-2.5,2.5),Mal_anom.lm$coefficients[1]+1*Mal_anom.lm$coefficients[2]+seq(-2.5,2.5)*Mal_anom.lm$coefficients[3])
 
 
 ```
@@ -318,6 +500,11 @@ kable(fem1,"latex",booktabs=T,linesep="",longtable=FALSE,align='r',digits=35)%>%
 ```{r tempgrowth,echo=FALSE,message=FALSE, warning=FALSE}
 
 #switch to cm.
+#There were 16,431 males and 21,050 females
+> dim(srv_wtage[which(srv_wtage$SEX<3&srv_wtage$LENGTH>0&srv_wtage$AGE>0&srv_wtage$SEX==1),])
+[1] 16431    21
+> dim(srv_wtage[which(srv_wtage$SEX<3&srv_wtage$LENGTH>0&srv_wtage$AGE>0&srv_wtage$SEX==2),])
+[1] 21050    21
 
 #Male
 VBf_M=growth(intype=1,unit=1,size=srv_wtage$LENGTH[which(srv_wtage$SEX==1)]/10,age=srv_wtage$AGE[which(srv_wtage$SEX==1)],calctype=1,wgtby=1,error=1,Sinf=50,K=0.13,t0=0.3)
@@ -400,7 +587,19 @@ OUT_lenA2=OUT_lenA[which(OUT_lenA$Temperature>0),]
 #Males and females grow in length more early in life
 OUT_lenA2$Age_factor=as.factor(OUT_lenA2$Age1)#set up age as a factor
 
-#library(ggpmisc)
+#What is the maximum length and age for males and females?
+
+max(srv_wtage$LENGTH[which(srv_wtage$SEX==1)]) #Males are 1?
+[1] 490
+max(srv_wtage$LENGTH[which(srv_wtage$SEX==2)])
+[1] 500
+max(srv_wtage$AGE[which(srv_wtage$SEX==2)],na.rm=TRUE)
+[1] 38
+max(srv_wtage$AGE[which(srv_wtage$SEX==1)],na.rm=TRUE)
+[1] 43
+
+
+library(ggpmisc)
 ```
 
 ```{r quad,echo=FALSE,message=FALSE, warning=FALSE}
@@ -409,17 +608,25 @@ OUT_lenA2$Age_factor=as.factor(OUT_lenA2$Age1)#set up age as a factor
 library(ggpubr)
 meanz=data.frame(cbind(rep(mean(tempz$AVGBSBT),length(base_incr_m))),base_incr_m,base_incr_f);colnames(meanz)=c("Temp","AvgGrowth_m","AvgGrowth_f")
 
+#Figure Female Quadratic
 formula <- y ~ poly(x, 2, raw = TRUE)
-ggplot(OUT_len2[which(OUT_len2$Age1<13),], aes(x=Temperature, y=Growth_Female)) +
+ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Female)) +ylim(c(-3,9))+xlab("Temperature (°C)")+
   geom_point() +
-  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),formula = formula
-  ) +theme_bw()+geom_point(data=meanz,aes(x=Temp,y=AvgGrowth_f),col="red")+ylab("Female Growth Increments (cm)")
+  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),col="grey40",formula = formula, size = 7
+  ) +ylab("Female Growth Increments (cm)") + theme_bw()+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14))+ggtitle("Female Quadratic Fit")+theme(axis.title=element_text(size=15))
 
+#+geom_point(data=meanz,aes(x=Temp,y=AvgGrowth_f),col="red")
+
+#Figure Male Quadratic
 formula <- y ~ poly(x, 2, raw = TRUE)
-ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Male)) +
+ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Male)) +ylim(c(-3,9))+xlab("Temperature (°C)")+
   geom_point() +
-  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),formula = formula
-  ) +theme_bw()+geom_point(data=meanz,aes(x=Temp,y=AvgGrowth_m),col="red")+ylab("Male Growth Increments (cm)")
+  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),col="grey40",formula = formula, size = 7
+  ) +ylab("Male Growth Increments (cm)") + theme_bw()+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14))+ggtitle("Male Quadratic Fit")+theme(axis.title=element_text(size=15))
+
+#geom_point(data=meanz,aes(x=Temp,y=AvgGrowth_m),col="red")+
 
 #R squared is teh proportion of variation in teh dependent variable that is predictable from the independent variable.
 
@@ -429,29 +636,40 @@ ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Male)) +
 
 ```{r linear,echo=FALSE,message=FALSE, warning=FALSE}
 formula <- y ~ x
-ggplot(OUT_len2[which(OUT_len2$Age1<13),], aes(x=Temperature, y=Growth_Female)) +
+ggplot(OUT_len2[which(OUT_len2$Age1<13),], aes(x=Temperature, y=Growth_Female)) +ylim(-3,9)+xlab("Temperature (°C)")+
   geom_point() +
-  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),formula = formula
-  ) +theme_bw()+geom_point(data=meanz[1:12,],aes(x=Temp,y=AvgGrowth_f),col="red")+geom_point(data=meanz[1:12,],aes(x=Temp-2,y=AvgGrowth_f-.24*2),col="red")+geom_point(data=meanz[1:12,],aes(x=Temp+2,y=AvgGrowth_f+2*.24),col="red")+ylab("Female Growth Increments (cm)")
+  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),col="grey40",formula = formula,size=7
+  ) +ylab("Female Growth Increments (cm)")+theme_bw()+
+ theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14))+ggtitle("Female Linear Fit")+theme(axis.title=element_text(size=15))
 #note that it is better when you restrict older ages.
 
 formula <- y ~ x
-ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Male)) +
+ggplot(OUT_len2[which(OUT_len2$Age1<12),], aes(x=Temperature, y=Growth_Male)) +ylim(-3,9)+xlab("Temperature (°C)")+
   geom_point() +
-  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),formula = formula
-  ) +theme_bw()+geom_point(data=meanz[1:11,],aes(x=Temp,y=AvgGrowth_m),col="red")+geom_point(data=meanz[1:11,],aes(x=Temp-2,y=AvgGrowth_m-2*(.26)),col="red")+geom_point(data=meanz[1:11,],aes(x=Temp+2,y=AvgGrowth_m+2*(.26)),col="red")
+  stat_smooth(method = "lm", formula = formula) +stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),col="grey40",formula = formula,size=7
+  ) +ylab("Male Growth Increments (cm)")+theme_bw()+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14))+ggtitle("Male Linear Fit")+theme(axis.title=element_text(size=15))
 ```
 
 This fits okay but somehow not great at the ends. Somehow my idea is not fitting as well as it seemse like it should.
 
 ```{r combine_empirical,echo=FALSE,message=FALSE, warning=FALSE}
 #maybe combine the two
-ggplot()+geom_point(data=OUT_len2[which(OUT_len2$Age1<13),],aes(x=Temperature,y=Growth_Female,color=Age1))+
+#Figure 5 Female linear
+ggplot()+geom_point(data=OUT_len2[which(OUT_len2$Age<13),],aes(x=Temperature,y=Growth_Female,color=Age))+
 new_scale_colour()+
-geom_point(data=OUT_lenA2[which(OUT_lenA2$Age1<13),],aes(x=Temperature+.05,y=Growth_Female,color=Age1))+
+geom_point(data=OUT_lenA2[which(OUT_lenA2$Age<13),],aes(x=Temperature+.05,y=Growth_Female,color=Age))+
 scale_colour_gradient(low = "red", high = "orange")+
- guides(col= guide_legend(title= "Modeled growth\nincrement\nfirst age"))+
- ggtitle("YFS female linear growth increment up to age 12 to 13, \nby increment and temperature\nModeled (reds) and empirical (blues)")+ylab("Growth (cm)")+theme_bw()+xlab("Temperature")+geom_point(data=meanz[1:11,],aes(x=Temp,y=AvgGrowth_m),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp-2,y=AvgGrowth_m-2*(.26)),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp+2,y=AvgGrowth_m+2*(.26)),col="green")
+ guides(col= guide_legend(title= "First age\nof growth\nincrement"))+
+ ggtitle("Empirical female growth (blues) and modeled linear fit (reds)")+ylab("Growth (cm)")+theme_bw()+xlab("Temperature (°C)")+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size =14),title=element_text(size=12))+theme(axis.title=element_text(size=15))
+
+#model after this one
+ggplot()+geom_point(data=OUT_len2[which(OUT_len2$Age<12),],aes(x=Temperature,y=Growth_Male,color=Age))+
+new_scale_colour()+
+geom_point(data=OUT_lenA2[which(OUT_lenA2$Age<12),],aes(x=Temperature+.05,y=Growth_Male,color=Age))+
+scale_colour_gradient(low = "red", high = "orange")+
+ guides(col= guide_legend(title= "First age\nof growth\nincrement"))+
+ ggtitle("Empirical male growth (blues) and modeled quadratic fit (reds)")+
+ ylab("Growth (mm)")+theme_bw()+xlab("Temperature (°C)")+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))
 
 
 #males
@@ -540,17 +758,19 @@ new_scale_colour()+
 geom_point(data=OUT_lenA2[which(OUT_lenA2$Age1<13),],aes(x=Temperature+.05,y=Growth_Female,color=Age1))+
 scale_colour_gradient(low = "red", high = "orange")+
  guides(col= guide_legend(title= "Modeled growth\nincrement\nfirst age"))+
- ggtitle("YFS female growth quadratic up to age 12 to 13, \nby increment and temperature\nModeled (reds) and empirical (blues)")+ylab("Growth (cm)")+theme_bw()+xlab("Temperature")+geom_point(data=meanz[1:11,],aes(x=Temp,y=AvgGrowth_m),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp-2,y=AvgGrowth_m-2*(.26)),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp+2,y=AvgGrowth_m+2*(.26)),col="green")
+ ggtitle("YFS female growth quadratic up to age 12 to 13, \nby increment and temperature modeled (reds) \nand empirical (blues)")+ylab("Growth (cm)")+theme_bw()+xlab("Temperature")+geom_point(data=meanz[1:11,],aes(x=Temp,y=AvgGrowth_m),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp-2,y=AvgGrowth_m-2*(.26)),col="green")+geom_point(data=meanz[1:11,],aes(x=Temp+2,y=AvgGrowth_m+2*(.26)),col="green")+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=14))+theme(axis.title=element_text(size=15))
 
+colnames(OUT_lenA2)[2]="Age"
+colnames(OUT_len2)[2]="Age"
 
-#males
-ggplot()+geom_point(data=OUT_len2[which(OUT_len2$Age1<12),],aes(x=Temperature,y=Growth_Male,color=Age1))+
+#Figure 5 male quadratic
+ggplot()+geom_point(data=OUT_len2[which(OUT_len2$Age<12),],aes(x=Temperature,y=Growth_Male,color=Age))+ylim(-3,9)+
 new_scale_colour()+
-geom_point(data=OUT_lenA2[which(OUT_lenA2$Age1<12),],aes(x=Temperature+.05,y=Growth_Male,color=Age1))+
+geom_point(data=OUT_lenA2[which(OUT_lenA2$Age<12),],aes(x=Temperature+.05,y=Growth_Male,color=Age))+
 scale_colour_gradient(low = "red", high = "orange")+
- guides(col= guide_legend(title= "Modeled growth\nincrement\nfirst age"))+
- ggtitle("YFS male growth quadratic up to age 11 to 12, \nby increment and temperature\nModeled (reds) and empirical (blues)")+
- ylab("Growth (mm)")+theme_bw()+xlab("Temperature")
+ guides(col= guide_legend(title= "First age\nof growth\nincrement"))+
+ ggtitle("Empirical male growth (blues) and modeled quadratic fit (reds)")+
+ ylab("Growth (mm)")+theme_bw()+xlab("Temperature (°C)")+theme(axis.text.x = element_text(size = 14),axis.text.y = element_text(size = 14),title=element_text(size=12))+theme(axis.title=element_text(size=15))
 ```
 #do for females through age 13 to 14
 
@@ -624,7 +844,60 @@ x=5
 wt1=.7*2*(x^1.3)
 wt2=2*(.7*x^1.3)
 
+#try the shaded boxes plot
 
+Femz=YFS18_2$oac_srv_s[4:41,1:20]
+Malz=YFS18_2$oac_srv_s[4:41,21:40]
+
+yrs=length(YFS18_2$yrs_srv_age_s[4:41])
+Age=rep(seq(1,20,1),each=yrs)
+Frequency=c(Femz)
+Year=rep(YFS18_2$yrs_srv_age_s[4:41],length(yrs))
+fishlen=data.frame(Year,Age,Frequency)
+Fem <- ggplot(fishlen, aes(Age,Year)) +
+ geom_tile(aes(fill = Frequency),colour = "lightgrey")+
+ scale_fill_gradient(low = "white",high = "darkblue")+ 
+ scale_y_continuous(breaks=seq(1979,2021,2),labels=seq(1979,2021,2))+ 
+ ggtitle("YFS Ages - Survey Females") +
+ theme(axis.text.y=element_text(size=rel(.7)))+theme_bw()
+
+Frequency=c(Malz)
+fishlen=data.frame(Year,Age,Frequency)
+Mal <- ggplot(fishlen, aes(Age,Year)) +
+ geom_tile(aes(fill = Frequency),colour = "lightgrey")+
+ scale_fill_gradient(low = "white",high = "darkblue")+ 
+ scale_y_continuous(breaks=seq(1975,2021,2),labels=seq(1975,2021,2))+ 
+ ggtitle("YFS Ages - Survey Males") +
+ theme(axis.text.y=element_text(size=rel(.7)))+theme_bw()
+
+grid.arrange(Fem,Mal,ncol=1)
+
+
+
+#Why is the population declining?Is it natural mortality?
+#fishiing mortality is pretty low, and not really increasing
+plot(seq(1982,2021),YFS18_2$F_f[29:68,20],ylim=c(0,.11),type="l")
+
+#survey biomass has declined since 1092 and 1983 but isn't really declining much..
+plot(YFS18_2$yrs_srv,YFS18_2$ob_bts,type="l")
+
+plot(YFS18_2$yrs_srv,YFS18_2$env_cov[1,],type="l")#temperature goes up and down
+
+plot(YFS18_2$yrs_srv,YFS18_2$env_cov[2,],type="l")#survy start date anomalies not really different except around the year2000.
+
+#
+Year=seq(1954,2021)
+natage_pf=data.frame(cbind(Year,YFS18_2$natage_f))
+colnames(natage_pf)=c("Year",seq(1,20,1))
+natage_pf2=reshape2::melt(natage_pf,id="Year")
+colnames(natage_pf2)=c("Year","Age","Frequency")
+
+
+freqsF=natage_pf2[which(natage_pf2$Year>2018),]
+freqsF$Age=as.numeric(freqsF$Age)
+freqsF$Year=as.factor(freqsF$Year)
+sapply(freqsF,class)
+ggplot(freqsF)+geom_line(aes(x=Age,y=Frequency,col=Year))
 
 ```
 

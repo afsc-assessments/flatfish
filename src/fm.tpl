@@ -84,16 +84,16 @@ DATA_SECTION
     break;
     case 1 : // Use empirical (values in data file) mean wts at age
     break;
-    case 3 : // start out with base growth values and deviations decomposed by year and age
+    case 2 : // start out with base growth values and deviations decomposed by year and age
     {
       phase_wt = 1;
       phase_growth_cov=-1; 
     }
     break;
-    case 2 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
+    case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
     {
-      phase_wt  = -1; 
-      phase_growth_cov =  1;
+      phase_wt  = 1; 
+      phase_growth_cov =  -1;
     }
     break;
   }
@@ -296,8 +296,7 @@ DATA_SECTION
   init_ivector nyrs_srv(1,nsrv)             //Number of years of annual survey index values
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
-  init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values  
-  !!cout<<"yrs_srv"<<yrs_srv<<endl;  
+  init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values   
 	// !! nyrs_srv_inbag = 0.9 * nyrs_srv;
 	// !! nyrs_srv_oobag = nyrs_srv - nyrs_srv_inbag;
   // imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
@@ -316,7 +315,6 @@ DATA_SECTION
   init_ivector nyrs_srv_age_s(1,nsrv)         //Number of survey age compositions
   init_matrix yrs_srv_age_c(1,nsrv,1,nyrs_srv_age_c)  //Years of survey age compositions
   init_matrix yrs_srv_age_s(1,nsrv,1,nyrs_srv_age_s)  //Years of survey age compositions   
-  !!cout<<"yrs_srv_age_s"<<yrs_srv_age_s<<endl;
   !!log_input( nyrs_srv_age_c);
   !!log_input( nyrs_srv_age_s);
   !!log_input(  yrs_srv_age_c);
@@ -328,10 +326,8 @@ DATA_SECTION
   init_3darray oac_srv_s(1,nsrv,1,nyrs_srv_age_s,1,2*nages)  //Survey age compositions
   !!log_input(oac_srv_c);
   !!log_input(oac_srv_s);
-  !! cout <<"oac_srv_s"<<oac_srv_s<<endl;  
   init_3darray wt_srv_f_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
   init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)  
-  !!cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
   matrix          wt_obs_f(styr_wt,endyr_wt,1,nages);
   matrix          wt_obs_m(styr_wt,endyr_wt,1,nages);
   !! for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }
@@ -354,7 +350,7 @@ DATA_SECTION
   !!log_input(maturity);
 
   init_number init_age_comp          //Flag whether initial age comp independent or not (0 = NOT)
-  !!cout<<"init_age_comp"<<init_age_comp<<endl;
+
 //  Index values
 
   int styr_rec
@@ -367,9 +363,9 @@ DATA_SECTION
   init_ivector n_env_cov(1,nsrv)
   !!log_input(n_env_cov);
   init_3darray env_cov(1,nsrv,1,n_env_cov,1,nyrs_srv)
-  !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
+  !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }  //INGRID THIS IS REDUNDANT FOR THE FIRST 2 FIELDS BUT FOR THE INTERACTION IT DOES GIVE ANOMALIES...CHECK LATER TO SEE IF THIS MATTERS.
 	// env_cov(j,k) /= stdev(env_cov(j,k)); }
-  !!log_input(env_cov);  
+  !!log_input(env_cov);
 
    number    adj_1;
    number    adj_2
@@ -392,7 +388,6 @@ DATA_SECTION
 
 //Spawning month
   init_number spawnmo          //Mean spawning month    
-  !!cout<<"spawnmo"<<spawnmo<<endl;
   number spmo_frac             //Spawning month occurance as a fraction of the year
   !!spmo_frac    =(spawnmo-1)/12.;
   !!log_input(spawnmo);
@@ -1016,13 +1011,13 @@ PRELIMINARY_CALCS_SECTION
     break;
   }    
 
+
   log_input(wt_fsh_f);
   log_input(wt_fsh_m);
   log_input(wt_srv_f);
   log_input(wt_srv_m);
   log_input(wt_pop_f);
   log_input(wt_pop_m);
-
 
 INITIALIZATION_SECTION
   // yellowfin sole males  n=656 name value std dev
@@ -1035,10 +1030,10 @@ INITIALIZATION_SECTION
   K_f 0.1263367     // 
   t0_f 0.5942688    // 
 
-  wt_fsh_fut_f .8;
-  wt_fsh_fut_m .8;
-  wt_pop_fut_f .8;
-  wt_pop_fut_m .8;
+  //wt_fsh_fut_f .8;  //INGRID this is a vector so .8 does not make sense
+  //wt_fsh_fut_m .8;
+  //wt_pop_fut_f .8;
+  //wt_pop_fut_m .8;
   q_alpha q_alpha_prior ;
   q_beta 0.001 ;
   R_logalpha     2.18844741303
@@ -1077,6 +1072,7 @@ PROCEDURE_SECTION
     get_selectivity();
     get_mortality();
     get_numbers_at_age();
+	
     //if(active(R_logalpha))
     compute_sr_fit();
     if (sd_phase() || mceval_phase())
@@ -1092,9 +1088,10 @@ PROCEDURE_SECTION
       for (i=styr;i<=endyr;i++)
         pred_rec(i) = 2.*natage_f(i,1);
     }
-    catch_at_age();
+    catch_at_age();	
   }
-
+  //get_msy
+  
   evaluate_the_objective_function();
 
   // next part returns the Byesian posterior for the listed parameters
@@ -1377,7 +1374,7 @@ FUNCTION catch_at_age
   }
 
 FUNCTION evaluate_the_objective_function
-  if (active(F40))
+  if (active(F40))   //note turned off generally
   {
     compute_spr_rates();
     obj_fun += sprpen;
@@ -1397,7 +1394,7 @@ FUNCTION evaluate_the_objective_function
   q_prior.initialize();
   if(active(yr_incr)||active(age_incr)||active(growth_alpha))
   {
-    // cout <<wt_pred_f(1988)(3,7)<<endl;
+
     for (i=styr_wt;i<=endyr_wt;i++)
     {
       for (j=3;j<nages;j++)
@@ -1625,7 +1622,6 @@ FUNCTION compute_spr_rates
   for (k=1;k<=nfsh;k++)
     sel_tmpu(k) = sel_fsh_f(k,endyr);
   sel_tmp = trans(sel_tmpu);
-	// cout <<sel_tmp << endl;exit(1);
 
   for (j=2;j<nages;j++)
   {
@@ -1652,7 +1648,8 @@ FUNCTION compute_spr_rates
   sprpen  +=10.*square(SBF35-0.35*SB0);
   sprpen  +=10.*square(SBF30-0.3*SB0);
 
-	// cout <<sprpen<<" "<<SB0<<" "<< SBF40<<" "<< SBF30<<" "<<endl;
+
+  obj_fun += sprpen;  //INGRID CHECK
 
 FUNCTION compute_sr_fit
   // sigmaR = 0.6;
@@ -1853,9 +1850,8 @@ FUNCTION Future_projections
        {
          // future_spr0(i) = get_spr(0.);
        }
-       // Set growth if temperature related
-       if (Growth_Option==3)
-       {  
+       // Temperature mediated future growth - this is for all Growth_Option values
+  
 		 if (i==1)
 		 {  
 		 //females
@@ -1910,7 +1906,6 @@ FUNCTION Future_projections
 			 wt_pop_fut_f_mat(i)           = wt_tmp_f;
 			 wt_pop_fut_m_mat(i)           = wt_tmp_m;
 		 }	//end of calculate future weight at age age>endyr.	 
-       } 
 
        for (k=1;k<=nfsh;k++)
        {
@@ -1922,7 +1917,7 @@ FUNCTION Future_projections
        S_future_f(i) = exp(-Z_future_f(i));
        S_future_m(i) = exp(-Z_future_m(i));
      } //end of line 1861
-     
+   	      
   //Future recruitment and SSB
   //Mean average recruitment of the time-series is used for the projection
     //NOTE spawningbiomass is beginyear, NOT spawnmonth xxx
@@ -2333,7 +2328,7 @@ REPORT_SECTION
   L_report << endl<<"Total_biomass " << endl;
     for (i=styr;i<=endyr;i++)
       L_report <<i<<",  "<<TotBiom(i)<<endl;
-
+ 
   L_report <<endl<<endl;
   L_report <<"F40= " << F40 << endl;
   L_report <<"F35= " << F35 << endl;
@@ -2978,24 +2973,49 @@ FUNCTION Get_wt_age
       case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and // decomposed by year and age
       {
         Initial_wt();
-        for (i=styr+1;i<=endyr;i++)
+        for (i=styr;i<=endyr;i++)   //INGRID WAS styr+1
         {
           // Age component estimated from 5-15
           // if (i >=1982)
-            incr_dev(i)(4,nages-7)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
-          // else 
-          //   incr_dev(i)(5,nages-5)     = 0.;
-
-          incr_dev(i)(nages-4,nages) = incr_dev(i,nages-5) ;
-          incr_dev(i)(2,4) = incr_dev(i,5) ;
-          wt_srv_f(1,i,1) = wt_srv_f(1,i-1,1);
-          wt_srv_m(1,i,1) = wt_srv_m(1,i-1,1);
-          wt_srv_f(1,i)(2,nages) = ++wt_srv_f(1,i-1)(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev(i))) ;
-          wt_srv_m(1,i)(2,nages) = ++wt_srv_m(1,i-1)(1,nages-1) + elem_prod(base_incr_m,mfexp(incr_dev(i))) ;
-          wt_pop_f(i) = wt_srv_f(1,i);
-          wt_pop_m(i) = wt_srv_m(1,i);
+          
+		  //incr_dev(i)(4,nages-7)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
+          //incr_dev(i)(nages-4,nages) = incr_dev(i,nages-5) ;
+          //incr_dev(i)(2,4) = incr_dev(i,5) ;
+          //wt_srv_f(1,i,1) = wt_srv_f(1,i-1,1);
+          //wt_srv_m(1,i,1) = wt_srv_m(1,i-1,1);
+          //wt_srv_f(1,i)(2,nages) = ++wt_srv_f(1,i-1)(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev(i))) ;
+          //wt_srv_m(1,i)(2,nages) = ++wt_srv_m(1,i-1)(1,nages-1) + elem_prod(base_incr_m,mfexp(incr_dev(i))) ;
+          //wt_pop_f(i) = wt_srv_f(1,i);
+          //wt_pop_m(i) = wt_srv_m(1,i);
+		  //wt_srv_f(i)=Fem_gr(1,i);
+		  //wt_srv_m(i)=Mal_gr(1,i);
+		  wt_pop_f(i)=Fem_gr(1,i);
+		  wt_pop_m(i)=Mal_gr(1,i);
         }
-        Get_Pred_wt();
+	    wt_srv_f=Fem_gr;
+	    wt_srv_m=Mal_gr;
+		
+  // INGRID this part substitutes function called Get_pred_wt adjusted for new growth option 3
+  for (i=styr_wt;i<=endyr_wt;i++)
+  {
+    wt_pred_f(i) = Fem_gr(1,i);   
+    wt_pred_m(i) = Mal_gr(1,i); 
+  }
+  // for other surveys set equal to survey 1...
+  for (k=2;k<=nsrv;k++)
+    for (i=styr;i<=endyr;i++)
+    {
+      wt_srv_f(k,i) = wt_srv_f(1,i) ;
+      wt_srv_m(k,i) = wt_srv_m(1,i) ;
+    }
+  // set fisheries equal to surveys 
+  for (k=1;k<=nfsh;k++)
+    for (i=styr;i<=endyr;i++)
+    {
+      wt_fsh_f(k,i) = wt_srv_f(1,i) ;
+      wt_fsh_m(k,i) = wt_srv_m(1,i) ;
+    }
+
       }
       break;
     }
@@ -3167,6 +3187,10 @@ FUNCTION Write_R
   R_report <<"wt_vbg_m" <<endl <<wt_vbg_m<< endl; 
   R_report <<"wt_pop_f" <<endl <<wt_pop_f<< endl;
   R_report <<"wt_pop_m" <<endl <<wt_pop_m<< endl;
+  R_report <<"wt_srv_f" <<endl <<wt_srv_f<< endl;
+  R_report <<"wt_srv_m" <<endl <<wt_srv_m<< endl;
+  R_report <<"wt_fsh_f" <<endl <<wt_fsh_f<< endl;
+  R_report <<"wt_fsh_m" <<endl <<wt_fsh_m<< endl;
   R_report <<"growth_alpha" <<endl <<growth_alpha<< endl;
   R_report <<"fut_temp" <<endl <<fut_temp<< endl;
   R_report <<"wt_pop_fut_f"<<endl<<wt_pop_fut_f<<endl;
@@ -3178,6 +3202,8 @@ FUNCTION Write_R
   R_report <<"nage_future_f"<<nage_future_f<<endl;
   R_report <<"nage_future_m"<<nage_future_m<<endl;
   R_report <<"env_cov"<<env_cov<<endl;
+  R_report <<"obs_srv"<<obs_srv<<endl;
+  R_report <<"Bmsy"<<Bmsy<<endl;
   //R_report <<"msy_fut"<<msy_fut<<endl;
 
    

@@ -3,7 +3,7 @@
 #datafile 
 #../data/yfs_2021_catwt.dat
 #Growth_Option
-	1
+    3
 #ABC_age_lb
 	6
 #phase_age_incr
@@ -11,7 +11,7 @@
 #phase_init_age_comp
 	2
 #phase_mn_rec
-	1
+	-1
 #phase_rec_dev
 	2
 #phase_mn_f
@@ -49,7 +49,7 @@
 #phase_sigmaR  
 	-5
 #phase_wtfmsy 
-	-4
+    4
 #pf_sigma    
 	0.05
 #a50_sigma   
