@@ -6,18 +6,118 @@ getwd()
 source(("../../R/prelims.R"))
 library(doParallel)
 library(patchwork)
+library(GGally)
 mytheme = theme_few()
+#Get Maxime's indices
+load("Overlap.RData")
+load("Overlap_male.RData")
+load("Overlap_female.RData")
+glimpse(Overlap_female)
+glimpse(Overlap_female)
+dim(bt)
+names(modlst[[1]])
+bt <- t(modlst[[1]]$Bottom_temp) %>% as.data.frame()
+bt <- as_tibble(bt) %>% transmute(temperature=V1,timing=V2,interaction=V3)
+bt$year <- c(1982:2019,2021)
+bt <- bt %>% mutate(type=)
+bt %>% print(n=Inf)
+df <- bt %>% pivot_longer(!year,names_to="type",values_to="index") %>%
+rbind(Overlap%>%transmute(year=Years,index=Index,type="overlap"))
+glimpse(df)
+(df) %>% filter(type!="interaction",type!="timing") %>%
+ggplot(aes(x=year,y=index,color=type)) + theme_few() +
+          geom_smooth() + geom_point()
+df%>%filter(type=="overlap")
+
 # Run model from last year
-mod_dir <- c("max0", "max1","max2","max3")
+mod_dir <- c("max0", "max1","max2","max3","max4")
 fn        <- paste0(mod_dir, "/fm");fn
-mod_names <- c("max0", "max1","max2","max3")
+mod_names <- c("max0", "max1","max2","max3","max4")
 nmods <- length(mod_names)
 
 registerDoParallel(nmods)
 system.time( modlst <- mclapply(fn, read_admb,mc.cores=nmods) )
 names(modlst) <- mod_names
 names(modlst)
-plot_bts(modlst[c(1,4)],overlay=TRUE)
+plot_bts(modlst[c(1,2,4)],overlay=TRUE)
+names(modlst[[1]])
+(modlst[[1]]$pred_srv)
+mean((log(modlst[[1]]$eb_bts)-log(modlst[[1]]$ob_bts))^2)^.5
+mean((log(modlst[[2]]$eb_bts)-log(modlst[[2]]$ob_bts))^2)^.5
+mean((log(modlst[[3]]$eb_bts)-log(modlst[[3]]$ob_bts))^2)^.5
+mean((log(modlst[[4]]$eb_bts)-log(modlst[[4]]$ob_bts))^2)^.5
+mean((log(modlst[[5]]$eb_bts)-log(modlst[[5]]$ob_bts))^2)^.5
+
+# get MCMC results and plot coefficients  marginals
+mcdf3<-as_tibble(read.table("max3/evalout.rep",header=FALSE))
+mcdf1<-as_tibble(read.table("max1/evalout.rep",header=FALSE))
+mcdf0<-as_tibble(read.table("max0/evalout.rep",header=FALSE))
+mcnames<- c("obj_fun","beta_temp","beta_timing","interaction","Alpha",c(1982:2019,2021))
+mcnames<- c("obj_fun","beta_overlap","beta_temp","beta_timing","Alpha",c(1982:2019,2021))
+names(mcdf0)<-mcnames
+names(mcdf3)<-mcnames
+mcnames<- c("obj_fun","beta_overlap","Alpha",c(1982:2019,2021))
+names(mcdf1)<-mcnames
+glimpse(mcdf3)
+glimpse(mcdf0)
+glimpse(mcdf1 )
+sum(mcdf$beta_overlap>0)/5000
+sum(mcdf1$beta_overlap>0)/3000
+
+mcdf$recent_q <- rowMeans(mcdf[,34:44])
+mcdf %>% select(beta_overlap,beta_temp,beta_timing,Alpha,recent_q) %>% sample_n(3000) %>%
+  ggpairs(aes(color="salmon",alpha=.4))
+
+ggplot()
+tmp <- mcdf %>% select(beta_overlap,beta_temp,beta_timing) %>%
+pivot_longer(cols=1:3,names_to="parameter",values_to="value") 
+tmp <- mcdf2 %>% select(beta_overlap) %>%
+pivot_longer(cols=1:1,names_to="parameter",values_to="value") 
+tmp <- mcdf0 %>% select(beta_temp,beta_timing,interaction) %>%
+pivot_longer(cols=1:3,names_to="parameter",values_to="value") 
+tmp
+
+p1 <- ggplot(tmp,aes(x=value,color=parameter,fill=parameter )) + geom_density(alpha=.7) +
+      xlab("Coefficient value") + ggthemes::theme_few(base_size=14) + xlim(c(-.15,.15)) + geom_vline(xintercept=0);p1
+p1
+rbind(p1$data, p2$data %>% mutate(parameter="overlap_alone")) %>%
+ggplot(aes(x=value,color=parameter,fill=parameter )) + geom_density(alpha=.7) +
+      ggthemes::theme_few()
+
+tmp <- mcdf3[,6:44] %>% pivot_longer(cols=1:38,names_to="year",values_to="value")  %>%
+#tmp <- mcdf1[,6:42] %>% pivot_longer(cols=1:36,names_to="year",values_to="value")  %>%
+filter(as.numeric(year)>1999) %>% mutate(year=as.factor(year))
+tmp %>% ggplot(aes(x=year,y=value)) + geom_violin(fill="salmon") +
+      ylim(c(.5,1.2)) +
+      ggthemes::theme_few(base_size=14) + ylab("Survey availability")
+mcnames<- c("obj_fun","wt_like",
+          "q_prior",
+          "m_prior",
+          "rec_like",
+          "sel_like",
+          "catch_like",
+          "srv_like",
+          "age_like_fsh",
+          "age_like_srv",
+          "q_srv",
+          "natmort_f", 
+          "natmort_m", 
+          "Fmsyr",
+          "ABC_biom",
+          "Bmsy",
+          "msy",
+          "TotBiom",
+          "SSB", 
+          "mean_log_rec",
+          "partial_F_f",
+          "sel_slope_srv",
+          "sel50_srv",
+          "sel_slope_srv_m",
+          "sel50_srv_m",
+    "mean_N_fsh_age",
+    "mean_N_srv_age",
+    "R_alpha",
+    "R_beta")
 
 
 #--Now make the projection files
@@ -152,3 +252,137 @@ function(M,biomass=TRUE)
     }
     return(mdf)
 }
+
+## ADNUTS try
+library(adnuts)
+# Model name
+m <- './fm'
+# Directory  
+d <- 'max3'
+d <- 'max1'
+d <- 'max0'
+# Assumes a converged MLE model has already been run....
+setwd(d)
+system(paste(m, '-nox -iprint 200 -mcmc 10 -binp fm.bar -phase 22 -hbf 1'))
+setwd('..')
+
+## Two different ways to gets NUTS working. First is to use the
+## Hessian (metric) just like with the RMW. Note the control argument.
+iter <- 1000 # maybe too many...depends are number cores...I used 8...
+chains=8
+fit.mle0 <- sample_nuts(model=m, path=d, iter=iter, warmup=iter/4,
+                   chains=chains, cores=chains, control=list(metric='mle'))
+pairs_admb(fit.mle0, pars=1:6, order='slow')
+
+init <- function() rnorm(numpars)
+fit.mle <- sample_nuts(model=m, path=d, iter=iter, warmup=iter/4,
+                   chains=chains, cores=chains, control=list(metric='mle'))
+pairs_admb(fit.mle, pars=1:6, order='slow')
+print(fit.mle)
+plot_sampler_params(fit.mle)
+launch_shinyadmb(fit.mle)
+
+mon <- monitor(fit.mle$samples, warmup=fit.mle$warmup, print=FALSE)
+
+
+## Now with more thinning
+thin <- 200
+iter <- 1000*thin
+fit.rwm <- sample_admb(model=m, path=d, iter=iter, algorithm='RWM', warmup=.25*iter,
+                    seeds=seeds, chains=chains, thin=thin,
+                    parallel=TRUE, cores=chains)
+
+launch_shinyadmb(fit)
+
+## Diagnose pilot analsyis
+mon <- monitor(fit.rwm$samples, warmup=fit.rwm$warmup, print=FALSE)
+ess <- mon[,'n_eff']
+(slow <- names(sort(ess))[1:6]) # slowest mixing parameters
+pairs_admb(fit=fit.rwm, pars=slow)
+(fast <- names(sort(ess, decr=TRUE))[1:6]) # fastest
+pairs_admb(fit=fit.rwm, pars=fast)
+
+## Another trick is you can run for a certain duration if you
+## have a time limit. Specify the warmup period and then a really
+## large value for iter and set a duration
+
+
+### End of pilot exploration.
+
+
+### Explore using NUTS
+setwd(d)
+m
+system(paste(m, '-nox -binp amak.bar -phase 22 -mcmc 10 -hbf 1'))
+setwd('..')
+
+## Never thin NUTS and use 500-1000 iterations per chain w/
+## approximately 1/4 warmup
+thin <- 20
+iter <- 5000*thin
+fit.rwm <- sample_admb(model=m, path=d, iter=iter, algorithm='RWM', warmup=iter/4,
+                   seeds=seeds, parallel=TRUE, chains=chains,
+                   cores=chains, control=list(metric='mle'))
+chains
+## Look at high correlations
+library(corrplot)
+x <- fit.mle$mle$cor
+dimnames(x) <- list('par'=fit.mle$mle$par.names, 'par2'=fit.mle$mle$par.names)
+ind <- sort(unique(which(abs(x)>.0 & x!= 1, arr.ind=TRUE)[,1]))
+y <- x[ind, ind]
+ind
+corrplot(y, method='color', type='upper')
+
+
+## Alternatively if no Hessian is available (e.g., b/c of
+## hierarchical model), then adapt a diagonal one during
+## warmup. This is much slower b/c it doesn't know the shape of
+## the posterior
+iter <- 100
+fit.diag <- sample_admb(model=m, path=d, iter=iter, algorithm='NUTS', warmup=iter/4,
+                   seeds=seeds, parallel=TRUE, chains=chains, cores=chains)
+
+## Now the samples from fit.diag can be used to estimate the
+## covariance and that can be used directly.
+fit.updated <- sample_admb(model=m, path=d, iter=iter, algorithm='NUTS', warmup=iter/4,
+                   seeds=seeds, parallel=TRUE, chains=chains,
+                   cores=chains, control=list(metric=fit$covar.est))
+
+
+save.image()
+setwd(d)
+system("./pm_mcmc -mceval")
+sdf <- read.table("mceval_srv.dat")
+names(sdf)<- c("Year","obs","predicted","draw")
+sdf2 <- sdf %>% filter(draw==1)
+ggplot(sdf2,aes(x=Year,y=obs)) + 
+   geom_point(data=sdf,aes(x=jitter(Year),y=predicted), size=.5,alpha=.2,color="grey") + 
+   scale_y_continuous(breaks=seq(0,12e6,by=4e5))  +
+   scale_x_continuous(breaks=seq(1990,2020,by=2))  +
+   theme_few() + ylab("Survey estimates") +
+    geom_line(size=2,color="salmon") + geom_point(size=4,color="red",shape=3)
+head(sdf)
+
+sdf <- read.table("mceval_M.dat") 
+names(sdf)<- c("Year","M","x")
+tail(sdf)
+sdf <- sdf %>%filter(Year==2020)
+dim(sdf)
+ggplot(sdf,aes(x=M)) + geom_density(fill="gold") + theme_few() + geom_vline(xintercept=mean(sdf$M)) +
+       geom_vline(xintercept=0.3, color = "grey",size=1,linetype=2)
+
+
+sdf <- read.table("mceval_sr.dat")
+head(sdf)
+names(sdf)<- c("Source","Stock","Recruits")
+dim(sdf)
+sdf2<-sdf %>% sample_n(100000)
+ggplot(sdf2,aes(x=Stock,y=Recruits,color=Source)) + 
+   theme_few() + geom_point(size=4,alpha=.1) 
+   head(sdf)
+   ylab("Survey estimates") +
+   scale_y_continuous(breaks=seq(0,12e6,by=4e5))  +
+   scale_x_continuous(breaks=seq(1990,2020,by=2))  +
+
+
+

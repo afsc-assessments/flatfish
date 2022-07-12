@@ -30,7 +30,7 @@ future: $(EXEC)
 	 ./$(EXEC) $(ARGS) -binp fm.bar -phase 22
 
 mcmc: $(EXEC)
-	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 20
+	 ./$(EXEC) $(ARGS) -mcmc 1000000 -rwm -hbf 1 -mcsave 200
 png: 
 	R CMD BATCH plot.R
 
