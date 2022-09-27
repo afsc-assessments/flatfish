@@ -92,7 +92,7 @@ DATA_SECTION
     break;
     case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
     {
-      phase_wt  = 1; 
+      phase_wt  = -1; 
       phase_growth_cov =  -1;
     }
     break;
@@ -874,9 +874,9 @@ PRELIMINARY_CALCS_SECTION
   //cout <<"wt_vbg_f"<<endl<<wt_vbg_f<<endl;
   //cout <<"wt_vbg_f(1,nages-1)"<<endl<<wt_vbg_f(1,nages-1)<<endl;
   //cout <<"wt_vbg_f(2,nages)"<<endl<<wt_vbg_f(2,nages)<<endl;
-  //cout <<"base_incr_f"<<endl<<base_incr_f<<endl;
-  //cout <<"base_incr_m"<<endl<<base_incr_m<<endl; 
-  //exit(1);
+  //cout <<"wt_obs_f"<<endl<<wt_obs_f<<endl;
+  //cout <<"wt_pred_f"<<endl<<wt_pred_f<<endl; 
+
   switch (Growth_Option)
   {
     case 0 : // Use constant time-invariant growth (from base growth parameters)
@@ -945,7 +945,7 @@ PRELIMINARY_CALCS_SECTION
 	{                             //for males ages 2-12 add temperature effect to growth 
 		for (j = 2; j<=12; j++)
 		{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.62*env_cov(1,1,i-1980)-.069*env_cov(1,1,i-1980)*env_cov(1,1,i-1980);  
+		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+4*env_cov(1,1,i-1980);  
 		}  
 		for (j =13;j<=nages;j++)      //ages 13 and older use average values
 		{
@@ -954,7 +954,7 @@ PRELIMINARY_CALCS_SECTION
 		}
 		for (j = 2; j<=13; j++)
 		{
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1980);  
+		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+6.7*env_cov(1,1,i-1980);//+2.2*pow(env_cov(1,1,i-1980),2);  
 		}  
 		for (j =14;j<=nages;j++)      //ages 14 and older use average values
 		{
@@ -976,7 +976,7 @@ PRELIMINARY_CALCS_SECTION
     	  cout<<i<<endl; 
     	for (j = 2; j<=12; j++)
     	{
-    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.62*env_cov(1,1,i-1981)-.069*env_cov(1,1,i-1981)*env_cov(1,1,i-1981);  
+    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+4*env_cov(1,1,i-1981);  
     	}  
     	for (j =13;j<=nages;j++)  
     	{
@@ -984,7 +984,7 @@ PRELIMINARY_CALCS_SECTION
     	} 
     	for (j = 2; j<=13; j++)
     	{
-    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1981);  
+    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+6.7*env_cov(1,1,i-1981);//+2.2*pow(env_cov(1,1,i-1980),2);  
     	}  
     	for (j =14;j<=nages;j++)  
     	{
@@ -1001,7 +1001,12 @@ PRELIMINARY_CALCS_SECTION
     wt_srv_m=Mal_gr;
 	wt_fsh_f=Fem_gr;
     wt_fsh_m=Mal_gr;
-    
+    for (int j=1982;j<=2012;j++)
+    {wt_pred_f(j)=Fem_gr(1,j);
+	wt_pred_m(j)=Mal_gr(1,j);}
+	cout<<"wt_pred_m"<<wt_pred_m<<endl;
+	cout<<"wt_pred_f"<<wt_pred_f<<endl;
+	exit(1);
     }
 
  
@@ -1018,7 +1023,7 @@ PRELIMINARY_CALCS_SECTION
   log_input(wt_srv_m);
   log_input(wt_pop_f);
   log_input(wt_pop_m);
-
+  
 INITIALIZATION_SECTION
   // yellowfin sole males  n=656 name value std dev
   Linf_m 36.0729742 //      updated 4/2022 See code_to_setup_YFSinputfile2022.R
@@ -1419,6 +1424,7 @@ FUNCTION evaluate_the_objective_function
     // cout<<"ObjFunWt: "<< norm2(log(wt_pred_m) - log(wt_obs_m))<< endl;; // matrices for the period of wt-age data (modify to use sample size)
     obj_fun += sum(wt_like);
   }
+
   if (!do_wt_only)
   {
     if (active(rec_dev))
@@ -1856,7 +1862,7 @@ FUNCTION Future_projections
 		 {  
 		 //females
          dvar_vector incr_dev_tmp_f(2,nages);
-  		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8) + .24*fut_temp(i-endyr) ;
+  		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8)+6.7*fut_temp(i-endyr);//+2.2*pow(fut_temp(i-endyr),2);
   		 incr_dev_tmp_f(nages-7,nages) = base_incr_f(nages-7,nages) ;
            wt_tmp_f(1)        = wt_vbg_f(1);
   		 for (j=1;j<=nages-1;j++)
@@ -1865,7 +1871,7 @@ FUNCTION Future_projections
   		 }  
 		 //males
            dvar_vector incr_dev_tmp_m(2,nages);
-  		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + .62*fut_temp(i-endyr)-.069*fut_temp(i-endyr)*fut_temp(i-endyr) ;
+  		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + 4*fut_temp(i-endyr);
   		 incr_dev_tmp_m(nages-6,nages) = base_incr_m(nages-6,nages) ;
            wt_tmp_m(1)        = wt_vbg_m(1);
   		 for (j=1;j<=nages-1;j++)
@@ -1883,7 +1889,7 @@ FUNCTION Future_projections
          {
 			 //females
            dvar_vector incr_dev_tmp_f(2,nages);
-	  		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8) + .24*fut_temp(i-endyr) ;
+	  		 incr_dev_tmp_f(2,nages-8)     = base_incr_f(2,nages-8)+6.7*fut_temp(i-endyr);//+2.2*pow(fut_temp(i-endyr),2) ;
 	  		 incr_dev_tmp_f(nages-7,nages) = base_incr_f(nages-7,nages) ;
 	           wt_tmp_f(1)        = wt_vbg_f(1);
 	  		 for (j=1;j<=nages-1;j++)
@@ -1892,7 +1898,7 @@ FUNCTION Future_projections
 	  		 }  
 			 //males
            dvar_vector incr_dev_tmp_m(2,nages);
-	  		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + .62*fut_temp(i-endyr)-.069*fut_temp(i-endyr)*fut_temp(i-endyr) ;
+	  		 incr_dev_tmp_m(2,nages-7)     = base_incr_m(2,nages-7) + 4*fut_temp(i-endyr);
 	  		 incr_dev_tmp_m(nages-6,nages) = base_incr_m(nages-6,nages) ;
 	           wt_tmp_m(1)        = wt_vbg_m(1);
 	  		 for (j=1;j<=nages-1;j++)
@@ -3071,7 +3077,7 @@ FUNCTION Write_R_wts
   R_report<<  wt_srv_m  <<endl;
 
   R_report<<"wt_like"  <<endl;
-  R_report <<  wt_like(1)<<endl;
+  R_report <<  wt_like<<endl;
 
   // Make a dataframe (long) with year, Population, report << "Estimated_sex_ratio Year Total Mature Age_7+"<< endl;
   R_report<<"Sex_ratio_population"  <<endl;

@@ -1,9 +1,9 @@
 #model_name 
 #Base
 #datafile 
-#../data/yfs_2021_catwt_temp.dat
+#../data/yfs_2021_catwt.dat
 #Growth_Option
-    3
+    1
 #ABC_age_lb
 	6
 #phase_age_incr
@@ -27,7 +27,7 @@
 #phase_logist_sel_devs    
 	4
 #phase_male_sel      
-	4
+	-4
 #phase_q
 	-5
 #q_alpha_prior
@@ -49,7 +49,7 @@
 #phase_sigmaR  
 	-5
 #phase_wtfmsy 
-    4
+	4
 #pf_sigma    
 	0.05
 #a50_sigma   
