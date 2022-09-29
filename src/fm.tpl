@@ -324,8 +324,8 @@ DATA_SECTION
   init_matrix nsmpl_srv_c(1,nsrv,1,nyrs_srv_age_c)  //Number of age structures read per age collection
   init_matrix nsmpl_srv_s(1,nsrv,1,nyrs_srv_age_s)  //Number of age structures read per age collection
   !!log_input(nsmpl_srv_s);
-  init_3darray oac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)  //Survey age compositions
-  init_3darray oac_srv_s(1,nsrv,1,nyrs_srv_age_s,1,2*nages)  //Survey age compositions
+  init_3darray oac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)  //Survey age compositions combined sexes
+  init_3darray oac_srv_s(1,nsrv,1,nyrs_srv_age_s,1,2*nages)  //Survey age compositions split sex females then males left to right
   !!log_input(oac_srv_c);
   !!log_input(oac_srv_s);
   !! cout <<"oac_srv_s"<<oac_srv_s<<endl;  
