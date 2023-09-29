@@ -29,7 +29,8 @@ for(i in 0:length(endyrvec)){
 	  system(fc)
 	# Go to that directory, update mod.ctl to this model's configuration
 	  setwd(rundir)
-	  ctl <- read_ctl("mod.ctl")
+	  ctl<-read_dat("mod.ctl")
+	 # ctl <- read_ctl("mod.ctl")
 	  ctl$n_retro     <- i
 	  #ctl$surv_dwnwt  <- j-1
 	  write_dat(ctl,"mod.ctl")

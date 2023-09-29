@@ -166,7 +166,8 @@ read_psv <- function(fn, nsamples=10000)
 #' @export
 #' 
 read_ctl <- function(fn)
-{
+{   
+    print("if read_ctl is a problem use read_dat instead")
     options(warn = -1) # Suppress the NA message in the coercion to double
     repfile <- scan(fn, what = "character", flush = TRUE, blank.lines.skip = FALSE,
                     quiet = TRUE)

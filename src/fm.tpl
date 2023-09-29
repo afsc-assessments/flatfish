@@ -1577,7 +1577,7 @@ FUNCTION Age_Like
          age_like_fsh(k) -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(eac_fsh_s(k,i) + 0.001);
   }
   age_like_fsh-=offset_fsh;
-  obj_fun += sum(age_like_fsh);
+  obj_fun += lambda(5)*sum(age_like_fsh);
 
   age_like_srv.initialize();
   for (k=1;k<=nsrv;k++)
@@ -1588,7 +1588,7 @@ FUNCTION Age_Like
       age_like_srv(k) -= nsmpl_srv_s(k,i)*(oac_srv_s(k,i) + 0.001) * log(eac_srv_s(k,i) + 0.001);
   }
   age_like_srv-=offset_srv;
-  obj_fun += sum(age_like_srv);
+  obj_fun += lambda(6)*sum(age_like_srv);
 
 FUNCTION dvariable spr_ratio(dvariable trial_F,dvar_vector& sel)
   dvariable SBtmp;
